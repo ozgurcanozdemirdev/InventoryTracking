@@ -85,6 +85,12 @@
     <Compile Include="InventoryTracking.UI\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="InventoryTracking.UI\MainForm.Appearance.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="InventoryTracking.Controls\InventoryIcons.cs" />
+    <Compile Include="InventoryTracking.Controls\InventoryValueLabel.cs" />
+    <Compile Include="InventoryTracking.Controls\InventorySearchTextBox.cs" />
     <Compile Include="InventoryTracking.UI\ProductDetailForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -139,6 +145,7 @@
     <Content Include="Notes\2026-09-26_V1_MalzemeBirimGuncelleme.sql" />
     <Content Include="Notes\2026-09-26_V1_StokTransferi.sql" />
     <Content Include="Notes\2026-09-26_V1_UygulamaYetkileri.sql" />
+    <Content Include="Notes\2026-10-06_MalzemeNumarasiSadelestirme.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="RemoveLocalCredentialsFromRelease" AfterTargets="Build" Condition="'$(Configuration)' == 'Release'">

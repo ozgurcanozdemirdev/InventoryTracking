@@ -17,13 +17,21 @@ namespace InventoryTracking.UI
     private readonly Urun _urun;
     private readonly int _depoId;
     private readonly StokService _stokService;
+    private readonly bool? _girisMi;
     private int _currentStockAmount = 0;
     public ProductDetailForm(Urun urun, int depoId, StokService stokService)
+      : this(urun, depoId, stokService, null)
+    {
+    }
+
+    public ProductDetailForm(Urun urun, int depoId, StokService stokService, bool? girisMi)
     {
       InitializeComponent();
       _urun = urun;
       _depoId = depoId;
       _stokService = stokService;
+      _girisMi = girisMi;
+      Shown += (sender, e) => numMiktar.Focus();
     }
 
     private void ProductDetailForm_Load(object sender, EventArgs e)
@@ -34,7 +42,11 @@ namespace InventoryTracking.UI
 
     private void InitializeControls()
     {
-      this.Text = "Ürün Detayı";
+      this.Text = _girisMi.HasValue ? (_girisMi.Value ? "Stok Girişi" : "Stok Çıkışı") : "Ürün Detayı";
+      // Ana ekrandaki yön butonu yalnızca istenen işlemi açar. Çift tıklama
+      // ile açılan genel ürün penceresinde her iki işlem kullanılabilir.
+      btnGiris.Enabled = !_girisMi.HasValue || _girisMi.Value;
+      btnCikis.Enabled = !_girisMi.HasValue || !_girisMi.Value;
       this.StartPosition = FormStartPosition.CenterParent;
       this.FormBorderStyle = FormBorderStyle.FixedDialog;
       this.MaximizeBox = false;

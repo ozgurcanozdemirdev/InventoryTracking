@@ -775,10 +775,28 @@ public class StokRepository
     var stoklar = new List<Stok>();
     using (SqlConnection conn = GetConnection())
     {
-      using (SqlCommand cmd = new SqlCommand("sp_GetStokByDepo", conn))
+      // Katalog numarası ve son hareket aynı sorguda alınır. Böylece satır seçerken
+      // tekrar SQL sorgusu yapılmaz; son hareket yalnızca seçili depoya ait olur.
+      const string query = @"
+        SELECT s.StokId, s.UrunId, u.Barkod, m.MalzemeNo, u.UrunAdi,
+               k.KategoriAdi, b.BirimAdi, u.Fiyat, s.Miktar,
+               CASE WHEN s.Miktar <= u.MinimumStok THEN N'Kritik'
+                    WHEN s.Miktar <= (u.MaksimumStok / 4) THEN N'Düşük'
+                    ELSE N'Normal' END AS StokDurumu,
+               s.OlusturulmaTarihi, s.GuncellemeTarihi, h.SonHareketTarihi
+        FROM dbo.Stok s
+        INNER JOIN dbo.Urun u ON s.UrunId = u.UrunId
+        INNER JOIN dbo.MalzemeKatalog m ON u.MalzemeId = m.MalzemeId
+        INNER JOIN dbo.Kategori k ON u.KategoriId = k.KategoriId
+        INNER JOIN dbo.Birim b ON u.BirimId = b.BirimId
+        OUTER APPLY (SELECT MAX(HareketTarihi) AS SonHareketTarihi
+                     FROM dbo.StokHareketi
+                     WHERE UrunId = s.UrunId AND DepoId = s.DepoId) h
+        WHERE s.DepoId = @DepoId AND u.AktifMi = 1
+        ORDER BY u.UrunAdi;";
+      using (SqlCommand cmd = new SqlCommand(query, conn))
       {
-        cmd.CommandType = CommandType.StoredProcedure;
-        cmd.Parameters.AddWithValue("@DepoId", depoId);
+        cmd.Parameters.Add("@DepoId", SqlDbType.Int).Value = depoId;
 
         using (SqlDataReader r = cmd.ExecuteReader())
         {
@@ -790,12 +808,15 @@ public class StokRepository
               UrunId = SafeGetInt(r, "UrunId"),
               DepoId = depoId,
               Barkod = SafeGetString(r, "Barkod"),
+              MalzemeNo = SafeGetString(r, "MalzemeNo"),
               UrunAdi = SafeGetString(r, "UrunAdi"),
               KategoriAdi = SafeGetString(r, "KategoriAdi"),
               BirimAdi = SafeGetString(r, "BirimAdi"),
               Fiyat = SafeGetDecimal(r, "Fiyat"),
               Miktar = SafeGetInt(r, "Miktar"),
               StokDurumu = SafeGetString(r, "StokDurumu"),
+              SonHareketTarihi = r.IsDBNull(r.GetOrdinal("SonHareketTarihi"))
+                ? (DateTime?)null : r.GetDateTime(r.GetOrdinal("SonHareketTarihi")),
               OlusturulmaTarihi = SafeGetDateTime(r, "OlusturulmaTarihi"),
               GuncellemeTarihi = SafeGetDateTime(r, "GuncellemeTarihi")
             });

@@ -28,9 +28,20 @@ BEGIN TRY
     IF COL_LENGTH(N'dbo.Urun', N'MalzemeId') IS NULL
         ALTER TABLE dbo.Urun ADD MalzemeId INT NULL;
 
-    -- Var olan ürünlere sabit bir geçiş numarası veriyoruz; barkod ve birim aynen korunur.
+    -- Mevcut ürün kimliğini sade malzeme numarası olarak kullanıyoruz.
+    -- Hedef numara önceden başka barkoda verilmişse geçişin tamamı geri alınır.
+    IF EXISTS
+    (
+        SELECT 1 FROM dbo.Urun AS u
+        INNER JOIN dbo.MalzemeKatalog AS m WITH (UPDLOCK, HOLDLOCK)
+            ON m.MalzemeNo = CONVERT(NVARCHAR(20), u.UrunId)
+        WHERE NOT EXISTS (SELECT 1 FROM dbo.MalzemeKatalog AS mevcut WHERE mevcut.Barkod = u.Barkod)
+    )
+        THROW 50013, N'Malzeme numarası başka bir barkoda ait; katalog geçişi geri alındı.', 1;
+
+    -- Barkod, açıklama ve birim korunur; yeni numaraya metin öneki eklenmez.
     INSERT INTO dbo.MalzemeKatalog (MalzemeNo, Barkod, Aciklama, BirimId)
-    SELECT N'LEGACY-' + CONVERT(NVARCHAR(20), u.UrunId), u.Barkod, u.UrunAdi, u.BirimId
+    SELECT CONVERT(NVARCHAR(20), u.UrunId), u.Barkod, u.UrunAdi, u.BirimId
     FROM dbo.Urun AS u
     WHERE NOT EXISTS (SELECT 1 FROM dbo.MalzemeKatalog AS m WHERE m.Barkod = u.Barkod);
 

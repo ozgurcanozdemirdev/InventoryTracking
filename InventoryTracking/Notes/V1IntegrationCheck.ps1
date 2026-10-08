@@ -1,4 +1,4 @@
-param([switch]$KeepDatabase, [string]$AssemblyPath, [string]$ReportScreenshotFolder)
+param([switch]$KeepDatabase, [string]$AssemblyPath, [string]$ReportScreenshotFolder, [string]$MainScreenshotFolder)
 
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Data
@@ -53,6 +53,36 @@ DROP TABLE dbo.StokTransferi;
   $null = Run-Sql $admin $transferMigration
   $null = Run-Sql $admin $transferMigration
   Check ((Run-Sql $admin "SELECT COUNT(*) FROM sys.columns WHERE object_id=OBJECT_ID('StokHareketi') AND name='TransferId'") -eq 1) 'idempotent transfer migration'
+  $catalogMigration = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '2026-09-26_MalzemeKatalogVeHareketYonu.sql'))
+  $null = Run-Sql $admin $catalogMigration
+  $null = Run-Sql $admin $catalogMigration
+  Check ((Run-Sql $admin "SELECT COUNT(*) FROM dbo.MalzemeKatalog WHERE MalzemeNo LIKE 'LEGACY-%'") -eq 0) 'catalog migration does not add a legacy prefix'
+
+  # Gecici veritabaninda eski otomatik numaralari ve gercek bir cakismayi taklit ederiz.
+  # Hata sirasinda iki kayit da korunmali; basarida stok iliskileri degismemelidir.
+  $stockCount = Run-Sql $admin 'SELECT COUNT(*) FROM dbo.Stok'
+  $movementCount = Run-Sql $admin 'SELECT COUNT(*) FROM dbo.StokHareketi'
+  $customNumber = Run-Sql $admin 'SELECT MalzemeNo FROM dbo.MalzemeKatalog WHERE MalzemeId=(SELECT MalzemeId FROM dbo.Urun WHERE UrunId=3)'
+  $null = Run-Sql $admin @'
+UPDATE m SET MalzemeNo = N'LEGACY-' + CONVERT(NVARCHAR(20), u.UrunId)
+FROM dbo.MalzemeKatalog AS m INNER JOIN dbo.Urun AS u ON u.MalzemeId=m.MalzemeId
+WHERE u.UrunId IN (1,2);
+INSERT INTO dbo.MalzemeKatalog (MalzemeNo, Barkod, Aciklama, BirimId)
+VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
+'@
+  $numberMigration = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '2026-10-06_MalzemeNumarasiSadelestirme.sql'))
+  $numberConflictRejected = $false
+  try { $null = Run-Sql $admin $numberMigration }
+  catch { $numberConflictRejected = $_.Exception.ToString().Contains('50031') -or ($_.Exception.InnerException.Number -eq 50031) }
+  Check $numberConflictRejected 'material number collision rejected'
+  Check ((Run-Sql $admin "SELECT COUNT(*) FROM dbo.MalzemeKatalog WHERE MalzemeNo IN ('LEGACY-1','LEGACY-2')") -eq 2) 'number collision rolls back every candidate'
+  $null = Run-Sql $admin "DELETE FROM dbo.MalzemeKatalog WHERE Barkod=N'QA-NUMBER-CONFLICT'"
+  Check ((Run-Sql $admin $numberMigration) -eq 2) 'automatic material numbers simplified'
+  Check ((Run-Sql $admin $numberMigration) -eq 0) 'material number migration is idempotent'
+  Check ((Run-Sql $admin 'SELECT COUNT(*) FROM dbo.Urun u INNER JOIN dbo.MalzemeKatalog m ON m.MalzemeId=u.MalzemeId WHERE u.UrunId IN (1,2) AND m.MalzemeNo=CONVERT(NVARCHAR(20),u.UrunId)') -eq 2) 'catalog stores plain material numbers'
+  Check ((Run-Sql $admin 'SELECT MalzemeNo FROM dbo.MalzemeKatalog WHERE MalzemeId=(SELECT MalzemeId FROM dbo.Urun WHERE UrunId=3)') -eq $customNumber) 'custom material number preserved'
+  Check (((Run-Sql $admin 'SELECT COUNT(*) FROM dbo.Stok') -eq $stockCount) -and
+    ((Run-Sql $admin 'SELECT COUNT(*) FROM dbo.StokHareketi') -eq $movementCount)) 'number migration preserves stock and movement records'
   $permissions = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '2026-09-26_V1_UygulamaYetkileri.sql'))
   $null = Run-Sql $admin $permissions
   Check ((Run-Sql $admin "SELECT COUNT(*) FROM sys.database_principals WHERE name='InventoryTrackingApp'") -eq 1) 'limited application role created'
@@ -330,20 +360,112 @@ DROP TABLE dbo.StokTransferi;
   finally { $setupForm.Close(); $setupForm.Dispose() }
   $main = New-Object InventoryTracking.UI.MainForm
   try {
-    $initialize = $main.GetType().GetMethod('MainForm_Load',
-      [Reflection.BindingFlags]'Instance,NonPublic')
-    $null = $initialize.Invoke($main, @($null, [EventArgs]::Empty))
+    $main.WindowState = [Windows.Forms.FormWindowState]::Normal
+    $main.ClientSize = New-Object Drawing.Size -ArgumentList 1440, 830
+    $main.Show()
+    [Windows.Forms.Application]::DoEvents()
     $mainGrid = $main.Controls.Find('dgvStoklar', $true) | Select-Object -First 1
     $mainDepots = $main.Controls.Find('cmbDepo', $true) | Select-Object -First 1
     Check (($mainGrid.Rows.Count -gt 0) -and ($mainDepots.Items.Count -gt 0)) 'main screen loads depot and stock rows'
+    Check ($mainGrid.Columns.Contains('MalzemeNo') -and $mainGrid.Columns.Contains('SonHareketTarihi') -and
+      $mainGrid.DefaultCellStyle.Font.Bold) 'main grid has material number, last movement and bold rows'
     $toolbar = $main.Controls.Find('pnlButtons', $true) | Select-Object -First 1
-    $categoryButton = $toolbar.Controls | Where-Object { $_.Text -like '*Kategoriler' } | Select-Object -First 1
-    $depotButton = $toolbar.Controls | Where-Object { $_.Text -like '*Depolar' } | Select-Object -First 1
-    $transferButton = $toolbar.Controls | Where-Object { $_.Text -like '*Transfer' } | Select-Object -First 1
-    $oldAdd = $toolbar.Controls.Find('btnYeniUrun', $false) | Select-Object -First 1
-    $oldExit = $toolbar.Controls.Find('btnKapat', $false) | Select-Object -First 1
-    Check (($categoryButton.Left -eq 661) -and ($depotButton.Left -eq 791) -and ($transferButton.Left -eq 921) -and
-      ($oldAdd.Left -eq 15) -and ($oldExit.Left -eq 1065)) 'main toolbar button positions preserved'
+    Check (($toolbar.Controls.Count -eq 9) -and
+      (@($toolbar.Controls | Where-Object { $null -ne $_.Image }).Count -eq 9)) 'nine main action buttons retain names and icons'
+    $searchBox = $main.Controls.Find('txtBarkod', $true) | Select-Object -First 1
+    $searchBox.Text = 'QA-MAT-1'
+    [Windows.Forms.Application]::DoEvents()
+    Check ($mainGrid.Rows.Count -eq 1) 'material-number search filters the main list'
+    $selected = $mainGrid.Rows[0].DataBoundItem
+    Check ($selected.MalzemeNo -eq 'QA-MAT-1') 'stock query returns the catalog material number'
+    $lastMovement = Run-Sql $admin "SELECT MAX(HareketTarihi) FROM StokHareketi WHERE UrunId=$newId AND DepoId=1"
+    Check ($selected.SonHareketTarihi -eq $lastMovement) 'last movement is scoped to selected product and depot'
+    $detailAmount = $main.Controls.Find('lblDetailMiktar', $true) | Select-Object -First 1
+    $topAmount = $main.Controls.Find('lblStockAmount', $true) | Select-Object -First 1
+    Check (($topAmount.Text -eq $selected.Miktar.ToString('N0')) -and
+      $detailAmount.Text.Contains($selected.Miktar.ToString('N0'))) 'selection updates top quantity and product panel'
+    $positiveStatus = $main.Controls.Find('lblDetailStokDurumu', $true) | Select-Object -First 1
+    Check (($selected.Miktar -gt 0) -and $positiveStatus.Text.Contains('Az Stok')) 'positive low stock is not displayed as out-of-stock'
+    $entryButton = $main.Controls.Find('btnStokGiris', $true) | Select-Object -First 1
+    $exitButton = $main.Controls.Find('btnStokCikis', $true) | Select-Object -First 1
+    foreach ($isEntry in @($true, $false)) {
+      $script:operationDialogChecked = $false
+      $dialogTimer = New-Object Windows.Forms.Timer
+      $dialogTimer.Interval = 150
+      $dialogTimer.Add_Tick({
+        $dialog = [Windows.Forms.Application]::OpenForms | Where-Object { $_ -is [InventoryTracking.UI.ProductDetailForm] } | Select-Object -First 1
+        if ($null -ne $dialog) {
+          $giris = $dialog.Controls.Find('btnGiris', $true) | Select-Object -First 1
+          $cikis = $dialog.Controls.Find('btnCikis', $true) | Select-Object -First 1
+          $script:operationDialogChecked = ($giris.Enabled -eq $isEntry) -and ($cikis.Enabled -ne $isEntry)
+          $dialogTimer.Stop()
+          $dialog.DialogResult = [Windows.Forms.DialogResult]::Cancel
+          $dialog.Close()
+        }
+      })
+      try {
+        $dialogTimer.Start()
+        if ($isEntry) { $entryButton.PerformClick() } else { $exitButton.PerformClick() }
+        Check $script:operationDialogChecked 'sidebar action opens the existing stock dialog with the correct direction'
+      }
+      finally { $dialogTimer.Stop(); $dialogTimer.Dispose() }
+    }
+    $searchBox.Text = 'NO-MATCH-UI-123'
+    [Windows.Forms.Application]::DoEvents()
+    Check (($mainGrid.Rows.Count -eq 0) -and (-not $entryButton.Enabled) -and
+      (-not $exitButton.Enabled) -and ($topAmount.Text -eq [string][char]0x2014)) 'empty search clears detail and disables stock actions'
+    $searchBox.Clear()
+    [Windows.Forms.Application]::DoEvents()
+    $noMovementRow = $mainGrid.Rows | Where-Object { $_.DataBoundItem.Barkod -eq '8690000123458' } | Select-Object -First 1
+    Check ($null -eq $noMovementRow.DataBoundItem.SonHareketTarihi) 'stock without movements has no fabricated last-movement date'
+    $searchBox.Text = 'QA-MAT-1'
+    for ($i = 0; $i -lt $mainDepots.Items.Count; $i++) {
+      if ($mainDepots.Items[$i].DepoId -eq $depotId) { $mainDepots.SelectedIndex = $i; break }
+    }
+    [Windows.Forms.Application]::DoEvents()
+    $otherDepotStock = $stock.GetStok($newId, $depotId)
+    Check (($mainGrid.Rows.Count -eq 1) -and ($mainGrid.Rows[0].DataBoundItem.DepoId -eq $depotId) -and
+      ($topAmount.Text -eq $otherDepotStock.Miktar.ToString('N0'))) 'depot change refreshes list and detail from the selected depot'
+    for ($i = 0; $i -lt $mainDepots.Items.Count; $i++) {
+      if ($mainDepots.Items[$i].DepoId -eq 1) { $mainDepots.SelectedIndex = $i; break }
+    }
+    $searchBox.Clear()
+    [Windows.Forms.Application]::DoEvents()
+    if ($MainScreenshotFolder) { [IO.Directory]::CreateDirectory($MainScreenshotFolder) | Out-Null }
+    foreach ($width in @(1440, 1180)) {
+      $main.ClientSize = New-Object Drawing.Size -ArgumentList $width, 830
+      [Windows.Forms.Application]::DoEvents()
+      $previousRight = 0
+      $toolbarFits = $true
+      foreach ($button in @($toolbar.Controls | Sort-Object Left)) {
+        $toolbarFits = $toolbarFits -and ($button.Left -ge $previousRight) -and ($button.Right -le $toolbar.ClientSize.Width)
+        $previousRight = $button.Right
+      }
+      Check $toolbarFits "toolbar fits without overlapping at width $width"
+      $detailPanel = $main.Controls.Find('pnlProductDetail', $true) | Select-Object -First 1
+      Check ($mainGrid.Right -lt $detailPanel.Left) 'grid and detail panel do not overlap'
+      $barcodePanel = $main.Controls.Find('pnlBarkodKutusu', $true) | Select-Object -First 1
+      Check ($barcodePanel.Bottom -le $barcodePanel.Parent.ClientSize.Height) 'barcode input is fully visible'
+      Check (($entryButton.Bottom -le $entryButton.Parent.ClientSize.Height) -and
+        ($exitButton.Bottom -le $exitButton.Parent.ClientSize.Height)) 'stock buttons remain visible at the bottom of the detail panel'
+      if ($MainScreenshotFolder) {
+        $shot = New-Object Drawing.Bitmap -ArgumentList $main.Width, $main.Height
+        try {
+          $main.DrawToBitmap($shot, (New-Object Drawing.Rectangle -ArgumentList 0, 0, $main.Width, $main.Height))
+          $shot.Save((Join-Path $MainScreenshotFolder ('main-' + $width + '.png')))
+        }
+        finally { $shot.Dispose() }
+      }
+    }
+    Check ($stock.SetStock($newId, 1, 0, 'QA UI zero stock').Success) 'zero stock prepared through stock service'
+    ($toolbar.Controls.Find('btnYenile', $false) | Select-Object -First 1).PerformClick()
+    $searchBox.Text = 'QA-MAT-1'
+    [Windows.Forms.Application]::DoEvents()
+    $statusLabel = $main.Controls.Find('lblDetailStokDurumu', $true) | Select-Object -First 1
+    Check (($topAmount.Text -eq '0') -and $statusLabel.Text.Contains('Stokta Yok') -and
+      (-not $exitButton.Enabled)) 'zero quantity shows out-of-stock and disables output'
+    $lastDateLabel = $main.Controls.Find('lblDetailSonHareketTarihi', $true) | Select-Object -First 1
+    Check (-not $lastDateLabel.Text.Contains('Hareket yok')) 'new stock movement refreshes the actual movement date'
   }
   finally { $main.Dispose() }
 }

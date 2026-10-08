@@ -54,6 +54,7 @@ foreach ($name in @(
   '2026-09-26_MalzemeKatalogVeHareketYonu.sql',
   '2026-09-26_V1_MalzemeBirimGuncelleme.sql',
   '2026-09-26_V1_StokTransferi.sql',
+  '2026-10-06_MalzemeNumarasiSadelestirme.sql',
   '2026-09-26_V1_UygulamaYetkileri.sql')) {
   Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination $sqlFolder
 }

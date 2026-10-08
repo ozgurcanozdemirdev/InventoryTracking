@@ -1,4 +1,4 @@
-﻿namespace InventoryTracking.UI
+namespace InventoryTracking.UI
 {
   partial class MainForm
   {
@@ -6,316 +6,310 @@
 
     protected override void Dispose(bool disposing)
     {
-      if (disposing && (components != null))
+      if (disposing)
       {
-        components.Dispose();
+        DisposeAppearanceResources();
+        if (components != null) components.Dispose();
       }
       base.Dispose(disposing);
     }
 
     private void InitializeComponent()
     {
-      this.pnlTop = new System.Windows.Forms.Panel();
+      this.components = new System.ComponentModel.Container();
+      this.pnlLayout = new System.Windows.Forms.TableLayoutPanel();
+      this.pnlTop = new System.Windows.Forms.TableLayoutPanel();
       this.lblTitle = new System.Windows.Forms.Label();
-      this.pnlSearch = new System.Windows.Forms.Panel();
+      this.picLogo = new System.Windows.Forms.PictureBox();
+      this.pnlHeaderInfo = new System.Windows.Forms.FlowLayoutPanel();
+      this.pnlSearch = new System.Windows.Forms.TableLayoutPanel();
+      this.pnlBarcode = new System.Windows.Forms.Panel();
       this.lblBarkod = new System.Windows.Forms.Label();
-      this.txtBarkod = new System.Windows.Forms.TextBox();
+      this.pnlBarkodKutusu = new System.Windows.Forms.Panel();
+      this.picBarkod = new System.Windows.Forms.PictureBox();
+      this.txtBarkod = new InventoryTracking.Controls.InventorySearchTextBox();
       this.pnlFilters = new System.Windows.Forms.Panel();
       this.lblDepo = new System.Windows.Forms.Label();
+      this.pnlDepoKutusu = new System.Windows.Forms.Panel();
+      this.picDepo = new System.Windows.Forms.PictureBox();
       this.cmbDepo = new System.Windows.Forms.ComboBox();
-      this.pnlButtons = new System.Windows.Forms.Panel();
+      this.pnlQuantity = new System.Windows.Forms.Panel();
+      this.lblQuantityTitle = new System.Windows.Forms.Label();
+      this.pnlQuantityValue = new System.Windows.Forms.FlowLayoutPanel();
+      this.picQuantity = new System.Windows.Forms.PictureBox();
+      this.lblStockAmount = new System.Windows.Forms.Label();
+      this.lblStockUnit = new System.Windows.Forms.Label();
+      this.pnlButtons = new System.Windows.Forms.TableLayoutPanel();
       this.btnYeniUrun = new System.Windows.Forms.Button();
       this.btnDuzenle = new System.Windows.Forms.Button();
       this.btnSil = new System.Windows.Forms.Button();
       this.btnYenile = new System.Windows.Forms.Button();
+      this.btnZRaporu = new System.Windows.Forms.Button();
       this.btnKapat = new System.Windows.Forms.Button();
+      this.pnlWorkspace = new System.Windows.Forms.TableLayoutPanel();
+      this.dgvStoklar = new System.Windows.Forms.DataGridView();
+      this.pnlProductDetail = new System.Windows.Forms.Panel();
+      this.pnlHint = new System.Windows.Forms.TableLayoutPanel();
+      this.lblHint = new System.Windows.Forms.Label();
+      this.lblRecordCount = new System.Windows.Forms.Label();
       this.statusStrip1 = new System.Windows.Forms.StatusStrip();
       this.toolStripStatusLabel = new System.Windows.Forms.ToolStripStatusLabel();
-      this.dgvStoklar = new System.Windows.Forms.DataGridView();
-      this.btnZRaporu = new System.Windows.Forms.Button();
-      this.pnlTop.SuspendLayout();
-      this.pnlSearch.SuspendLayout();
-      this.pnlFilters.SuspendLayout();
-      this.pnlButtons.SuspendLayout();
-      this.statusStrip1.SuspendLayout();
-      ((System.ComponentModel.ISupportInitialize)(this.dgvStoklar)).BeginInit();
+      this.toolStripConnection = new System.Windows.Forms.ToolStripStatusLabel();
+      this.toolStripDepot = new System.Windows.Forms.ToolStripStatusLabel();
+      this.toolStripVersion = new System.Windows.Forms.ToolStripStatusLabel();
       this.SuspendLayout();
-      // 
-      // pnlTop
-      // 
-      this.pnlTop.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(41)))), ((int)(((byte)(128)))), ((int)(((byte)(185)))));
-      this.pnlTop.Controls.Add(this.lblTitle);
-      this.pnlTop.Dock = System.Windows.Forms.DockStyle.Top;
-      this.pnlTop.Location = new System.Drawing.Point(0, 0);
+      ((System.ComponentModel.ISupportInitialize)(this.dgvStoklar)).BeginInit();
+
+      this.pnlLayout.Name = "pnlLayout";
+      this.pnlLayout.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.pnlLayout.ColumnCount = 1;
+      this.pnlLayout.RowCount = 5;
+      this.pnlLayout.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.pnlLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+      this.pnlLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+      this.pnlLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 72F));
+      this.pnlLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.pnlLayout.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 46F));
+      this.pnlLayout.Controls.Add(this.pnlTop, 0, 0);
+      this.pnlLayout.Controls.Add(this.pnlSearch, 0, 1);
+      this.pnlLayout.Controls.Add(this.pnlButtons, 0, 2);
+      this.pnlLayout.Controls.Add(this.pnlWorkspace, 0, 3);
+      this.pnlLayout.Controls.Add(this.pnlHint, 0, 4);
+
       this.pnlTop.Name = "pnlTop";
-      this.pnlTop.Padding = new System.Windows.Forms.Padding(15);
-      this.pnlTop.Size = new System.Drawing.Size(1200, 60);
-      this.pnlTop.TabIndex = 0;
-      // 
-      // lblTitle
-      // 
-      this.lblTitle.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
-      this.lblTitle.ForeColor = System.Drawing.Color.White;
-      this.lblTitle.Location = new System.Drawing.Point(15, 15);
+      this.pnlTop.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.pnlTop.Margin = new System.Windows.Forms.Padding(0);
+      this.pnlTop.Padding = new System.Windows.Forms.Padding(16, 8, 16, 8);
+      this.pnlTop.BackColor = System.Drawing.Color.FromArgb(0, 117, 201);
+      this.pnlTop.ColumnCount = 3;
+      this.pnlTop.RowCount = 1;
+      this.pnlTop.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.pnlTop.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 48F));
+      this.pnlTop.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.pnlTop.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+      this.pnlTop.Controls.Add(this.picLogo, 0, 0);
+      this.pnlTop.Controls.Add(this.lblTitle, 1, 0);
+      this.pnlTop.Controls.Add(this.pnlHeaderInfo, 2, 0);
+      this.picLogo.Name = "picLogo";
+      this.picLogo.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.picLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
       this.lblTitle.Name = "lblTitle";
-      this.lblTitle.Size = new System.Drawing.Size(1170, 30);
-      this.lblTitle.TabIndex = 0;
+      this.lblTitle.Dock = System.Windows.Forms.DockStyle.Fill;
       this.lblTitle.Text = "STOK TAKİP SİSTEMİ";
+      this.lblTitle.ForeColor = System.Drawing.Color.White;
+      this.lblTitle.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold);
       this.lblTitle.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
-      // 
-      // pnlSearch
-      // 
-      this.pnlSearch.BackColor = System.Drawing.Color.White;
-      this.pnlSearch.Controls.Add(this.lblBarkod);
-      this.pnlSearch.Controls.Add(this.txtBarkod);
-      this.pnlSearch.Dock = System.Windows.Forms.DockStyle.Top;
-      this.pnlSearch.Location = new System.Drawing.Point(0, 60);
+      this.pnlHeaderInfo.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.pnlHeaderInfo.AutoSize = true;
+      this.pnlHeaderInfo.WrapContents = false;
+      this.pnlHeaderInfo.FlowDirection = System.Windows.Forms.FlowDirection.LeftToRight;
+
       this.pnlSearch.Name = "pnlSearch";
-      this.pnlSearch.Padding = new System.Windows.Forms.Padding(15);
-      this.pnlSearch.Size = new System.Drawing.Size(1200, 70);
-      this.pnlSearch.TabIndex = 1;
-      // 
-      // lblBarkod
-      // 
-      this.lblBarkod.AutoSize = true;
-      this.lblBarkod.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-      this.lblBarkod.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
-      this.lblBarkod.Location = new System.Drawing.Point(15, 12);
+      this.pnlSearch.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.pnlSearch.Margin = new System.Windows.Forms.Padding(16, 12, 16, 10);
+      this.pnlSearch.ColumnCount = 3;
+      this.pnlSearch.RowCount = 1;
+      this.pnlSearch.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.pnlSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 48F));
+      this.pnlSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 27F));
+      this.pnlSearch.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 25F));
+      this.pnlSearch.Controls.Add(this.pnlBarcode, 0, 0);
+      this.pnlSearch.Controls.Add(this.pnlFilters, 1, 0);
+      this.pnlSearch.Controls.Add(this.pnlQuantity, 2, 0);
+      this.pnlBarcode.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.pnlBarcode.Margin = new System.Windows.Forms.Padding(0, 0, 16, 0);
+      this.pnlBarcode.Controls.Add(this.pnlBarkodKutusu);
+      this.pnlBarcode.Controls.Add(this.lblBarkod);
+      this.lblBarkod.Text = "Barkod / Ürün Ara";
       this.lblBarkod.Name = "lblBarkod";
-      this.lblBarkod.Size = new System.Drawing.Size(123, 20);
-      this.lblBarkod.TabIndex = 0;
-      this.lblBarkod.Text = "Barkod Okutma:";
-      // 
-      // txtBarkod
-      // 
-      this.txtBarkod.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-      this.txtBarkod.Font = new System.Drawing.Font("Segoe UI", 14F);
-      this.txtBarkod.Location = new System.Drawing.Point(15, 35);
+      this.lblBarkod.Dock = System.Windows.Forms.DockStyle.Top;
+      this.lblBarkod.Height = 26;
+      this.lblBarkod.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+      this.pnlBarkodKutusu.Name = "pnlBarkodKutusu";
+      this.pnlBarkodKutusu.Dock = System.Windows.Forms.DockStyle.Bottom;
+      this.pnlBarkodKutusu.Height = 44;
+      this.pnlBarkodKutusu.BackColor = System.Drawing.Color.White;
+      this.pnlBarkodKutusu.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.pnlBarkodKutusu.Padding = new System.Windows.Forms.Padding(8, 10, 8, 7);
+      this.pnlBarkodKutusu.Controls.Add(this.txtBarkod);
+      this.pnlBarkodKutusu.Controls.Add(this.picBarkod);
+      this.picBarkod.Dock = System.Windows.Forms.DockStyle.Left;
+      this.picBarkod.Width = 34;
+      this.picBarkod.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
       this.txtBarkod.Name = "txtBarkod";
-      this.txtBarkod.Size = new System.Drawing.Size(300, 32);
+      this.txtBarkod.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.txtBarkod.BorderStyle = System.Windows.Forms.BorderStyle.None;
+      this.txtBarkod.Font = new System.Drawing.Font("Segoe UI", 11F);
       this.txtBarkod.TabIndex = 0;
       this.txtBarkod.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtBarkod_KeyPress);
-      // 
-      // pnlFilters
-      // 
-      this.pnlFilters.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
-      this.pnlFilters.Controls.Add(this.lblDepo);
-      this.pnlFilters.Controls.Add(this.cmbDepo);
-      this.pnlFilters.Dock = System.Windows.Forms.DockStyle.Top;
-      this.pnlFilters.Location = new System.Drawing.Point(0, 130);
+
       this.pnlFilters.Name = "pnlFilters";
-      this.pnlFilters.Padding = new System.Windows.Forms.Padding(15);
-      this.pnlFilters.Size = new System.Drawing.Size(1200, 70);
-      this.pnlFilters.TabIndex = 2;
-      // 
-      // lblDepo
-      // 
-      this.lblDepo.AutoSize = true;
-      this.lblDepo.Font = new System.Drawing.Font("Segoe UI", 11F, System.Drawing.FontStyle.Bold);
-      this.lblDepo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
-      this.lblDepo.Location = new System.Drawing.Point(15, 12);
+      this.pnlFilters.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.pnlFilters.Margin = new System.Windows.Forms.Padding(0, 0, 16, 0);
+      this.pnlFilters.Controls.Add(this.pnlDepoKutusu);
+      this.pnlFilters.Controls.Add(this.lblDepo);
+      this.lblDepo.Text = "Depo Seçimi";
       this.lblDepo.Name = "lblDepo";
-      this.lblDepo.Size = new System.Drawing.Size(99, 20);
-      this.lblDepo.TabIndex = 0;
-      this.lblDepo.Text = "Depo Seçimi:";
-      // 
-      // cmbDepo
-      // 
+      this.lblDepo.Dock = System.Windows.Forms.DockStyle.Top;
+      this.lblDepo.Height = 26;
+      this.lblDepo.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+      this.pnlDepoKutusu.Dock = System.Windows.Forms.DockStyle.Bottom;
+      this.pnlDepoKutusu.Height = 44;
+      this.pnlDepoKutusu.BackColor = System.Drawing.Color.White;
+      this.pnlDepoKutusu.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.pnlDepoKutusu.Padding = new System.Windows.Forms.Padding(8, 6, 6, 4);
+      this.pnlDepoKutusu.Controls.Add(this.cmbDepo);
+      this.pnlDepoKutusu.Controls.Add(this.picDepo);
+      this.picDepo.Dock = System.Windows.Forms.DockStyle.Left;
+      this.picDepo.Width = 34;
+      this.picDepo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+      this.cmbDepo.Name = "cmbDepo";
+      this.cmbDepo.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.cmbDepo.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
       this.cmbDepo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
       this.cmbDepo.Font = new System.Drawing.Font("Segoe UI", 11F);
-      this.cmbDepo.Location = new System.Drawing.Point(15, 35);
-      this.cmbDepo.Name = "cmbDepo";
-      this.cmbDepo.Size = new System.Drawing.Size(300, 28);
       this.cmbDepo.TabIndex = 1;
       this.cmbDepo.SelectedIndexChanged += new System.EventHandler(this.cmbDepo_SelectedIndexChanged);
-      // 
-      // pnlButtons
-      // 
-      this.pnlButtons.BackColor = System.Drawing.Color.White;
-      this.pnlButtons.Controls.Add(this.btnZRaporu);
-      this.pnlButtons.Controls.Add(this.btnYeniUrun);
-      this.pnlButtons.Controls.Add(this.btnDuzenle);
-      this.pnlButtons.Controls.Add(this.btnSil);
-      this.pnlButtons.Controls.Add(this.btnYenile);
-      this.pnlButtons.Controls.Add(this.btnKapat);
-      this.pnlButtons.Dock = System.Windows.Forms.DockStyle.Top;
-      this.pnlButtons.Location = new System.Drawing.Point(0, 200);
+
+      this.pnlQuantity.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.pnlQuantity.Margin = new System.Windows.Forms.Padding(0);
+      this.pnlQuantity.Controls.Add(this.pnlQuantityValue);
+      this.pnlQuantity.Controls.Add(this.lblQuantityTitle);
+      this.lblQuantityTitle.Text = "Stok Miktarı";
+      this.lblQuantityTitle.Dock = System.Windows.Forms.DockStyle.Top;
+      this.lblQuantityTitle.Height = 26;
+      this.lblQuantityTitle.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+      this.pnlQuantityValue.Dock = System.Windows.Forms.DockStyle.Bottom;
+      this.pnlQuantityValue.Height = 44;
+      this.pnlQuantityValue.WrapContents = false;
+      this.pnlQuantityValue.Controls.Add(this.picQuantity);
+      this.pnlQuantityValue.Controls.Add(this.lblStockAmount);
+      this.pnlQuantityValue.Controls.Add(this.lblStockUnit);
+      this.picQuantity.Size = new System.Drawing.Size(36, 38);
+      this.picQuantity.SizeMode = System.Windows.Forms.PictureBoxSizeMode.CenterImage;
+      this.lblStockAmount.Name = "lblStockAmount";
+      this.lblStockAmount.AutoSize = true;
+      this.lblStockAmount.MinimumSize = new System.Drawing.Size(92, 40);
+      this.lblStockAmount.Font = new System.Drawing.Font("Segoe UI", 14F, System.Drawing.FontStyle.Bold);
+      this.lblStockAmount.BackColor = System.Drawing.Color.FromArgb(230, 239, 248);
+      this.lblStockAmount.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+      this.lblStockAmount.Text = "—";
+      this.lblStockUnit.Name = "lblStockUnit";
+      this.lblStockUnit.AutoSize = true;
+      this.lblStockUnit.MinimumSize = new System.Drawing.Size(0, 40);
+      this.lblStockUnit.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+
       this.pnlButtons.Name = "pnlButtons";
-      this.pnlButtons.Padding = new System.Windows.Forms.Padding(15);
-      this.pnlButtons.Size = new System.Drawing.Size(1200, 60);
-      this.pnlButtons.TabIndex = 3;
-      // 
-      // btnYeniUrun
-      // 
-      this.btnYeniUrun.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-      this.btnYeniUrun.FlatAppearance.BorderSize = 0;
-      this.btnYeniUrun.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btnYeniUrun.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-      this.btnYeniUrun.ForeColor = System.Drawing.Color.White;
-      this.btnYeniUrun.Location = new System.Drawing.Point(15, 10);
+      this.pnlButtons.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.pnlButtons.Margin = new System.Windows.Forms.Padding(16, 0, 16, 14);
+      this.pnlButtons.ColumnCount = 9;
+      this.pnlButtons.RowCount = 1;
+      this.pnlButtons.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
       this.btnYeniUrun.Name = "btnYeniUrun";
-      this.btnYeniUrun.Size = new System.Drawing.Size(120, 40);
-      this.btnYeniUrun.TabIndex = 0;
-      this.btnYeniUrun.Text = "✓ Yeni Ürün";
-      this.btnYeniUrun.UseVisualStyleBackColor = false;
+      this.btnYeniUrun.Text = "Yeni Ürün";
       this.btnYeniUrun.Click += new System.EventHandler(this.btnYeniUrun_Click);
-      // 
-      // btnDuzenle
-      // 
-      this.btnDuzenle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-      this.btnDuzenle.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.btnDuzenle.FlatAppearance.BorderSize = 0;
-      this.btnDuzenle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btnDuzenle.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-      this.btnDuzenle.ForeColor = System.Drawing.Color.White;
-      this.btnDuzenle.Location = new System.Drawing.Point(145, 10);
       this.btnDuzenle.Name = "btnDuzenle";
-      this.btnDuzenle.Size = new System.Drawing.Size(120, 40);
-      this.btnDuzenle.TabIndex = 1;
-      this.btnDuzenle.Text = "✎ Düzenle";
-      this.btnDuzenle.UseVisualStyleBackColor = false;
+      this.btnDuzenle.Text = "Düzenle";
       this.btnDuzenle.Click += new System.EventHandler(this.btnDuzenle_Click);
-      // 
-      // btnSil
-      // 
-      this.btnSil.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
-      this.btnSil.FlatAppearance.BorderSize = 0;
-      this.btnSil.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btnSil.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-      this.btnSil.ForeColor = System.Drawing.Color.White;
-      this.btnSil.Location = new System.Drawing.Point(275, 10);
       this.btnSil.Name = "btnSil";
-      this.btnSil.Size = new System.Drawing.Size(120, 40);
-      this.btnSil.TabIndex = 2;
-      this.btnSil.Text = "✕ Sil";
-      this.btnSil.UseVisualStyleBackColor = false;
+      this.btnSil.Text = "Sil";
       this.btnSil.Click += new System.EventHandler(this.btnSil_Click);
-      // 
-      // btnYenile
-      // 
-      this.btnYenile.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(155)))), ((int)(((byte)(89)))), ((int)(((byte)(182)))));
-      this.btnYenile.FlatAppearance.BorderSize = 0;
-      this.btnYenile.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btnYenile.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-      this.btnYenile.ForeColor = System.Drawing.Color.White;
-      this.btnYenile.Location = new System.Drawing.Point(405, 10);
       this.btnYenile.Name = "btnYenile";
-      this.btnYenile.Size = new System.Drawing.Size(120, 40);
-      this.btnYenile.TabIndex = 3;
-      this.btnYenile.Text = "↻ Yenile";
-      this.btnYenile.UseVisualStyleBackColor = false;
+      this.btnYenile.Text = "Yenile";
       this.btnYenile.Click += new System.EventHandler(this.btnYenile_Click);
-      // 
-      // btnKapat
-      // 
-      this.btnKapat.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-      this.btnKapat.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
-      this.btnKapat.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-      this.btnKapat.FlatAppearance.BorderSize = 0;
-      this.btnKapat.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btnKapat.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-      this.btnKapat.ForeColor = System.Drawing.Color.White;
-      this.btnKapat.Location = new System.Drawing.Point(1065, 10);
+      this.btnZRaporu.Name = "btnZRaporu";
+      this.btnZRaporu.Text = "Hareketler";
+      this.btnZRaporu.Click += new System.EventHandler(this.btnZRaporu_Click);
       this.btnKapat.Name = "btnKapat";
-      this.btnKapat.Size = new System.Drawing.Size(120, 40);
-      this.btnKapat.TabIndex = 4;
-      this.btnKapat.Text = "✕ Çıkış";
-      this.btnKapat.UseVisualStyleBackColor = false;
+      this.btnKapat.Text = "Çıkış";
       this.btnKapat.Click += new System.EventHandler(this.btnKapat_Click);
-      // 
-      // statusStrip1
-      // 
-      this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel});
-      this.statusStrip1.Location = new System.Drawing.Point(0, 660);
-      this.statusStrip1.Name = "statusStrip1";
-      this.statusStrip1.Size = new System.Drawing.Size(1200, 22);
-      this.statusStrip1.TabIndex = 5;
-      // 
-      // toolStripStatusLabel
-      // 
-      this.toolStripStatusLabel.Name = "toolStripStatusLabel";
-      this.toolStripStatusLabel.Size = new System.Drawing.Size(34, 17);
-      this.toolStripStatusLabel.Text = "Hazır";
-      // 
-      // dgvStoklar
-      // 
+      this.pnlButtons.Controls.Add(this.btnYeniUrun, 0, 0);
+      this.pnlButtons.Controls.Add(this.btnDuzenle, 1, 0);
+      this.pnlButtons.Controls.Add(this.btnSil, 2, 0);
+      this.pnlButtons.Controls.Add(this.btnYenile, 3, 0);
+      this.pnlButtons.Controls.Add(this.btnZRaporu, 4, 0);
+      this.pnlButtons.Controls.Add(this.btnKapat, 8, 0);
+
+      this.pnlWorkspace.Name = "pnlWorkspace";
+      this.pnlWorkspace.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.pnlWorkspace.Margin = new System.Windows.Forms.Padding(16, 0, 16, 12);
+      this.pnlWorkspace.ColumnCount = 2;
+      this.pnlWorkspace.RowCount = 1;
+      this.pnlWorkspace.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.pnlWorkspace.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.pnlWorkspace.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 320F));
+      this.pnlWorkspace.Controls.Add(this.dgvStoklar, 0, 0);
+      this.pnlWorkspace.Controls.Add(this.pnlProductDetail, 1, 0);
+      this.dgvStoklar.Name = "dgvStoklar";
+      this.dgvStoklar.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.dgvStoklar.Margin = new System.Windows.Forms.Padding(0, 0, 12, 0);
+      this.dgvStoklar.AutoGenerateColumns = false;
       this.dgvStoklar.AllowUserToAddRows = false;
       this.dgvStoklar.AllowUserToDeleteRows = false;
-      this.dgvStoklar.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-      this.dgvStoklar.Dock = System.Windows.Forms.DockStyle.Fill;
-      this.dgvStoklar.Location = new System.Drawing.Point(0, 260);
-      this.dgvStoklar.Name = "dgvStoklar";
       this.dgvStoklar.ReadOnly = true;
+      this.dgvStoklar.MultiSelect = false;
       this.dgvStoklar.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-      this.dgvStoklar.Size = new System.Drawing.Size(1200, 400);
-      this.dgvStoklar.TabIndex = 6;
-      // 
-      // btnZRaporu
-      // 
-      this.btnZRaporu.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(230)))), ((int)(((byte)(126)))), ((int)(((byte)(34)))));
-      this.btnZRaporu.FlatAppearance.BorderSize = 0;
-      this.btnZRaporu.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-      this.btnZRaporu.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-      this.btnZRaporu.ForeColor = System.Drawing.Color.White;
-      this.btnZRaporu.Location = new System.Drawing.Point(531, 10);
-      this.btnZRaporu.Name = "btnZRaporu";
-      this.btnZRaporu.Size = new System.Drawing.Size(120, 40);
-      this.btnZRaporu.TabIndex = 5;
-      this.btnZRaporu.Text = "📊 Hareketler";
-      this.btnZRaporu.UseVisualStyleBackColor = false;
-      this.btnZRaporu.Click += new System.EventHandler(this.btnZRaporu_Click);
-      // 
-      // MainForm
-      // 
-      this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-      this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
-      this.ClientSize = new System.Drawing.Size(1200, 682);
-      this.ControlBox = false;
-      this.Controls.Add(this.dgvStoklar);
-      this.Controls.Add(this.pnlButtons);
-      this.Controls.Add(this.pnlFilters);
-      this.Controls.Add(this.pnlSearch);
-      this.Controls.Add(this.pnlTop);
+      this.pnlProductDetail.Name = "pnlProductDetail";
+      this.pnlProductDetail.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.pnlProductDetail.Margin = new System.Windows.Forms.Padding(0);
+      this.pnlProductDetail.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+      this.pnlProductDetail.AutoScroll = true;
+
+      this.pnlHint.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.pnlHint.Margin = new System.Windows.Forms.Padding(16, 0, 16, 10);
+      this.pnlHint.ColumnCount = 2;
+      this.pnlHint.RowCount = 1;
+      this.pnlHint.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.pnlHint.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+      this.pnlHint.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+      this.pnlHint.Controls.Add(this.lblHint, 0, 0);
+      this.pnlHint.Controls.Add(this.lblRecordCount, 1, 0);
+      this.lblHint.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.lblHint.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      this.lblHint.Text = "Seçili ürün için stok işlemini açın veya ürün satırına çift tıklayın.";
+      this.lblRecordCount.Name = "lblRecordCount";
+      this.lblRecordCount.AutoSize = true;
+      this.lblRecordCount.Dock = System.Windows.Forms.DockStyle.Fill;
+      this.lblRecordCount.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+      this.statusStrip1.Name = "statusStrip1";
+      this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+        this.toolStripStatusLabel, this.toolStripConnection, this.toolStripDepot, this.toolStripVersion });
+      this.toolStripStatusLabel.Spring = true;
+      this.toolStripStatusLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+      this.toolStripStatusLabel.Text = "Hazır";
+      this.toolStripConnection.Text = "Bağlantı bekleniyor";
+      this.toolStripDepot.Text = "Depo seçilmedi";
+
+      this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+      this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+      this.Font = new System.Drawing.Font("Segoe UI", 10F);
+      this.BackColor = System.Drawing.Color.FromArgb(245, 248, 252);
+      this.ForeColor = System.Drawing.Color.FromArgb(31, 43, 61);
+      this.ClientSize = new System.Drawing.Size(1440, 830);
+      this.MinimumSize = new System.Drawing.Size(1180, 740);
+      this.Controls.Add(this.pnlLayout);
       this.Controls.Add(this.statusStrip1);
       this.Name = "MainForm";
+      this.Text = "Stok Takip Sistemi";
       this.ShowIcon = false;
       this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
       this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.MainForm_FormClosed);
       this.Load += new System.EventHandler(this.MainForm_Load);
-      this.pnlTop.ResumeLayout(false);
-      this.pnlSearch.ResumeLayout(false);
-      this.pnlSearch.PerformLayout();
-      this.pnlFilters.ResumeLayout(false);
-      this.pnlFilters.PerformLayout();
-      this.pnlButtons.ResumeLayout(false);
-      this.statusStrip1.ResumeLayout(false);
-      this.statusStrip1.PerformLayout();
       ((System.ComponentModel.ISupportInitialize)(this.dgvStoklar)).EndInit();
       this.ResumeLayout(false);
       this.PerformLayout();
-
     }
 
-    private System.Windows.Forms.Panel pnlTop;
-    private System.Windows.Forms.Label lblTitle;
-    private System.Windows.Forms.Panel pnlSearch;
-    private System.Windows.Forms.Label lblBarkod;
-    private System.Windows.Forms.TextBox txtBarkod;
-    private System.Windows.Forms.Panel pnlFilters;
-    private System.Windows.Forms.Label lblDepo;
+    private System.Windows.Forms.TableLayoutPanel pnlLayout, pnlTop, pnlSearch, pnlButtons, pnlWorkspace, pnlHint;
+    private System.Windows.Forms.Panel pnlBarcode, pnlBarkodKutusu, pnlFilters, pnlDepoKutusu, pnlQuantity, pnlProductDetail;
+    private System.Windows.Forms.FlowLayoutPanel pnlHeaderInfo, pnlQuantityValue;
+    private System.Windows.Forms.PictureBox picLogo, picBarkod, picDepo, picQuantity;
+    private System.Windows.Forms.Label lblTitle, lblBarkod, lblDepo, lblQuantityTitle, lblStockAmount, lblStockUnit, lblHint, lblRecordCount;
+    private InventoryTracking.Controls.InventorySearchTextBox txtBarkod;
     private System.Windows.Forms.ComboBox cmbDepo;
-    private System.Windows.Forms.Panel pnlButtons;
-    private System.Windows.Forms.Button btnYeniUrun;
-    private System.Windows.Forms.Button btnDuzenle;
-    private System.Windows.Forms.Button btnSil;
-    private System.Windows.Forms.Button btnYenile;
-    private System.Windows.Forms.Button btnKapat;
+    private System.Windows.Forms.Button btnYeniUrun, btnDuzenle, btnSil, btnYenile, btnZRaporu, btnKapat;
     private System.Windows.Forms.StatusStrip statusStrip1;
-    private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel;
+    private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel, toolStripConnection, toolStripDepot, toolStripVersion;
     private System.Windows.Forms.DataGridView dgvStoklar;
-    private System.Windows.Forms.Button btnZRaporu;
   }
 }
