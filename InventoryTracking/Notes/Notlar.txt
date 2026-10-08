@@ -1,0 +1,40 @@
+﻿1- Mainform ui kısmına seçilen ürün satıldı butonu eklenecek ve bu butona tıklandığında seçilen ürünün stok miktarı 1 azaltılacak. Eğer stok miktarı 0 ise kullanıcıya uyarı mesajı gösterilecek ve satış işlemi gerçekleştirilmeyecek. Ayrıca satış işlemi başarılı olduğunda kullanıcıya bilgilendirme mesajı gösterilecek.
+
+2- Mainform ui kısmına seçilen ürün iade butonu eklenecek ve bu butona tıklandığında seçilen ürünün stok miktarı 1 artırılacak. Ayrıca iade işlemi başarılı olduğunda kullanıcıya bilgilendirme mesajı gösterilecek.
+
+3- Mainform ui kısmına seçilen ürünün stok miktarını gösteren bir label eklenecek ve bu label her satış veya iade işleminden sonra güncellenecek.
+
+4- Mainform ui kısmına seçilen ürünün detaylarını gösteren bir panel eklenecek ve bu panelde ürünün adı, kategorisi, birimi, fiyatı ve stok miktarı gibi bilgiler gösterilecek. Bu panel her ürün seçildiğinde güncellenecek.
+
+5-+ Mainform ui kısmına ürün ekleme butonu eklenecek ve bu butona tıklandığında yeni bir ürün ekleme formu açılacak. Bu formda kullanıcı ürünün barkodunu, adını, kategorisini, birimini, fiyatını ve başlangıç stok miktarını girebilecek. Ürün ekleme işlemi başarılı olduğunda kullanıcıya bilgilendirme mesajı gösterilecek ve ana formdaki ürün listesi güncellenecek.(Yapıldı)
+6-+ Mainform ui kısmına ürün silme butonu eklenecek ve bu butona tıklandığında seçilen ürün silinecek. Silme işlemi öncesinde kullanıcıya onay mesajı gösterilecek. Silme işlemi başarılı olduğunda kullanıcıya bilgilendirme mesajı gösterilecek ve ana formdaki ürün listesi güncellenecek.(Yapıldı)
+
+7-+ Mainform ui kısmına ürün güncelleme butonu eklenecek ve bu butona tıklandığında seçilen ürünün bilgilerini güncelleme formu açılacak. Bu formda kullanıcı ürünün adını, kategorisini, birimini, fiyatını ve stok miktarını güncelleyebilecek. Güncelleme işlemi başarılı olduğunda kullanıcıya bilgilendirme mesajı gösterilecek ve ana formdaki ürün listesi güncellenecek.(Yapıldı)
+
+8- Mainform ui kısmına kategori butonu eklenecek ve bu butona tıklandığında yeni bir kategori ekleme-güncelleme ve silme ekranı tek bir formda açılacak. Bu formda kullanıcı kategori ekleyebilecek, mevcut kategorileri güncelleyebilecek ve silebilecek. Kategori işlemleri başarılı olduğunda kullanıcıya bilgilendirme mesajı gösterilecek ve ana formdaki kategori listesi güncellenecek.
+
+9- Mainform ui kısmına depo butonu eklenecek ve bu butona tıklandığında yeni bir depo ekleme-güncelleme ve silme ekranı tek bir formda açılacak. Bu formda kullanıcı depo ekleyebilecek, mevcut depoları güncelleyebilecek ve silebilecek. Depo işlemleri başarılı olduğunda kullanıcıya bilgilendirme mesajı gösterilecek ve ana formdaki depo listesi güncellenecek.
+
+*10- Eğer aynı barkod numarasına sahip bir ürün yoksa direkt kullanıcı "Böyle bir ürün bulunmamaktadır." uyarısı alıp ardından yeni ürün ekleme formu açılsın.
+
+11- Eğer aynı barkod numarasına sahip bir ürün varsa kullanıcıya "Bu barkod numarasına sahip bir ürün zaten mevcut. Ürün güncelleme formunu açmak ister misiniz?" uyarısı gösterilecek ve kullanıcı evet derse ürün güncelleme formu açılacak, hayır derse işlem iptal edilecek.
+
+12- Mainform ui kısmına seçilen ürünün satış ve iade işlemlerinin tarihçesini gösteren bir tablo eklenecek. Bu tabloda her satış ve iade işlemi için işlem tarihi, işlem türü (satış/iade), ürün adı, miktar ve işlem yapan kullanıcı bilgileri gösterilecek. Tablonun her işlemden sonra güncellenmesi sağlanacak.
+
+13- Mainform ui kısmına seçilen ürünün toplam satış ve iade miktarlarını gösteren bir label eklenecek. Bu label her satış veya iade işleminden sonra güncellenecek ve günlük olarak toplam satış ve iade miktarlarını kullanıcıya gösterecek.
+
+14- Z raporu ekranı eklenecek ve bu ekranda kullanıcı isterse olduğu tarihten geriye tam son bir yıl için, yıllık, aylık ve günlük olarak toplam satış ve iade miktarları, toplam gelir ve gider bilgileri gösterilecek. Ayrıca kullanıcı bu raporu PDF veya Excel formatında dışa aktarabilecek.
+
+15- Kullanıcı yönetimi ekranı eklenecek ve bu ekranda kullanıcılar eklenebilecek, güncellenebilecek ve silinebilecek. Kullanıcı işlemleri başarılı olduğunda kullanıcıya bilgilendirme mesajı gösterilecek ve ana formdaki kullanıcı listesi güncellenecek.
+
+16- Kullanıcıların yetki seviyeleri belirlenecek ve her kullanıcıya farklı yetkiler atanacak. Örneğin, bazı kullanıcılar sadece satış ve iade işlemleri yapabilirken, bazı kullanıcılar ürün ekleme, silme ve güncelleme işlemlerini yapabilecek. Yetki seviyeleri kullanıcı yönetimi ekranında belirlenecek ve her kullanıcının yetkileri kaydedilecek.
+
+17- Kullanıcıların yetki seviyelerine göre ana formda gösterilen butonlar ve işlemler kısıtlanacak. Örneğin, yetkisi olmayan bir kullanıcı ürün ekleme butonunu göremeyecek veya tıklayamayacak. Yetki kontrolü her işlem öncesinde yapılacak ve yetkisiz işlemler engellenecek.
+
+18- Kullanıcıların yetki seviyelerine göre raporlama ekranlarında gösterilen veriler kısıtlanacak. Örneğin, yetkisi olmayan bir kullanıcı sadece kendi yaptığı satış ve iade işlemlerini görebilecek, diğer kullanıcıların işlemlerini göremeyecek. Yetki kontrolü raporlama ekranlarında da uygulanacak.
+
+19- Kullanıcıların yetki seviyelerine göre kategori ve depo yönetimi ekranlarında gösterilen veriler kısıtlanacak. Örneğin, yetkisi olmayan bir kullanıcı sadece kendi eklediği kategorileri ve depoları görebilecek, diğer kullanıcıların eklediği kategorileri ve depoları göremeyecek. Yetki kontrolü kategori ve depo yönetimi ekranlarında da uygulanacak.
+
+20- Kullanıcıların yetki seviyelerine göre ürün detay panelinde gösterilen bilgiler kısıtlanacak. Örneğin, yetkisi olmayan bir kullanıcı ürünün fiyatını göremeyecek veya değiştiremeyecek. Yetki kontrolü ürün detay panelinde de uygulanacak.
+ 
+
