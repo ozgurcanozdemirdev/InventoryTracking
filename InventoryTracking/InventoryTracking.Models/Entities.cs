@@ -37,6 +37,7 @@ namespace InventoryTracking.Models
       public string Lokasyon { get; set; }
       public string Aciklama { get; set; }
       public bool AktifMi { get; set; }
+      public string Durum => AktifMi ? "Aktif" : "Pasif";
       public DateTime OlusturulmaTarihi { get; set; }
       public DateTime GuncellemeTarihi { get; set; }
     }
@@ -160,11 +161,45 @@ namespace InventoryTracking.Models
       Normal = 3     // Normal seviye
     }
 
-    public class ZRaporuDto
+    public class HareketRaporFiltresi
+    {
+      public DateTime Baslangic { get; set; }
+      public DateTime Bitis { get; set; }
+      public int? DepoId { get; set; }
+      public string UrunArama { get; set; }
+      // 0: tümü, 1: normal giriş/çıkış, 2: transfer, 3: sayım düzeltmesi.
+      public int HareketGrubu { get; set; }
+      public bool? CikisMi { get; set; }
+    }
+
+    public class HareketRaporOzeti
     {
       public string Donem { get; set; }
-      public int ToplamGirisMiktari { get; set; }
-      public int ToplamCikisMiktari { get; set; }
+      public long NormalGiris { get; set; }
+      public long NormalCikis { get; set; }
+      public long TransferGiris { get; set; }
+      public long TransferCikis { get; set; }
+      public long DuzeltmeGiris { get; set; }
+      public long DuzeltmeCikis { get; set; }
+      public long NetDegisim { get; set; }
+      public long HareketSayisi { get; set; }
+    }
+
+    public class HareketRaporDetayi
+    {
+      public int HareketId { get; set; }
+      public DateTime HareketTarihi { get; set; }
+      public string UrunAdi { get; set; }
+      public string Barkod { get; set; }
+      public string DepoAdi { get; set; }
+      public string HareketTipi { get; set; }
+      public string Yon { get; set; }
+      public int DegisenMiktar { get; set; }
+      public int OncekiMiktar { get; set; }
+      public int YeniMiktar { get; set; }
+      public string KullaniciAdi { get; set; }
+      public string Aciklama { get; set; }
+      public int? TransferId { get; set; }
     }
   }
 }

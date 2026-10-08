@@ -18,6 +18,7 @@ namespace InventoryTracking.UI
     private readonly ComboBox cmbBirim = new ComboBox();
     private readonly MalzemeService _malzemeService = new MalzemeService();
     private readonly BirimService _birimService = new BirimService();
+    private readonly MalzemeKatalog _editing;
 
     public MalzemeKatalog KaydedilenMalzeme { get; private set; }
 
@@ -53,6 +54,15 @@ namespace InventoryTracking.UI
       Shown += (sender, e) => LoadBirimler();
     }
 
+    public MalzemeKayitForm(MalzemeKatalog malzeme) : this(malzeme?.Barkod)
+    {
+      _editing = malzeme ?? throw new ArgumentNullException(nameof(malzeme));
+      Text = "Malzeme Düzenle";
+      txtMalzemeNo.Text = malzeme.MalzemeNo;
+      txtAciklama.Text = malzeme.Aciklama;
+      txtBarkod.ReadOnly = true;
+    }
+
     private void AddRow(string title, Control input, int top)
     {
       Controls.Add(new Label { Text = title, AutoSize = true, Location = new Point(18, top + 4) });
@@ -68,6 +78,7 @@ namespace InventoryTracking.UI
         cmbBirim.DataSource = _birimService.GetAllBirimler() ?? new List<Birim>();
         cmbBirim.DisplayMember = "BirimAdi";
         cmbBirim.ValueMember = "BirimId";
+        if (_editing != null) cmbBirim.SelectedValue = _editing.BirimId;
         txtMalzemeNo.Focus();
       }
       catch (Exception ex)
@@ -86,6 +97,7 @@ namespace InventoryTracking.UI
 
       var malzeme = new MalzemeKatalog
       {
+        MalzemeId = _editing?.MalzemeId ?? 0,
         MalzemeNo = txtMalzemeNo.Text.Trim(),
         Barkod = txtBarkod.Text.Trim(),
         Aciklama = txtAciklama.Text.Trim(),
@@ -93,7 +105,7 @@ namespace InventoryTracking.UI
       };
 
       // UNIQUE kısıtları son güvencedir; aynı barkodu başka kullanıcı kaydederse hata gösterilir.
-      var result = _malzemeService.Add(malzeme);
+      var result = _editing == null ? _malzemeService.Add(malzeme) : _malzemeService.Update(malzeme);
       if (!result.Success)
       {
         MessageBox.Show(result.Message, "Malzeme kaydedilemedi", MessageBoxButtons.OK, MessageBoxIcon.Warning);

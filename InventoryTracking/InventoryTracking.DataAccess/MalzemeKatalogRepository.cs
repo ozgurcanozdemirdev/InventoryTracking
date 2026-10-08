@@ -66,5 +66,54 @@ namespace InventoryTracking.DataAccess
         return OperationResult.Fail("Malzeme kaydı yapılamadı: " + ex.Message);
       }
     }
+
+    public OperationResult Update(MalzemeKatalog malzeme)
+    {
+      if (malzeme == null || malzeme.MalzemeId <= 0 ||
+          string.IsNullOrWhiteSpace(malzeme.MalzemeNo) || string.IsNullOrWhiteSpace(malzeme.Aciklama) ||
+          malzeme.BirimId <= 0)
+        return OperationResult.Fail("Malzeme numarası, açıklama ve birim zorunludur.");
+
+      try
+      {
+        using (SqlConnection conn = SqlDBConnection.GetConnection())
+        using (SqlTransaction transaction = conn.BeginTransaction(System.Data.IsolationLevel.Serializable))
+        {
+          // Birim değişimi dış anahtarın ON UPDATE CASCADE kuralıyla ürüne yansır.
+          // Açıklamayı da aynı transaction'da eşitliyoruz; hata olursa ikisi geri alınır.
+          using (SqlCommand cmd = new SqlCommand(@"
+              UPDATE MalzemeKatalog
+              SET MalzemeNo=@MalzemeNo, Aciklama=@Aciklama, BirimId=@BirimId
+              WHERE MalzemeId=@MalzemeId AND Barkod=@Barkod", conn, transaction))
+          {
+            cmd.Parameters.AddWithValue("@MalzemeId", malzeme.MalzemeId);
+            cmd.Parameters.AddWithValue("@Barkod", malzeme.Barkod);
+            cmd.Parameters.AddWithValue("@MalzemeNo", malzeme.MalzemeNo.Trim());
+            cmd.Parameters.AddWithValue("@Aciklama", malzeme.Aciklama.Trim());
+            cmd.Parameters.AddWithValue("@BirimId", malzeme.BirimId);
+            if (cmd.ExecuteNonQuery() == 0)
+              return OperationResult.Fail("Malzeme kaydı bulunamadı.");
+          }
+          using (SqlCommand cmd = new SqlCommand(@"
+              UPDATE Urun SET UrunAdi=@Aciklama, GuncellemeTarihi=GETDATE()
+              WHERE MalzemeId=@MalzemeId", conn, transaction))
+          {
+            cmd.Parameters.AddWithValue("@MalzemeId", malzeme.MalzemeId);
+            cmd.Parameters.AddWithValue("@Aciklama", malzeme.Aciklama.Trim());
+            cmd.ExecuteNonQuery();
+          }
+          transaction.Commit();
+          return OperationResult.Ok("Malzeme ve bağlı ürün bilgileri güncellendi.");
+        }
+      }
+      catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
+      {
+        return OperationResult.Fail("Bu malzeme numarası veya ürün açıklaması zaten kullanılıyor.");
+      }
+      catch (Exception ex)
+      {
+        return OperationResult.Fail("Malzeme güncellenemedi: " + ex.Message);
+      }
+    }
   }
 }

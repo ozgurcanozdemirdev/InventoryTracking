@@ -13,6 +13,10 @@ namespace InventoryTracking.UI
     private readonly StokService _stokService;
     private readonly UrunService _urunService;
     private readonly DepoService _depoService;
+    private Button _btnKategoriYonet;
+    private Button _btnDepoYonet;
+    private Button _btnTransfer;
+    private Button _btnBaglanti;
     private int _selectedDepoId = 1;
 
 
@@ -57,6 +61,52 @@ namespace InventoryTracking.UI
 
       ConfigureDataGridViewColumns();
 
+      // Var olan butonların konumunu değiştirmeden boş alana iki yönetim girişi ekliyoruz.
+      _btnKategoriYonet = MakeManagementButton("🏷️ Kategoriler", 661, System.Drawing.Color.FromArgb(52, 152, 219));
+      _btnDepoYonet = MakeManagementButton("🏬 Depolar", 791, System.Drawing.Color.FromArgb(155, 89, 182));
+      _btnTransfer = MakeManagementButton("⇄ Transfer", 921, System.Drawing.Color.FromArgb(230, 126, 34));
+      _btnKategoriYonet.Click += (sender, e) =>
+      {
+        using (var form = new KategoriYonetimForm()) form.ShowDialog(this);
+        LoadStokList();
+      };
+      _btnDepoYonet.Click += (sender, e) =>
+      {
+        using (var form = new DepoYonetimForm()) form.ShowDialog(this);
+        _isFormLoading = true;
+        LoadDepolar(_selectedDepoId);
+        _isFormLoading = false;
+        LoadStokList();
+      };
+      _btnTransfer.Click += (sender, e) =>
+      {
+        var selected = dgvStoklar.SelectedRows.Count > 0
+          ? dgvStoklar.SelectedRows[0].DataBoundItem as Entities.Stok : null;
+        using (var form = new StokTransferForm(_selectedDepoId, selected?.UrunId ?? 0))
+        {
+          if (form.ShowDialog(this) == DialogResult.OK) LoadStokList();
+        }
+      };
+      pnlButtons.Controls.Add(_btnKategoriYonet);
+      pnlButtons.Controls.Add(_btnDepoYonet);
+      pnlButtons.Controls.Add(_btnTransfer);
+
+      _btnBaglanti = MakeManagementButton("Bağlantı Ayarları", 350, System.Drawing.Color.FromArgb(52, 152, 219));
+      _btnBaglanti.Location = new System.Drawing.Point(350, 32);
+      _btnBaglanti.Size = new System.Drawing.Size(160, 32);
+      _btnBaglanti.Click += (sender, e) =>
+      {
+        using (var form = new ConnectionSetupForm())
+        {
+          if (form.ShowDialog(this) != DialogResult.OK) return;
+        }
+        _isFormLoading = true;
+        LoadDepolar();
+        _isFormLoading = false;
+        LoadStokList();
+      };
+      pnlFilters.Controls.Add(_btnBaglanti);
+
       // TextBox - Barkod okuma
       txtBarkod.Focus();
 
@@ -66,6 +116,25 @@ namespace InventoryTracking.UI
 
       dgvStoklar.CellFormatting -= DgvStoklar_CellFormatting;
       dgvStoklar.CellFormatting += DgvStoklar_CellFormatting;
+      dgvStoklar.CellDoubleClick -= DgvStoklar_CellDoubleClick;
+      dgvStoklar.CellDoubleClick += DgvStoklar_CellDoubleClick;
+    }
+
+    private static Button MakeManagementButton(string title, int left, System.Drawing.Color color)
+    {
+      var button = new Button
+      {
+        Text = title,
+        Location = new System.Drawing.Point(left, 10),
+        Size = new System.Drawing.Size(120, 40),
+        BackColor = color,
+        ForeColor = System.Drawing.Color.White,
+        FlatStyle = FlatStyle.Flat,
+        Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold),
+        UseVisualStyleBackColor = false
+      };
+      button.FlatAppearance.BorderSize = 0;
+      return button;
     }
 
     private void ConfigureDataGridViewColumns()
@@ -109,7 +178,7 @@ namespace InventoryTracking.UI
       dgvStoklar.Columns.Add(new DataGridViewTextBoxColumn { Name = "Miktar", HeaderText = "Miktar", DataPropertyName = "Miktar" });
       dgvStoklar.Columns.Add(new DataGridViewTextBoxColumn { Name = "StokDurumu", HeaderText = "Durum", DataPropertyName = "StokDurumu" });
       dgvStoklar.Columns.Add(new DataGridViewTextBoxColumn { Name = "GuncellemeTarihi", HeaderText = "Son Güncelleme", DataPropertyName = "GuncellemeTarihi" });
-
+      //
       // Sütun genişlikleri
       dgvStoklar.Columns["Barkod"].Width = 120;
       dgvStoklar.Columns["UrunAdi"].Width = 200;
@@ -126,7 +195,7 @@ namespace InventoryTracking.UI
     }
 
 
-    private void LoadDepolar()
+    private void LoadDepolar(int preferredDepoId = 0)
     {
       try
       {
@@ -134,7 +203,8 @@ namespace InventoryTracking.UI
 
         if (depolar == null || depolar.Count == 0)
         {
-          MessageBox.Show("Aktif depo bulunamadı. Lütfen database'de en az bir depo oluşturun.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          cmbDepo.DataSource = null;
+          MessageBox.Show("Aktif depo bulunamadı. Depolar butonundan yeni depo ekleyiniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
           return;
         }
 
@@ -145,7 +215,9 @@ namespace InventoryTracking.UI
         cmbDepo.DisplayMember = "DepoAdi";
         cmbDepo.ValueMember = "DepoId";
 
-        if (cmbDepo.Items.Count > 0)
+        if (preferredDepoId > 0 && depolar.Exists(d => d.DepoId == preferredDepoId))
+          cmbDepo.SelectedValue = preferredDepoId;
+        else if (cmbDepo.Items.Count > 0)
         {
           cmbDepo.SelectedIndex = 0;
         }
@@ -200,7 +272,7 @@ namespace InventoryTracking.UI
 
         // 5. Status bar'da bilgi göster
         int urunSayisi = stoklar != null ? stoklar.Count : 0;
-        toolStripStatusLabel.Text = $"Toplam {urunSayisi} ürün yüklendi - Depo: {cmbDepo.Text}";
+        toolStripStatusLabel.Text = $"Toplam {urunSayisi} ürün yüklendi - Depo: {cmbDepo.Text} | Stok işlemi için ürüne çift tıklayın";
       }
       catch (Exception ex)
       {
@@ -238,7 +310,7 @@ namespace InventoryTracking.UI
     {
       using (var addForm = new AddEditProductForm(_selectedDepoId))
       {
-        if (addForm.ShowDialog() == DialogResult.OK)
+        if (addForm.ShowDialog(this) == DialogResult.OK)
         {
           LoadStokList();
         }
@@ -361,22 +433,17 @@ namespace InventoryTracking.UI
           if (urun != null)
           {
             DialogResult cevap = MessageBox.Show(
-                $"Ürün Bulundu: {urun.UrunAdi}\n\nBu ürünün detay ekranını açmak ister misiniz?",
-                "Ürün Bulundu",
+                $"Bu barkod numarasına sahip bir ürün zaten mevcut: {urun.UrunAdi}.\nÜrün güncelleme formunu açmak ister misiniz?",
+                "Ürün Zaten Kayıtlı",
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
             if (cevap == DialogResult.Yes)
             {
-              ProductDetailForm detayForm = new ProductDetailForm(urun, _selectedDepoId, _stokService);
-              detayForm.ShowDialog();
-
-
-              LoadStokList();
-            }
-            else
-            {
-              MessageBox.Show($"Ürün Bulundu: {urun.UrunAdi}", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+              using (var editForm = new AddEditProductForm(urun, _selectedDepoId))
+              {
+                if (editForm.ShowDialog(this) == DialogResult.OK) LoadStokList();
+              }
             }
 
             txtBarkod.Clear();
@@ -384,6 +451,25 @@ namespace InventoryTracking.UI
           }
           else
           {
+            var pasifUrun = urunService.SearchInactiveByBarkod(arananBarkod);
+            if (pasifUrun != null)
+            {
+              var cevap = MessageBox.Show(
+                $"{pasifUrun.UrunAdi} pasif durumda. Ürünü yeniden etkinleştirmek ister misiniz? Mevcut stok kayıtları korunur.",
+                "Pasif Ürün", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+              if (cevap == DialogResult.Yes)
+              {
+                var sonuc = urunService.ReactivateProduct(pasifUrun.UrunId);
+                MessageBox.Show(sonuc.Message, sonuc.Success ? "Başarılı" : "Hata",
+                  MessageBoxButtons.OK, sonuc.Success ? MessageBoxIcon.Information : MessageBoxIcon.Error);
+                if (sonuc.Success) LoadStokList();
+              }
+              txtBarkod.Clear();
+              txtBarkod.Focus();
+              return;
+            }
+            MessageBox.Show("Böyle bir ürün bulunmamaktadır.", "Ürün Bulunamadı",
+              MessageBoxButtons.OK, MessageBoxIcon.Information);
             var malzemeService = new MalzemeService();
             var malzeme = malzemeService.GetByBarkod(arananBarkod);
             if (malzeme == null)
@@ -417,6 +503,32 @@ namespace InventoryTracking.UI
       }
     }
 
+
+    private void DgvStoklar_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+    {
+      if (e.RowIndex < 0 || e.RowIndex >= dgvStoklar.Rows.Count) return;
+      string barkod = dgvStoklar.Rows[e.RowIndex].Cells["Barkod"].Value?.ToString();
+      if (string.IsNullOrWhiteSpace(barkod)) return;
+      try
+      {
+        var urun = _urunService.SearchByBarkod(barkod);
+        if (urun == null)
+        {
+          MessageBox.Show("Ürün bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          LoadStokList();
+          return;
+        }
+        using (var detailForm = new ProductDetailForm(urun, _selectedDepoId, _stokService))
+        {
+          if (detailForm.ShowDialog(this) == DialogResult.OK) LoadStokList();
+        }
+      }
+      catch (Exception ex)
+      {
+        MessageBox.Show("Stok işlem ekranı açılamadı: " + ex.Message, "Hata",
+          MessageBoxButtons.OK, MessageBoxIcon.Error);
+      }
+    }
 
     private void DgvStoklar_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
     {
@@ -460,9 +572,9 @@ namespace InventoryTracking.UI
 
     private void btnZRaporu_Click(object sender, EventArgs e)
     {
-      // Z Raporu formunu çağırıp ekranda gösteriyoruz
-      ZReportForm raporFormu = new ZReportForm();
-      raporFormu.ShowDialog();
+      // Hareket raporu mevcut ana ekranın üzerinden ayrı bir pencere olarak açılır.
+      using (var raporFormu = new ZReportForm())
+        raporFormu.ShowDialog(this);
     }
   }
 }

@@ -67,7 +67,7 @@ BEGIN TRY
     IF NOT EXISTS (SELECT 1 FROM sys.foreign_keys WHERE name = N'FK_Urun_MalzemeBag')
         ALTER TABLE dbo.Urun WITH CHECK ADD CONSTRAINT FK_Urun_MalzemeBag
             FOREIGN KEY (MalzemeId, Barkod, BirimId)
-            REFERENCES dbo.MalzemeKatalog(MalzemeId, Barkod, BirimId);
+            REFERENCES dbo.MalzemeKatalog(MalzemeId, Barkod, BirimId) ON UPDATE CASCADE;
 
     IF COL_LENGTH(N'dbo.StokHareketi', N'CikisMi') IS NULL
         ALTER TABLE dbo.StokHareketi ADD CikisMi BIT NULL;

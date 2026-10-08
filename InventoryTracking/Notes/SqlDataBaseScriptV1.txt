@@ -20,6 +20,10 @@ IF OBJECT_ID('StokHareketi', 'U') IS NOT NULL
     DROP TABLE StokHareketi;
 GO
 
+IF OBJECT_ID('StokTransferi', 'U') IS NOT NULL
+    DROP TABLE StokTransferi;
+GO
+
 IF OBJECT_ID('Stok', 'U') IS NOT NULL
     DROP TABLE Stok;
 GO
@@ -117,7 +121,7 @@ CREATE TABLE Urun
     CONSTRAINT FK_Urun_Kategori FOREIGN KEY (KategoriId) REFERENCES Kategori(KategoriId),
     CONSTRAINT FK_Urun_Birim FOREIGN KEY (BirimId) REFERENCES Birim(BirimId),
     CONSTRAINT FK_Urun_MalzemeKatalog FOREIGN KEY (MalzemeId) REFERENCES MalzemeKatalog(MalzemeId),
-    CONSTRAINT FK_Urun_MalzemeBag FOREIGN KEY (MalzemeId, Barkod, BirimId) REFERENCES MalzemeKatalog(MalzemeId, Barkod, BirimId),
+    CONSTRAINT FK_Urun_MalzemeBag FOREIGN KEY (MalzemeId, Barkod, BirimId) REFERENCES MalzemeKatalog(MalzemeId, Barkod, BirimId) ON UPDATE CASCADE,
     CONSTRAINT UQ_Urun_MalzemeId UNIQUE (MalzemeId),
     CONSTRAINT CK_Urun_Fiyat CHECK (Fiyat >= 0),
     CONSTRAINT CK_Urun_UrunAdi_Bosluk CHECK (DATALENGTH(UrunAdi) = DATALENGTH(LTRIM(RTRIM(UrunAdi))))
@@ -147,6 +151,25 @@ PRINT 'Stok tablosu olusturuldu.';
 GO
 
 -- 8. STOK HAREKETI TABLOSU
+CREATE TABLE StokTransferi
+(
+    TransferId INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_StokTransferi PRIMARY KEY,
+    UrunId INT NOT NULL,
+    KaynakDepoId INT NOT NULL,
+    HedefDepoId INT NOT NULL,
+    Miktar INT NOT NULL,
+    Aciklama NVARCHAR(500) NOT NULL,
+    KullaniciAdi NVARCHAR(100) NULL,
+    TransferTarihi DATETIME NOT NULL CONSTRAINT DF_StokTransferi_Tarih DEFAULT GETDATE(),
+    CONSTRAINT FK_StokTransferi_Urun FOREIGN KEY (UrunId) REFERENCES Urun(UrunId),
+    CONSTRAINT FK_StokTransferi_Kaynak FOREIGN KEY (KaynakDepoId) REFERENCES Depo(DepoId),
+    CONSTRAINT FK_StokTransferi_Hedef FOREIGN KEY (HedefDepoId) REFERENCES Depo(DepoId),
+    CONSTRAINT CK_StokTransferi_Miktar CHECK (Miktar > 0),
+    CONSTRAINT CK_StokTransferi_Depolar CHECK (KaynakDepoId <> HedefDepoId),
+    CONSTRAINT CK_StokTransferi_Aciklama CHECK (LEN(LTRIM(RTRIM(Aciklama))) > 0)
+);
+GO
+
 CREATE TABLE StokHareketi
 (
     HareketId INT PRIMARY KEY IDENTITY(1,1),
@@ -159,9 +182,11 @@ CREATE TABLE StokHareketi
     HareketTipi NVARCHAR(20) NOT NULL,
     Aciklama NVARCHAR(500) NULL,
     KullaniciAdi NVARCHAR(100) NULL,
+    TransferId INT NULL,
     HareketTarihi DATETIME DEFAULT GETDATE(),
     CONSTRAINT FK_StokHareketi_Urun FOREIGN KEY (UrunId) REFERENCES Urun(UrunId),
     CONSTRAINT FK_StokHareketi_Depo FOREIGN KEY (DepoId) REFERENCES Depo(DepoId),
+    CONSTRAINT FK_StokHareketi_Transfer FOREIGN KEY (TransferId) REFERENCES StokTransferi(TransferId),
     CONSTRAINT CK_StokHareketi_CikisMi CHECK ((CikisMi = 0 AND DegisenMiktar >= 0) OR (CikisMi = 1 AND DegisenMiktar < 0))
 );
 PRINT 'StokHareketi tablosu olusturuldu.';
@@ -175,6 +200,7 @@ CREATE INDEX IX_Stok_UrunId ON Stok(UrunId);
 CREATE INDEX IX_Stok_DepoId ON Stok(DepoId);
 CREATE INDEX IX_StokHareketi_UrunId ON StokHareketi(UrunId);
 CREATE INDEX IX_StokHareketi_DepoId ON StokHareketi(DepoId);
+CREATE UNIQUE INDEX UX_StokHareketi_TransferYonu ON StokHareketi(TransferId, CikisMi) WHERE TransferId IS NOT NULL;
 PRINT 'Indexler olusturuldu.';
 GO
 
@@ -348,7 +374,7 @@ PRINT '====================================================';
 PRINT 'Stok Takip Sistemi Kurulumu Basarili!';
 PRINT '====================================================';
 PRINT 'Database: InventoryTracking';
-PRINT 'Tablolar: 7';
+PRINT 'Tablolar: 8';
 PRINT 'Stored Procedures: 4';
 PRINT 'Demo Kategoriler: 3';
 PRINT 'Demo Birimler: 4';

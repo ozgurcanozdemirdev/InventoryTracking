@@ -81,6 +81,10 @@ namespace InventoryTracking.DataAccess
         }
         return OperationResult.Ok("Kategori başarıyla eklendi");
       }
+      catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
+      {
+        return OperationResult.Fail("Bu isimde bir kategori zaten kayıtlıdır.");
+      }
       catch (Exception ex)
       {
         return OperationResult.Fail($"Kategori ekleme hatası: {ex.Message}");
@@ -99,14 +103,45 @@ namespace InventoryTracking.DataAccess
             cmd.Parameters.AddWithValue("@KategoriId", kategori.KategoriId);
             cmd.Parameters.AddWithValue("@KategoriAdi", kategori.KategoriAdi);
             cmd.Parameters.AddWithValue("@Aciklama", kategori.Aciklama ?? (object)DBNull.Value);
-            cmd.ExecuteNonQuery();
+            if (cmd.ExecuteNonQuery() == 0)
+              return OperationResult.Fail("Kategori bulunamadı.");
           }
         }
         return OperationResult.Ok("Kategori güncellendi");
       }
+      catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
+      {
+        return OperationResult.Fail("Bu isimde bir kategori zaten kayıtlıdır.");
+      }
       catch (Exception ex)
       {
         return OperationResult.Fail($"Kategori güncelleme hatası: {ex.Message}");
+      }
+    }
+
+    public OperationResult Delete(int kategoriId)
+    {
+      try
+      {
+        using (SqlConnection conn = GetConnection())
+        using (SqlCommand cmd = new SqlCommand(@"
+            DELETE FROM Kategori
+            WHERE KategoriId = @KategoriId
+              AND NOT EXISTS (SELECT 1 FROM Urun WHERE KategoriId = @KategoriId)", conn))
+        {
+          cmd.Parameters.AddWithValue("@KategoriId", kategoriId);
+          if (cmd.ExecuteNonQuery() > 0)
+            return OperationResult.Ok("Kategori silindi.");
+        }
+        return OperationResult.Fail("Kategori bulunamadı veya bir üründe kullanılıyor. Kullanılan kategori silinemez.");
+      }
+      catch (SqlException ex) when (ex.Number == 547)
+      {
+        return OperationResult.Fail("Kategori başka kayıtlarda kullanılıyor; silinemez.");
+      }
+      catch (Exception ex)
+      {
+        return OperationResult.Fail("Kategori silme hatası: " + ex.Message);
       }
     }
 
@@ -216,6 +251,28 @@ namespace InventoryTracking.DataAccess
   {
     private SqlConnection GetConnection() => SqlDBConnection.GetConnection();
 
+    public List<Depo> GetAll()
+    {
+      var depolar = new List<Depo>();
+      using (SqlConnection conn = GetConnection())
+      using (SqlCommand cmd = new SqlCommand("SELECT DepoId, DepoAdi, Lokasyon, Aciklama, AktifMi FROM Depo ORDER BY AktifMi DESC, DepoAdi", conn))
+      using (SqlDataReader reader = cmd.ExecuteReader())
+      {
+        while (reader.Read())
+        {
+          depolar.Add(new Depo
+          {
+            DepoId = reader.GetInt32(0),
+            DepoAdi = reader.GetString(1),
+            Lokasyon = reader.IsDBNull(2) ? "" : reader.GetString(2),
+            Aciklama = reader.IsDBNull(3) ? "" : reader.GetString(3),
+            AktifMi = reader.GetBoolean(4)
+          });
+        }
+      }
+      return depolar;
+    }
+
     public List<Depo> GetAllActive()
     {
       var depolar = new List<Depo>();
@@ -258,7 +315,7 @@ namespace InventoryTracking.DataAccess
               return new Depo
               {
                 DepoId = SafeGetInt(reader, "DepoId"),
-                DepoAdi = SafeGetString(reader, "SafeGetString" == "" ? "DepoAdi" : "DepoAdi"), // Safe string
+                DepoAdi = SafeGetString(reader, "DepoAdi"),
                 Lokasyon = SafeGetString(reader, "Lokasyon"),
                 Aciklama = SafeGetString(reader, "Aciklama"),
                 AktifMi = SafeGetBoolean(reader, "AktifMi"),
@@ -270,6 +327,88 @@ namespace InventoryTracking.DataAccess
         }
       }
       return null;
+    }
+
+    public OperationResult Add(Depo depo)
+    {
+      try
+      {
+        using (SqlConnection conn = GetConnection())
+        using (SqlCommand cmd = new SqlCommand(@"
+            INSERT INTO Depo (DepoAdi, Lokasyon, Aciklama, AktifMi)
+            VALUES (@DepoAdi, @Lokasyon, @Aciklama, 1)", conn))
+        {
+          cmd.Parameters.AddWithValue("@DepoAdi", depo.DepoAdi);
+          cmd.Parameters.AddWithValue("@Lokasyon", depo.Lokasyon ?? "");
+          cmd.Parameters.AddWithValue("@Aciklama", depo.Aciklama ?? "");
+          cmd.ExecuteNonQuery();
+          return OperationResult.Ok("Depo eklendi.");
+        }
+      }
+      catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
+      {
+        return OperationResult.Fail("Bu isimde bir depo zaten kayıtlıdır.");
+      }
+      catch (Exception ex)
+      {
+        return OperationResult.Fail("Depo ekleme hatası: " + ex.Message);
+      }
+    }
+
+    public OperationResult Update(Depo depo)
+    {
+      try
+      {
+        using (SqlConnection conn = GetConnection())
+        using (SqlCommand cmd = new SqlCommand(@"
+            UPDATE Depo SET DepoAdi=@DepoAdi, Lokasyon=@Lokasyon, Aciklama=@Aciklama,
+                GuncellemeTarihi=GETDATE() WHERE DepoId=@DepoId", conn))
+        {
+          cmd.Parameters.AddWithValue("@DepoId", depo.DepoId);
+          cmd.Parameters.AddWithValue("@DepoAdi", depo.DepoAdi);
+          cmd.Parameters.AddWithValue("@Lokasyon", depo.Lokasyon ?? "");
+          cmd.Parameters.AddWithValue("@Aciklama", depo.Aciklama ?? "");
+          return cmd.ExecuteNonQuery() > 0
+            ? OperationResult.Ok("Depo güncellendi.") : OperationResult.Fail("Depo bulunamadı.");
+        }
+      }
+      catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
+      {
+        return OperationResult.Fail("Bu isimde bir depo zaten kayıtlıdır.");
+      }
+      catch (Exception ex)
+      {
+        return OperationResult.Fail("Depo güncelleme hatası: " + ex.Message);
+      }
+    }
+
+    public OperationResult SetActive(int depoId, bool aktifMi)
+    {
+      try
+      {
+        using (SqlConnection conn = GetConnection())
+        using (SqlTransaction transaction = conn.BeginTransaction(IsolationLevel.Serializable))
+        using (SqlCommand cmd = new SqlCommand(aktifMi
+          ? "UPDATE Depo SET AktifMi=1, GuncellemeTarihi=GETDATE() WHERE DepoId=@DepoId AND AktifMi=0"
+          : @"UPDATE Depo SET AktifMi=0, GuncellemeTarihi=GETDATE()
+              WHERE DepoId=@DepoId AND AktifMi=1
+                AND (SELECT COUNT(*) FROM Depo WHERE AktifMi=1)>1
+                AND NOT EXISTS (SELECT 1 FROM Stok WHERE DepoId=@DepoId AND Miktar>0)", conn, transaction))
+        {
+          cmd.Parameters.AddWithValue("@DepoId", depoId);
+          int affected = cmd.ExecuteNonQuery();
+          if (affected == 0)
+            return OperationResult.Fail(aktifMi
+              ? "Depo bulunamadı veya zaten aktif."
+              : "Depo pasife alınamadı. Son aktif depo veya içinde stok bulunan depo kapatılamaz.");
+          transaction.Commit();
+          return OperationResult.Ok(aktifMi ? "Depo etkinleştirildi." : "Depo pasife alındı.");
+        }
+      }
+      catch (Exception ex)
+      {
+        return OperationResult.Fail("Depo durumu değiştirilemedi: " + ex.Message);
+      }
     }
 
     #region Güvenli Okuma Metotları
@@ -358,6 +497,41 @@ namespace InventoryTracking.DataAccess
       }
       return null;
     }
+    public Urun GetInactiveByBarkod(string barkod)
+    {
+      int urunId;
+      using (SqlConnection conn = GetConnection())
+      using (SqlCommand cmd = new SqlCommand(
+        "SELECT UrunId FROM Urun WHERE Barkod = @Barkod AND AktifMi = 0", conn))
+      {
+        cmd.Parameters.AddWithValue("@Barkod", barkod.Trim());
+        var id = cmd.ExecuteScalar();
+        if (id == null) return null;
+        urunId = (int)id;
+      }
+      return GetById(urunId);
+    }
+
+    public OperationResult Reactivate(int urunId)
+    {
+      try
+      {
+        using (SqlConnection conn = GetConnection())
+        using (SqlCommand cmd = new SqlCommand(
+          "UPDATE Urun SET AktifMi = 1, GuncellemeTarihi = GETDATE() WHERE UrunId = @UrunId AND AktifMi = 0", conn))
+        {
+          cmd.Parameters.AddWithValue("@UrunId", urunId);
+          return cmd.ExecuteNonQuery() == 1
+            ? OperationResult.Ok("Ürün yeniden etkinleştirildi. Mevcut stok kayıtları korundu.")
+            : OperationResult.Fail("Pasif ürün bulunamadı.");
+        }
+      }
+      catch (Exception ex)
+      {
+        return OperationResult.Fail("Ürün etkinleştirilemedi: " + ex.Message);
+      }
+    }
+
     /// <summary>
     /// 05 - Aktif tüm ürünleri listeleme işlemi.
     /// </summary>
@@ -701,6 +875,7 @@ public class StokRepository
       }
       return null;
     }
+
     finally
     {
       // Yalnızca bu metodun açtığı bağlantıyı kapatıyoruz. Dışarıdan gelen
@@ -713,7 +888,8 @@ public class StokRepository
   /// <summary>
   /// 14 - Stok artırma/azaltma işlemi ve Stok Hareketi (Log) kaydı (Transaction Güvencesiyle).
   /// </summary>
-  public OperationResult UpdateStok(int urunId, int depoId, int degisim, string tip, string aciklama, SqlTransaction transaction = null)
+  public OperationResult UpdateStok(int urunId, int depoId, int degisim, string tip, string aciklama,
+    SqlTransaction transaction = null, int? transferId = null)
   {
     if (urunId <= 0 || depoId <= 0 || string.IsNullOrWhiteSpace(tip))
       return OperationResult.Fail("Geçersiz stok işlemi.");
@@ -721,6 +897,20 @@ public class StokRepository
     SqlTransaction trans = transaction ?? conn.BeginTransaction(IsolationLevel.Serializable);
     try
     {
+        // Pasif ürün veya depoya yeni hareket yazılmasını işlem boyunca engelle.
+        using (SqlCommand check = new SqlCommand(@"
+            SELECT CASE WHEN EXISTS (SELECT 1 FROM Urun WITH (UPDLOCK, HOLDLOCK)
+                                     WHERE UrunId=@UrunId AND AktifMi=1)
+                AND EXISTS (SELECT 1 FROM Depo WITH (UPDLOCK, HOLDLOCK)
+                            WHERE DepoId=@DepoId AND AktifMi=1)
+              THEN 1 ELSE 0 END", conn, trans))
+        {
+          check.Parameters.AddWithValue("@UrunId", urunId);
+          check.Parameters.AddWithValue("@DepoId", depoId);
+          if ((int)check.ExecuteScalar() != 1)
+            return OperationResult.Fail("Stok işlemi için ürün ve depo aktif olmalıdır.");
+        }
+
         // Mevcut miktar kontrolü
         var mevcut = GetByUrunAndDepo(urunId, depoId, trans);
         int eskiMiktar = mevcut?.Miktar ?? 0;
@@ -746,8 +936,8 @@ public class StokRepository
         if (degisim != 0)
         {
         // Stok hareket logunu (Audit) kaydet
-        string logQuery = @"INSERT INTO StokHareketi (UrunId, DepoId, OncekiMiktar, YeniMiktar, DegisenMiktar, CikisMi, HareketTipi, Aciklama, KullaniciAdi) 
-                                        VALUES (@U, @D, @O, @Y, @Deg, @CikisMi, @T, @A, @K)";
+        string logQuery = @"INSERT INTO StokHareketi (UrunId, DepoId, OncekiMiktar, YeniMiktar, DegisenMiktar, CikisMi, HareketTipi, Aciklama, KullaniciAdi, TransferId)
+                                        VALUES (@U, @D, @O, @Y, @Deg, @CikisMi, @T, @A, @K, @TransferId)";
 
         using (SqlCommand cmd = new SqlCommand(logQuery, conn, trans))
         {
@@ -761,6 +951,7 @@ public class StokRepository
           cmd.Parameters.AddWithValue("@T", tip);
           cmd.Parameters.AddWithValue("@A", aciklama ?? "");
           cmd.Parameters.AddWithValue("@K", Environment.UserName);
+          cmd.Parameters.AddWithValue("@TransferId", (object)transferId ?? DBNull.Value);
           cmd.ExecuteNonQuery();
         }
         }
@@ -780,20 +971,78 @@ public class StokRepository
     }
   }
 
+  public OperationResult TransferStock(int urunId, int kaynakDepoId, int hedefDepoId, int miktar, string aciklama)
+  {
+    if (urunId <= 0 || kaynakDepoId <= 0 || hedefDepoId <= 0 ||
+        kaynakDepoId == hedefDepoId || miktar <= 0 || string.IsNullOrWhiteSpace(aciklama) || aciklama.Trim().Length > 500)
+      return OperationResult.Fail("Ürün, farklı iki depo, pozitif miktar ve en fazla 500 karakterlik açıklama zorunludur.");
+
+    try
+    {
+      using (SqlConnection conn = GetConnection())
+      using (SqlTransaction transaction = conn.BeginTransaction(IsolationLevel.Serializable))
+      {
+        using (SqlCommand check = new SqlCommand(@"
+            SELECT CASE WHEN EXISTS (SELECT 1 FROM Urun WITH (UPDLOCK, HOLDLOCK)
+                                     WHERE UrunId=@UrunId AND AktifMi=1)
+                AND (SELECT COUNT(*) FROM Depo WITH (UPDLOCK, HOLDLOCK)
+                     WHERE DepoId IN (@Kaynak, @Hedef) AND AktifMi=1)=2
+              THEN 1 ELSE 0 END", conn, transaction))
+        {
+          check.Parameters.AddWithValue("@UrunId", urunId);
+          check.Parameters.AddWithValue("@Kaynak", kaynakDepoId);
+          check.Parameters.AddWithValue("@Hedef", hedefDepoId);
+          if ((int)check.ExecuteScalar() != 1)
+          {
+            transaction.Rollback();
+            return OperationResult.Fail("Ürün veya seçilen depolardan biri aktif değil.");
+          }
+        }
+
+        int transferId;
+        using (SqlCommand insert = new SqlCommand(@"
+            INSERT INTO StokTransferi (UrunId, KaynakDepoId, HedefDepoId, Miktar, Aciklama, KullaniciAdi)
+            VALUES (@UrunId, @Kaynak, @Hedef, @Miktar, @Aciklama, @Kullanici);
+            SELECT CAST(SCOPE_IDENTITY() AS INT);", conn, transaction))
+        {
+          insert.Parameters.AddWithValue("@UrunId", urunId);
+          insert.Parameters.AddWithValue("@Kaynak", kaynakDepoId);
+          insert.Parameters.AddWithValue("@Hedef", hedefDepoId);
+          insert.Parameters.AddWithValue("@Miktar", miktar);
+          insert.Parameters.AddWithValue("@Aciklama", aciklama.Trim());
+          insert.Parameters.AddWithValue("@Kullanici", Environment.UserName);
+          transferId = (int)insert.ExecuteScalar();
+        }
+
+        string not = $"Transfer #{transferId}";
+        var cikis = UpdateStok(urunId, kaynakDepoId, -miktar, "Transfer Çıkış", not, transaction, transferId);
+        if (!cikis.Success) { transaction.Rollback(); return cikis; }
+        var giris = UpdateStok(urunId, hedefDepoId, miktar, "Transfer Giriş", not, transaction, transferId);
+        if (!giris.Success) { transaction.Rollback(); return giris; }
+        transaction.Commit();
+        return OperationResult.Ok($"Transfer tamamlandı. İşlem numarası: {transferId}", transferId);
+      }
+    }
+    catch (Exception ex)
+    {
+      return OperationResult.Fail("Stok transferi yapılamadı: " + ex.Message);
+    }
+  }
+
   /// <summary>
   /// 15 - Stoğu doğrudan belirli bir değere set etme (Upsert).
   /// </summary>
-  public OperationResult UpsertStok(int urunId, int depoId, int miktar)
+  public OperationResult UpsertStok(int urunId, int depoId, int miktar, string neden)
   {
-    if (urunId <= 0 || depoId <= 0 || miktar < 0)
-      return OperationResult.Fail("Geçersiz stok miktarı.");
+    if (urunId <= 0 || depoId <= 0 || miktar < 0 || string.IsNullOrWhiteSpace(neden) || neden.Trim().Length > 500)
+      return OperationResult.Fail("Geçerli stok miktarı ve en fazla 500 karakterlik düzeltme nedeni zorunludur.");
     try
     {
       using (SqlConnection conn = GetConnection())
       using (SqlTransaction trans = conn.BeginTransaction(IsolationLevel.Serializable))
       {
         int mevcut = GetByUrunAndDepo(urunId, depoId, trans)?.Miktar ?? 0;
-        var result = UpdateStok(urunId, depoId, checked(miktar - mevcut), "Sayım Düzeltmesi", "Stok miktarı eşitlendi.", trans);
+        var result = UpdateStok(urunId, depoId, checked(miktar - mevcut), "Sayım Düzeltmesi", neden.Trim(), trans);
         if (!result.Success) { trans.Rollback(); return result; }
         trans.Commit();
         return result;

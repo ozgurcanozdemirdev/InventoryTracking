@@ -46,6 +46,18 @@ namespace InventoryTracking.Business
         return _urunRepository.GetByBarkod(barkod.Trim());
       }
 
+      public Urun SearchInactiveByBarkod(string barkod)
+      {
+        if (string.IsNullOrWhiteSpace(barkod)) return null;
+        return _urunRepository.GetInactiveByBarkod(barkod.Trim());
+      }
+
+      public OperationResult ReactivateProduct(int urunId)
+      {
+        return urunId > 0 ? _urunRepository.Reactivate(urunId)
+          : OperationResult.Fail("Geçersiz ürün seçimi.");
+      }
+
       /// <summary>
       /// Tüm ürünleri getir
       /// </summary>
@@ -126,7 +138,7 @@ namespace InventoryTracking.Business
       /// <summary>
       /// Mevcut bir ürünün bilgilerini günceller.
       /// </summary>
-      public OperationResult UpdateProduct(UrunViewModel model)
+      public OperationResult UpdateProduct(UrunViewModel model, string duzeltmeNedeni = null)
       {
         // 1. AŞAMA: Güvenlik ve Mantık Kontrolü.
         // Güncellenecek ürünün veritabanında mutlaka bir karşılığı (UrunId) olmak zorundadır.
@@ -172,12 +184,17 @@ namespace InventoryTracking.Business
         {
           var mevcut = _stokRepository.GetByUrunAndDepo(model.UrunId, model.DepoId, transaction);
           int fark = checked(model.Miktar - (mevcut?.Miktar ?? 0));
+          if (fark != 0 && (string.IsNullOrWhiteSpace(duzeltmeNedeni) || duzeltmeNedeni.Trim().Length > 500))
+          {
+            transaction.Rollback();
+            return OperationResult.Fail("Stok miktarı değiştirildiğinde en fazla 500 karakterlik düzeltme nedeni zorunludur.");
+          }
           var result = _urunRepository.Update(urun, transaction);
           if (!result.Success) { transaction.Rollback(); return result; }
           if (fark != 0 || mevcut == null)
           {
             var stokResult = _stokRepository.UpdateStok(model.UrunId, model.DepoId, fark,
-              "Sayım Düzeltmesi", "Ürün düzenleme ekranında stok miktarı değiştirildi.", transaction);
+              "Sayım Düzeltmesi", fark == 0 ? "" : duzeltmeNedeni.Trim(), transaction);
             if (!stokResult.Success) { transaction.Rollback(); return stokResult; }
           }
           transaction.Commit();
@@ -334,14 +351,19 @@ namespace InventoryTracking.Business
       /// <summary>
       /// Stok miktarını direkt olarak belirli bir sayıya set (eşitleme) eder
       /// </summary>
-      public OperationResult SetStock(int urunId, int depoId, int miktar)
+      public OperationResult SetStock(int urunId, int depoId, int miktar, string neden)
       {
         if (urunId <= 0 || depoId <= 0 || miktar < 0)
         {
           return OperationResult.Fail("Geçersiz parametre girdisi");
         }
 
-        return _stokRepository.UpsertStok(urunId, depoId, miktar);
+        return _stokRepository.UpsertStok(urunId, depoId, miktar, neden);
+      }
+
+      public OperationResult TransferStock(int urunId, int kaynakDepoId, int hedefDepoId, int miktar, string aciklama)
+      {
+        return _stokRepository.TransferStock(urunId, kaynakDepoId, hedefDepoId, miktar, aciklama);
       }
 
       /// <summary>
@@ -411,6 +433,11 @@ namespace InventoryTracking.Business
       {
         return _repository.Add(malzeme);
       }
+
+      public OperationResult Update(MalzemeKatalog malzeme)
+      {
+        return _repository.Update(malzeme);
+      }
     }
 
     /// <summary>
@@ -469,6 +496,12 @@ namespace InventoryTracking.Business
 
         return _kategoriRepository.Update(kategori);
       }
+
+      public OperationResult DeleteKategori(int kategoriId)
+      {
+        return kategoriId > 0 ? _kategoriRepository.Delete(kategoriId)
+          : OperationResult.Fail("Geçersiz kategori seçimi.");
+      }
     }
 
     /// <summary>
@@ -517,72 +550,158 @@ namespace InventoryTracking.Business
         if (depoId <= 0) throw new ArgumentException("Geçersiz depo ID");
         return _depoRepository.GetById(depoId);
       }
+
+      public List<Depo> GetAllDepolar()
+      {
+        return _depoRepository.GetAll();
+      }
+
+      public OperationResult AddDepo(string depoAdi, string lokasyon, string aciklama)
+      {
+        if (string.IsNullOrWhiteSpace(depoAdi)) return OperationResult.Fail("Depo adı boş olamaz.");
+        return _depoRepository.Add(new Depo
+        {
+          DepoAdi = depoAdi.Trim(), Lokasyon = lokasyon?.Trim(), Aciklama = aciklama?.Trim()
+        });
+      }
+
+      public OperationResult UpdateDepo(int depoId, string depoAdi, string lokasyon, string aciklama)
+      {
+        if (depoId <= 0 || string.IsNullOrWhiteSpace(depoAdi))
+          return OperationResult.Fail("Geçerli bir depo ve ad seçiniz.");
+        return _depoRepository.Update(new Depo
+        {
+          DepoId = depoId, DepoAdi = depoAdi.Trim(), Lokasyon = lokasyon?.Trim(), Aciklama = aciklama?.Trim()
+        });
+      }
+
+      public OperationResult SetDepoActive(int depoId, bool aktifMi)
+      {
+        return depoId > 0 ? _depoRepository.SetActive(depoId, aktifMi)
+          : OperationResult.Fail("Geçersiz depo seçimi.");
+      }
     }
 
     public class ZReportService
     {
-      public List<ZRaporuDto> GetZRaporu(DateTime baslangic, DateTime bitis, string periyot)
+      private const string RaporFiltreSql = @"
+            FROM StokHareketi h
+            INNER JOIN Urun u ON u.UrunId = h.UrunId
+            INNER JOIN Depo d ON d.DepoId = h.DepoId
+            LEFT JOIN StokTransferi t ON t.TransferId = h.TransferId
+            WHERE h.HareketTarihi >= @Baslangic AND h.HareketTarihi < @Bitis
+              AND (@DepoId IS NULL OR h.DepoId = @DepoId)
+              AND (@UrunArama = N'' OR CHARINDEX(@UrunArama, u.UrunAdi) > 0
+                   OR CHARINDEX(@UrunArama, u.Barkod) > 0)
+              AND (@CikisMi IS NULL OR h.CikisMi = @CikisMi)
+              AND (@HareketGrubu = 0
+                   OR (@HareketGrubu = 1 AND h.TransferId IS NULL AND h.HareketTipi <> N'Sayım Düzeltmesi')
+                   OR (@HareketGrubu = 2 AND h.TransferId IS NOT NULL)
+                   OR (@HareketGrubu = 3 AND h.TransferId IS NULL AND h.HareketTipi = N'Sayım Düzeltmesi'))";
+
+      private static void AddRaporParameters(SqlCommand command, HareketRaporFiltresi filtre)
       {
-        var liste = new List<ZRaporuDto>();
+        if (filtre == null || filtre.Baslangic.Date > filtre.Bitis.Date ||
+            filtre.Bitis.Date == DateTime.MaxValue.Date || filtre.HareketGrubu < 0 || filtre.HareketGrubu > 3)
+          throw new ArgumentException("Geçersiz hareket raporu filtresi.");
 
-        string donemSorgusu = "";
-        string groupBy = "";
+        // Bitiş gününün tamamını kapsamak için ertesi günün başlangıcını hariç tutuyoruz.
+        command.Parameters.AddWithValue("@Baslangic", filtre.Baslangic.Date);
+        command.Parameters.AddWithValue("@Bitis", filtre.Bitis.Date.AddDays(1));
+        command.Parameters.Add("@DepoId", System.Data.SqlDbType.Int).Value =
+          (object)filtre.DepoId ?? DBNull.Value;
+        command.Parameters.Add("@UrunArama", System.Data.SqlDbType.NVarChar, 200).Value =
+          (filtre.UrunArama ?? "").Trim();
+        command.Parameters.Add("@CikisMi", System.Data.SqlDbType.Bit).Value =
+          (object)filtre.CikisMi ?? DBNull.Value;
+        command.Parameters.AddWithValue("@HareketGrubu", filtre.HareketGrubu);
+      }
 
-        // Seçilen Periyoda göre SQL Gruplama mantığını ayarlıyoruz
+      public List<HareketRaporOzeti> GetHareketOzeti(HareketRaporFiltresi filtre, string periyot)
+      {
+        string donemSorgusu;
         switch (periyot)
         {
-          case "Günlük":
-            donemSorgusu = "CONVERT(varchar(10), HareketTarihi, 104)"; // Örn: 21.08.2026
-            groupBy = "CONVERT(varchar(10), HareketTarihi, 104)";
-            break;
-          case "Aylık":
-            donemSorgusu = "RIGHT(CONVERT(varchar(10), HareketTarihi, 104), 7)"; // Örn: 08.2026
-            groupBy = "RIGHT(CONVERT(varchar(10), HareketTarihi, 104), 7)";
-            break;
-          case "Yıllık":
-            donemSorgusu = "CAST(YEAR(HareketTarihi) AS varchar(4))"; // Örn: 2026
-            groupBy = "YEAR(HareketTarihi)";
-            break;
-          default:
-            throw new ArgumentException("Geçersiz rapor periyodu.");
+          case "Günlük": donemSorgusu = "CONVERT(varchar(10), h.HareketTarihi, 104)"; break;
+          case "Aylık": donemSorgusu = "RIGHT(CONVERT(varchar(10), h.HareketTarihi, 104), 7)"; break;
+          case "Yıllık": donemSorgusu = "CAST(YEAR(h.HareketTarihi) AS varchar(4))"; break;
+          default: throw new ArgumentException("Geçersiz rapor periyodu.");
         }
 
-        // Stok hareketi satış veya gelir değildir; hareket tablosunda fiyat geçmişi tutulmuyor.
+        // İç transferler iki hareket üretir; normal giriş/çıkış toplamına katılmaz.
         string query = $@"
-            SELECT 
-                {donemSorgusu} AS Donem,
-                SUM(CASE WHEN CikisMi = 0 THEN DegisenMiktar ELSE 0 END) AS ToplamGirisMiktari,
-                SUM(CASE WHEN CikisMi = 1 THEN -DegisenMiktar ELSE 0 END) AS ToplamCikisMiktari
-            FROM StokHareketi
-            WHERE HareketTarihi >= @baslangic AND HareketTarihi < @bitis
-            GROUP BY {groupBy}
-            ORDER BY MIN(HareketTarihi) DESC";
+            SELECT {donemSorgusu} AS Donem,
+              SUM(CASE WHEN h.TransferId IS NULL AND h.HareketTipi <> N'Sayım Düzeltmesi' AND h.CikisMi=0 THEN CAST(h.DegisenMiktar AS BIGINT) ELSE 0 END) AS NormalGiris,
+              SUM(CASE WHEN h.TransferId IS NULL AND h.HareketTipi <> N'Sayım Düzeltmesi' AND h.CikisMi=1 THEN -CAST(h.DegisenMiktar AS BIGINT) ELSE 0 END) AS NormalCikis,
+              SUM(CASE WHEN h.TransferId IS NOT NULL AND h.CikisMi=0 THEN CAST(h.DegisenMiktar AS BIGINT) ELSE 0 END) AS TransferGiris,
+              SUM(CASE WHEN h.TransferId IS NOT NULL AND h.CikisMi=1 THEN -CAST(h.DegisenMiktar AS BIGINT) ELSE 0 END) AS TransferCikis,
+              SUM(CASE WHEN h.TransferId IS NULL AND h.HareketTipi = N'Sayım Düzeltmesi' AND h.CikisMi=0 THEN CAST(h.DegisenMiktar AS BIGINT) ELSE 0 END) AS DuzeltmeGiris,
+              SUM(CASE WHEN h.TransferId IS NULL AND h.HareketTipi = N'Sayım Düzeltmesi' AND h.CikisMi=1 THEN -CAST(h.DegisenMiktar AS BIGINT) ELSE 0 END) AS DuzeltmeCikis,
+              SUM(CAST(h.DegisenMiktar AS BIGINT)) AS NetDegisim,
+              COUNT_BIG(*) AS HareketSayisi
+            {RaporFiltreSql}
+            GROUP BY {donemSorgusu}
+            ORDER BY MIN(h.HareketTarihi) DESC";
 
+        var sonuc = new List<HareketRaporOzeti>();
         using (var connection = SqlDBConnection.GetConnection())
+        using (var command = new SqlCommand(query, connection))
         {
-          using (var command = new SqlCommand(query, connection))
+          AddRaporParameters(command, filtre);
+          using (var reader = command.ExecuteReader())
           {
-            // Bitiş günü tamamı dahil, sonraki günün başlangıcı hariç.
-            command.Parameters.AddWithValue("@baslangic", baslangic.Date);
-            command.Parameters.AddWithValue("@bitis", bitis.Date.AddDays(1));
-
-            // GetConnection bağlantıyı açık döndürür; burada tekrar Open çağrılmaz.
-            using (var reader = command.ExecuteReader())
+            while (reader.Read())
             {
-              while (reader.Read())
+              sonuc.Add(new HareketRaporOzeti
               {
-                liste.Add(new ZRaporuDto
-                {
-                  Donem = reader["Donem"].ToString(),
-                  ToplamGirisMiktari = reader["ToplamGirisMiktari"] != DBNull.Value ? Convert.ToInt32(reader["ToplamGirisMiktari"]) : 0,
-                  ToplamCikisMiktari = reader["ToplamCikisMiktari"] != DBNull.Value ? Convert.ToInt32(reader["ToplamCikisMiktari"]) : 0
-                });
-              }
+                Donem = reader.GetString(0),
+                NormalGiris = reader.GetInt64(1), NormalCikis = reader.GetInt64(2),
+                TransferGiris = reader.GetInt64(3), TransferCikis = reader.GetInt64(4),
+                DuzeltmeGiris = reader.GetInt64(5), DuzeltmeCikis = reader.GetInt64(6),
+                NetDegisim = reader.GetInt64(7), HareketSayisi = reader.GetInt64(8)
+              });
             }
           }
         }
-        return liste;
+        return sonuc;
       }
+
+      public List<HareketRaporDetayi> GetHareketDetayi(HareketRaporFiltresi filtre)
+      {
+        string query = @"
+            SELECT h.HareketId, h.HareketTarihi, u.UrunAdi, u.Barkod, d.DepoAdi,
+                   h.HareketTipi, h.CikisMi, h.DegisenMiktar, h.OncekiMiktar,
+                   h.YeniMiktar, COALESCE(h.KullaniciAdi, N''),
+                   COALESCE(t.Aciklama, h.Aciklama, N''), h.TransferId
+            " + RaporFiltreSql + @"
+            ORDER BY h.HareketTarihi DESC, h.HareketId DESC";
+
+        var sonuc = new List<HareketRaporDetayi>();
+        using (var connection = SqlDBConnection.GetConnection())
+        using (var command = new SqlCommand(query, connection))
+        {
+          AddRaporParameters(command, filtre);
+          using (var reader = command.ExecuteReader())
+          {
+            while (reader.Read())
+            {
+              sonuc.Add(new HareketRaporDetayi
+              {
+                HareketId = reader.GetInt32(0), HareketTarihi = reader.GetDateTime(1),
+                UrunAdi = reader.GetString(2), Barkod = reader.GetString(3),
+                DepoAdi = reader.GetString(4), HareketTipi = reader.GetString(5),
+                Yon = reader.GetBoolean(6) ? "Çıkış" : "Giriş",
+                DegisenMiktar = reader.GetInt32(7), OncekiMiktar = reader.GetInt32(8),
+                YeniMiktar = reader.GetInt32(9), KullaniciAdi = reader.GetString(10),
+                Aciklama = reader.GetString(11),
+                TransferId = reader.IsDBNull(12) ? (int?)null : reader.GetInt32(12)
+              });
+            }
+          }
+        }
+        return sonuc;
+      }
+
     }
   }
 }

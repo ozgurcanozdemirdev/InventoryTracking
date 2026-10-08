@@ -90,17 +90,31 @@ namespace InventoryTracking.UI
       cmbBirim.Enabled = false;
 
       // Katalog kaydı ürün kaydından ayrı tutulur; yeni barkod önce burada tanımlanır.
-      if (!_isEditMode)
       {
         _btnMalzemeKaydi = new Button
         {
-          Text = "Malzeme Kaydı",
+          Text = _isEditMode ? "Malzeme Düzenle" : "Malzeme Kaydı",
           Location = new System.Drawing.Point(139, 10),
-          Size = new System.Drawing.Size(133, 40)
+          Size = new System.Drawing.Size(133, 40),
+          BackColor = System.Drawing.Color.FromArgb(52, 152, 219),
+          ForeColor = System.Drawing.Color.White,
+          FlatStyle = FlatStyle.Flat,
+          Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold),
+          UseVisualStyleBackColor = false
         };
+        _btnMalzemeKaydi.FlatAppearance.BorderSize = 0;
         _btnMalzemeKaydi.Click += (sender, e) =>
         {
-          using (var form = new MalzemeKayitForm(txtBarkod.Text))
+          var kayit = _malzemeService.GetByBarkod(txtBarkod.Text);
+          if (_isEditMode && kayit == null)
+          {
+            MessageBox.Show("Bu ürüne bağlı malzeme kaydı bulunamadı.", "Hata",
+              MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
+          }
+          using (var form = _isEditMode
+            ? new MalzemeKayitForm(kayit)
+            : new MalzemeKayitForm(txtBarkod.Text))
           {
             if (form.ShowDialog(this) == DialogResult.OK)
             {
@@ -265,7 +279,17 @@ namespace InventoryTracking.UI
 
         if (_isEditMode)
         {
-          result = _urunService.UpdateProduct(model);
+          string neden = null;
+          int mevcutMiktar = _stokService.GetStok(model.UrunId, model.DepoId)?.Miktar ?? 0;
+          if (model.Miktar != mevcutMiktar)
+          {
+            using (var nedenFormu = new StokDuzeltmeNedeniForm())
+            {
+              if (nedenFormu.ShowDialog(this) != DialogResult.OK) return;
+              neden = nedenFormu.Neden;
+            }
+          }
+          result = _urunService.UpdateProduct(model, neden);
         }
         else
         {
