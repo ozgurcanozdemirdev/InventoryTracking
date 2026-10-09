@@ -1,4 +1,5 @@
-﻿using InventoryTracking.Connection;
+using InventoryTracking.Localization;
+using InventoryTracking.Connection;
 using InventoryTracking.DataAccess;
 using System;
 using System.Collections.Generic;
@@ -55,7 +56,7 @@ namespace InventoryTracking.Business
       public OperationResult ReactivateProduct(int urunId)
       {
         return urunId > 0 ? _urunRepository.Reactivate(urunId)
-          : OperationResult.Fail("Geçersiz ürün seçimi.");
+          : OperationResult.Fail(UiText.Get("InvalidProduct"));
       }
 
       /// <summary>
@@ -75,7 +76,7 @@ namespace InventoryTracking.Business
         // İş Kuralı: ID değeri 0 veya negatif olamaz.
         if (urunId <= 0)
         {
-          throw new ArgumentException("Geçersiz ürün ID");
+          throw new ArgumentException(UiText.Get("InvalidProductId"));
         }
 
         return _urunRepository.GetById(urunId);
@@ -99,7 +100,7 @@ namespace InventoryTracking.Business
         // veritabanına kaydedilebilecek formattaki gerçek 'Urun' (Entity) nesnesine dönüştürüyoruz.
         var katalogKaydi = _malzemeRepository.GetByBarkod(model.Barkod);
         if (katalogKaydi == null)
-          return OperationResult.Fail($"{model.Barkod.Trim()} numaralı malzeme bulunamadı. Önce yeni malzeme kaydı oluşturun.");
+          return OperationResult.Fail(UiText.Format("MaterialNumberMissing", model.Barkod.Trim()));
 
         var urun = new Urun
         {
@@ -119,7 +120,7 @@ namespace InventoryTracking.Business
         };
 
         if (model.DepoId <= 0 || model.Miktar < 0)
-          return OperationResult.Fail("Geçerli bir depo ve stok miktarı seçiniz.");
+          return OperationResult.Fail(UiText.Get("SelectWarehouseQuantity"));
 
         // Ürün ve ilk stok aynı transaction içinde kaydedilir; biri başarısızsa ikisi de geri alınır.
         using (var connection = SqlDBConnection.GetConnection())
@@ -128,7 +129,7 @@ namespace InventoryTracking.Business
           var result = _urunRepository.Add(urun, transaction);
           if (!result.Success) { transaction.Rollback(); return result; }
           var stokResult = _stokRepository.UpdateStok(urun.UrunId, model.DepoId, model.Miktar,
-            "Giriş", "Yeni ürün kaydı ve ilk stok girişi.", transaction);
+            "Giriş", UiText.Get("InitialStockDescription"), transaction);
           if (!stokResult.Success) { transaction.Rollback(); return stokResult; }
           transaction.Commit();
           return result;
@@ -145,7 +146,7 @@ namespace InventoryTracking.Business
         // 0 veya negatif bir ID geldiyse (yanlış parametre yollandıysa) işlemi anında reddediyoruz.
         if (model == null || model.UrunId <= 0)
         {
-          return new OperationResult { Success = false, Message = "Geçersiz ürün ID" };
+          return new OperationResult { Success = false, Message = UiText.Get("InvalidProductId") };
         }
 
         // 2. AŞAMA: Validasyon (Doğrulama).
@@ -176,7 +177,7 @@ namespace InventoryTracking.Business
         };
 
         if (model.DepoId <= 0 || model.Miktar < 0)
-          return OperationResult.Fail("Geçerli bir depo ve stok miktarı seçiniz.");
+          return OperationResult.Fail(UiText.Get("SelectWarehouseQuantity"));
 
         // Ekrandaki miktar da düzenlemenin parçasıdır; açıklama ve stok tek transaction'dadır.
         using (var connection = SqlDBConnection.GetConnection())
@@ -187,7 +188,7 @@ namespace InventoryTracking.Business
           if (fark != 0 && (string.IsNullOrWhiteSpace(duzeltmeNedeni) || duzeltmeNedeni.Trim().Length > 500))
           {
             transaction.Rollback();
-            return OperationResult.Fail("Stok miktarı değiştirildiğinde en fazla 500 karakterlik düzeltme nedeni zorunludur.");
+            return OperationResult.Fail(UiText.Get("StockAdjustmentReason"));
           }
           var result = _urunRepository.Update(urun, transaction);
           if (!result.Success) { transaction.Rollback(); return result; }
@@ -211,7 +212,7 @@ namespace InventoryTracking.Business
         // Silinmek istenen ID'nin geçerli bir sayı olup olmadığını kontrol ediyoruz.
         if (urunId <= 0)
         {
-          return new OperationResult { Success = false, Message = "Geçersiz ürün ID" };
+          return new OperationResult { Success = false, Message = UiText.Get("InvalidProductId") };
         }
 
         // 2. AŞAMA: Silme İşlemi (Soft Delete).
@@ -232,7 +233,7 @@ namespace InventoryTracking.Business
         // Arka arkaya iş kuralları denetleniyor. Herhangi bir kural ihlal edilirse "false" dönüp işlem kesilir.
         if (model == null)
         {
-          errorMessage = "Model null olamaz";
+          errorMessage = UiText.Get("NullModel");
           return false;
         }
 
@@ -244,37 +245,37 @@ namespace InventoryTracking.Business
 
         if (string.IsNullOrWhiteSpace(model.UrunAdi))
         {
-          errorMessage = "Ürün adı boş olamaz";
+          errorMessage = UiText.Get("ProductNameRequired");
           return false;
         }
 
         if (model.KategoriId <= 0)
         {
-          errorMessage = "Geçerli bir kategori seçiniz";
+          errorMessage = UiText.Get("SelectCategory");
           return false;
         }
 
         if (model.BirimId <= 0)
         {
-          errorMessage = "Geçerli bir birim seçiniz";
+          errorMessage = UiText.Get("SelectUnit");
           return false;
         }
 
         if (model.Fiyat < 0)
         {
-          errorMessage = "Fiyat negatif olamaz";
+          errorMessage = UiText.Get("PriceNegative");
           return false;
         }
 
         if (model.MinimumStok < 0 || model.MaksimumStok < 0)
         {
-          errorMessage = "Minimum/Maksimum stok negatif olamaz";
+          errorMessage = UiText.Get("StockLimitsNegative");
           return false;
         }
 
         if (model.MinimumStok > model.MaksimumStok)
         {
-          errorMessage = "Minimum stok, maksimum stoktan büyük olamaz";
+          errorMessage = UiText.Get("StockLimitsOrder");
           return false;
         }
 
@@ -282,13 +283,13 @@ namespace InventoryTracking.Business
         var malzeme = _malzemeRepository.GetByBarkod(model.Barkod);
         if (malzeme == null)
         {
-          errorMessage = $"{model.Barkod.Trim()} numaralı malzeme bulunamadı. Önce yeni malzeme kaydı oluşturun.";
+          errorMessage = UiText.Format("MaterialNumberMissing", model.Barkod.Trim());
           return false;
         }
         if (malzeme.BirimId != model.BirimId ||
             !string.Equals(malzeme.Aciklama, model.UrunAdi.Trim(), StringComparison.Ordinal))
         {
-          errorMessage = "Ürün açıklaması ve birimi malzeme kataloğundaki kayıtla aynı olmalıdır.";
+          errorMessage = UiText.Get("ProductCatalogMatch");
           return false;
         }
 
@@ -296,7 +297,7 @@ namespace InventoryTracking.Business
         // farklı büyük/küçük harfle yeniden eklenmesini kullanıcıya erkenden bildiriyoruz.
         if (_urunRepository.IsNameTaken(model.UrunAdi, model.UrunId))
         {
-          errorMessage = "Bu isimde bir ürün zaten kayıtlıdır.";
+          errorMessage = UiText.Get("ProductNameExists");
           return false;
         }
 
@@ -335,7 +336,7 @@ namespace InventoryTracking.Business
       {
         if (depoId <= 0)
         {
-          throw new ArgumentException("Geçersiz depo ID");
+          throw new ArgumentException(UiText.Get("InvalidWarehouseId"));
         }
 
         return _stokRepository.GetByDepo(depoId) ?? new List<Stok>();
@@ -355,7 +356,7 @@ namespace InventoryTracking.Business
       {
         if (urunId <= 0 || depoId <= 0 || miktar < 0)
         {
-          return OperationResult.Fail("Geçersiz parametre girdisi");
+          return OperationResult.Fail(UiText.Get("InvalidParameters"));
         }
 
         return _stokRepository.UpsertStok(urunId, depoId, miktar, neden);
@@ -461,7 +462,7 @@ namespace InventoryTracking.Business
       {
         if (kategoriId <= 0)
         {
-          throw new ArgumentException("Geçersiz kategori ID");
+          throw new ArgumentException(UiText.Get("InvalidCategoryId"));
         }
         return _kategoriRepository.GetById(kategoriId);
       }
@@ -470,7 +471,7 @@ namespace InventoryTracking.Business
       {
         if (string.IsNullOrWhiteSpace(kategoriAdi))
         {
-          return OperationResult.Fail("Kategori adı boş olamaz");
+          return OperationResult.Fail(UiText.Get("CategoryNameRequired"));
         }
 
         var kategori = new Kategori
@@ -484,8 +485,8 @@ namespace InventoryTracking.Business
 
       public OperationResult UpdateKategori(int kategoriId, string kategoriAdi, string aciklama = "")
       {
-        if (kategoriId <= 0) return OperationResult.Fail("Geçersiz kategori ID");
-        if (string.IsNullOrWhiteSpace(kategoriAdi)) return OperationResult.Fail("Kategori adı boş olamaz");
+        if (kategoriId <= 0) return OperationResult.Fail(UiText.Get("InvalidCategoryId"));
+        if (string.IsNullOrWhiteSpace(kategoriAdi)) return OperationResult.Fail(UiText.Get("CategoryNameRequired"));
 
         var kategori = new Kategori
         {
@@ -500,7 +501,7 @@ namespace InventoryTracking.Business
       public OperationResult DeleteKategori(int kategoriId)
       {
         return kategoriId > 0 ? _kategoriRepository.Delete(kategoriId)
-          : OperationResult.Fail("Geçersiz kategori seçimi.");
+          : OperationResult.Fail(UiText.Get("InvalidCategory"));
       }
     }
 
@@ -523,7 +524,7 @@ namespace InventoryTracking.Business
 
       public Birim GetBirimById(int birimId)
       {
-        if (birimId <= 0) throw new ArgumentException("Geçersiz birim ID");
+        if (birimId <= 0) throw new ArgumentException(UiText.Get("InvalidUnitId"));
         return _birimRepository.GetById(birimId);
       }
     }
@@ -547,7 +548,7 @@ namespace InventoryTracking.Business
 
       public Depo GetDepoById(int depoId)
       {
-        if (depoId <= 0) throw new ArgumentException("Geçersiz depo ID");
+        if (depoId <= 0) throw new ArgumentException(UiText.Get("InvalidWarehouseId"));
         return _depoRepository.GetById(depoId);
       }
 
@@ -558,7 +559,7 @@ namespace InventoryTracking.Business
 
       public OperationResult AddDepo(string depoAdi, string lokasyon, string aciklama)
       {
-        if (string.IsNullOrWhiteSpace(depoAdi)) return OperationResult.Fail("Depo adı boş olamaz.");
+        if (string.IsNullOrWhiteSpace(depoAdi)) return OperationResult.Fail(UiText.Get("WarehouseNameRequired"));
         return _depoRepository.Add(new Depo
         {
           DepoAdi = depoAdi.Trim(), Lokasyon = lokasyon?.Trim(), Aciklama = aciklama?.Trim()
@@ -568,7 +569,7 @@ namespace InventoryTracking.Business
       public OperationResult UpdateDepo(int depoId, string depoAdi, string lokasyon, string aciklama)
       {
         if (depoId <= 0 || string.IsNullOrWhiteSpace(depoAdi))
-          return OperationResult.Fail("Geçerli bir depo ve ad seçiniz.");
+          return OperationResult.Fail(UiText.Get("SelectWarehouseName"));
         return _depoRepository.Update(new Depo
         {
           DepoId = depoId, DepoAdi = depoAdi.Trim(), Lokasyon = lokasyon?.Trim(), Aciklama = aciklama?.Trim()
@@ -578,7 +579,7 @@ namespace InventoryTracking.Business
       public OperationResult SetDepoActive(int depoId, bool aktifMi)
       {
         return depoId > 0 ? _depoRepository.SetActive(depoId, aktifMi)
-          : OperationResult.Fail("Geçersiz depo seçimi.");
+          : OperationResult.Fail(UiText.Get("InvalidWarehouse"));
       }
     }
 
@@ -603,7 +604,7 @@ namespace InventoryTracking.Business
       {
         if (filtre == null || filtre.Baslangic.Date > filtre.Bitis.Date ||
             filtre.Bitis.Date == DateTime.MaxValue.Date || filtre.HareketGrubu < 0 || filtre.HareketGrubu > 3)
-          throw new ArgumentException("Geçersiz hareket raporu filtresi.");
+          throw new ArgumentException(UiText.Get("InvalidReportFilter"));
 
         // Bitiş gününün tamamını kapsamak için ertesi günün başlangıcını hariç tutuyoruz.
         command.Parameters.AddWithValue("@Baslangic", filtre.Baslangic.Date);
@@ -625,7 +626,7 @@ namespace InventoryTracking.Business
           case "Günlük": donemSorgusu = "CONVERT(varchar(10), h.HareketTarihi, 104)"; break;
           case "Aylık": donemSorgusu = "RIGHT(CONVERT(varchar(10), h.HareketTarihi, 104), 7)"; break;
           case "Yıllık": donemSorgusu = "CAST(YEAR(h.HareketTarihi) AS varchar(4))"; break;
-          default: throw new ArgumentException("Geçersiz rapor periyodu.");
+          default: throw new ArgumentException(UiText.Get("InvalidPeriod"));
         }
 
         // İç transferler iki hareket üretir; normal giriş/çıkış toplamına katılmaz.

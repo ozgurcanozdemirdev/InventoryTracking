@@ -1,5 +1,7 @@
 .vs/
 **/bin/
 **/obj/
+*.user
+*.suo
 InventoryTracking/App.config
 dist/

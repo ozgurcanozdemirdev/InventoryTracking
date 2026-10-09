@@ -1,4 +1,5 @@
-﻿using System;
+using InventoryTracking.Localization;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -26,7 +27,7 @@ namespace InventoryTracking.Connection
         // Dağıtımda bağlantı bilgisini uygulama ayarı yerine ortam değişkeninden alabiliriz.
         string connectionString = ResolveConnectionString();
         if (string.IsNullOrWhiteSpace(connectionString))
-          throw new InvalidOperationException("Veritabanı bağlantı dizesi (DBConStr) boş. App.config ve Settings.settings ayarlarını kontrol edin.");
+          throw new InvalidOperationException(UiText.Get("EmptyDbConfig"));
 
         _connection = new SqlConnection(connectionString);
       }

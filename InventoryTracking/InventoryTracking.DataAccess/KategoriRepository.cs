@@ -1,4 +1,5 @@
-﻿using InventoryTracking.Connection;
+using InventoryTracking.Localization;
+using InventoryTracking.Connection;
 using InventoryTracking.DataAccess;
 using System;
 using System.Collections.Generic;
@@ -79,15 +80,15 @@ namespace InventoryTracking.DataAccess
             cmd.ExecuteNonQuery();
           }
         }
-        return OperationResult.Ok("Kategori başarıyla eklendi");
+        return OperationResult.Ok(UiText.Get("CategoryAdded"));
       }
       catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
       {
-        return OperationResult.Fail("Bu isimde bir kategori zaten kayıtlıdır.");
+        return OperationResult.Fail(UiText.Get("CategoryNameExists"));
       }
       catch (Exception ex)
       {
-        return OperationResult.Fail($"Kategori ekleme hatası: {ex.Message}");
+        return OperationResult.Fail(UiText.Format("CategoryAddException", ex.Message));
       }
     }
 
@@ -104,18 +105,18 @@ namespace InventoryTracking.DataAccess
             cmd.Parameters.AddWithValue("@KategoriAdi", kategori.KategoriAdi);
             cmd.Parameters.AddWithValue("@Aciklama", kategori.Aciklama ?? (object)DBNull.Value);
             if (cmd.ExecuteNonQuery() == 0)
-              return OperationResult.Fail("Kategori bulunamadı.");
+              return OperationResult.Fail(UiText.Get("CategoryNotFound"));
           }
         }
-        return OperationResult.Ok("Kategori güncellendi");
+        return OperationResult.Ok(UiText.Get("CategoryUpdated"));
       }
       catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
       {
-        return OperationResult.Fail("Bu isimde bir kategori zaten kayıtlıdır.");
+        return OperationResult.Fail(UiText.Get("CategoryNameExists"));
       }
       catch (Exception ex)
       {
-        return OperationResult.Fail($"Kategori güncelleme hatası: {ex.Message}");
+        return OperationResult.Fail(UiText.Format("CategoryUpdateException", ex.Message));
       }
     }
 
@@ -131,17 +132,17 @@ namespace InventoryTracking.DataAccess
         {
           cmd.Parameters.AddWithValue("@KategoriId", kategoriId);
           if (cmd.ExecuteNonQuery() > 0)
-            return OperationResult.Ok("Kategori silindi.");
+            return OperationResult.Ok(UiText.Get("CategoryDeleted"));
         }
-        return OperationResult.Fail("Kategori bulunamadı veya bir üründe kullanılıyor. Kullanılan kategori silinemez.");
+        return OperationResult.Fail(UiText.Get("CategoryDeleteRejected"));
       }
       catch (SqlException ex) when (ex.Number == 547)
       {
-        return OperationResult.Fail("Kategori başka kayıtlarda kullanılıyor; silinemez.");
+        return OperationResult.Fail(UiText.Get("CategoryInUse"));
       }
       catch (Exception ex)
       {
-        return OperationResult.Fail("Kategori silme hatası: " + ex.Message);
+        return OperationResult.Fail(UiText.Get("CategoryDeleteError") + ex.Message);
       }
     }
 
@@ -342,16 +343,16 @@ namespace InventoryTracking.DataAccess
           cmd.Parameters.AddWithValue("@Lokasyon", depo.Lokasyon ?? "");
           cmd.Parameters.AddWithValue("@Aciklama", depo.Aciklama ?? "");
           cmd.ExecuteNonQuery();
-          return OperationResult.Ok("Depo eklendi.");
+          return OperationResult.Ok(UiText.Get("WarehouseAdded"));
         }
       }
       catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
       {
-        return OperationResult.Fail("Bu isimde bir depo zaten kayıtlıdır.");
+        return OperationResult.Fail(UiText.Get("WarehouseNameExists"));
       }
       catch (Exception ex)
       {
-        return OperationResult.Fail("Depo ekleme hatası: " + ex.Message);
+        return OperationResult.Fail(UiText.Get("WarehouseAddError") + ex.Message);
       }
     }
 
@@ -369,16 +370,16 @@ namespace InventoryTracking.DataAccess
           cmd.Parameters.AddWithValue("@Lokasyon", depo.Lokasyon ?? "");
           cmd.Parameters.AddWithValue("@Aciklama", depo.Aciklama ?? "");
           return cmd.ExecuteNonQuery() > 0
-            ? OperationResult.Ok("Depo güncellendi.") : OperationResult.Fail("Depo bulunamadı.");
+            ? OperationResult.Ok(UiText.Get("WarehouseUpdated")) : OperationResult.Fail(UiText.Get("WarehouseNotFound"));
         }
       }
       catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
       {
-        return OperationResult.Fail("Bu isimde bir depo zaten kayıtlıdır.");
+        return OperationResult.Fail(UiText.Get("WarehouseNameExists"));
       }
       catch (Exception ex)
       {
-        return OperationResult.Fail("Depo güncelleme hatası: " + ex.Message);
+        return OperationResult.Fail(UiText.Get("WarehouseUpdateError") + ex.Message);
       }
     }
 
@@ -399,15 +400,15 @@ namespace InventoryTracking.DataAccess
           int affected = cmd.ExecuteNonQuery();
           if (affected == 0)
             return OperationResult.Fail(aktifMi
-              ? "Depo bulunamadı veya zaten aktif."
-              : "Depo pasife alınamadı. Son aktif depo veya içinde stok bulunan depo kapatılamaz.");
+              ? UiText.Get("WarehouseAlreadyActive")
+              : UiText.Get("WarehouseDeactivateRejected"));
           transaction.Commit();
-          return OperationResult.Ok(aktifMi ? "Depo etkinleştirildi." : "Depo pasife alındı.");
+          return OperationResult.Ok(aktifMi ? UiText.Get("WarehouseActivated") : UiText.Get("WarehouseDeactivated"));
         }
       }
       catch (Exception ex)
       {
-        return OperationResult.Fail("Depo durumu değiştirilemedi: " + ex.Message);
+        return OperationResult.Fail(UiText.Get("WarehouseStatusError") + ex.Message);
       }
     }
 
@@ -522,13 +523,13 @@ namespace InventoryTracking.DataAccess
         {
           cmd.Parameters.AddWithValue("@UrunId", urunId);
           return cmd.ExecuteNonQuery() == 1
-            ? OperationResult.Ok("Ürün yeniden etkinleştirildi. Mevcut stok kayıtları korundu.")
-            : OperationResult.Fail("Pasif ürün bulunamadı.");
+            ? OperationResult.Ok(UiText.Get("ProductActivated"))
+            : OperationResult.Fail(UiText.Get("InactiveProductMissing"));
         }
       }
       catch (Exception ex)
       {
-        return OperationResult.Fail("Ürün etkinleştirilemedi: " + ex.Message);
+        return OperationResult.Fail(UiText.Get("ProductActivateError") + ex.Message);
       }
     }
 
@@ -572,7 +573,7 @@ namespace InventoryTracking.DataAccess
       }
       catch (Exception ex)
       {
-        throw new Exception($"Ürünler listelenirken hata oluştu: {ex.Message}", ex);
+        throw new Exception(UiText.Format("ProductListException", ex.Message), ex);
       }
 
       return urunler;
@@ -644,19 +645,19 @@ namespace InventoryTracking.DataAccess
           }
         }
         finally { if (transaction == null) conn.Dispose(); }
-        return OperationResult.Ok("Ürün başarıyla eklendi");
+        return OperationResult.Ok(UiText.Get("ProductAdded"));
       }
       catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
       {
         // Ön kontrolü iki kullanıcı aynı anda geçebilir; benzersiz indeks son
         // güvenceyi sağlar ve burada kullanıcıya anlaşılır bir sonuç döneriz.
         return OperationResult.Fail(ex.Message.Contains("UX_Urun_UrunAdi")
-          ? "Bu isimde bir ürün zaten kayıtlıdır."
-          : "Bu barkod zaten sistemde kayıtlıdır.");
+          ? UiText.Get("ProductNameExists")
+          : UiText.Get("BarcodeExists"));
       }
       catch (Exception ex)
       {
-        return OperationResult.Fail($"Ürün ekleme hatası: {ex.Message}");
+        return OperationResult.Fail(UiText.Format("ProductAddException", ex.Message));
       }
     }
 
@@ -684,21 +685,21 @@ namespace InventoryTracking.DataAccess
             cmd.Parameters.AddWithValue("@AktifMi", urun.AktifMi);
 
             if (cmd.ExecuteNonQuery() == 0)
-              return OperationResult.Fail("Ürün bulunamadı.");
+              return OperationResult.Fail(UiText.Get("ProductMissingDot"));
           }
         }
         finally { if (transaction == null) conn.Dispose(); }
-        return OperationResult.Ok("Ürün başarıyla güncellendi");
+        return OperationResult.Ok(UiText.Get("ProductUpdated"));
       }
       catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
       {
         return OperationResult.Fail(ex.Message.Contains("UX_Urun_UrunAdi")
-          ? "Bu isimde bir ürün zaten kayıtlıdır."
-          : "Bu barkod zaten sistemde kayıtlıdır.");
+          ? UiText.Get("ProductNameExists")
+          : UiText.Get("BarcodeExists"));
       }
       catch (Exception ex)
       {
-        return OperationResult.Fail($"Ürün güncelleme hatası: {ex.Message}");
+        return OperationResult.Fail(UiText.Format("ProductUpdateException", ex.Message));
       }
     }
 
@@ -717,13 +718,13 @@ namespace InventoryTracking.DataAccess
             cmd.Parameters.AddWithValue("@UrunId", urunId);
             int affectedRows = cmd.ExecuteNonQuery();
 
-            return affectedRows > 0 ? OperationResult.Ok("Ürün başarıyla silindi") : OperationResult.Fail("Ürün bulunamadı");
+            return affectedRows > 0 ? OperationResult.Ok(UiText.Get("ProductDeleted")) : OperationResult.Fail(UiText.Get("ProductMissing"));
           }
         }
       }
       catch (Exception ex)
       {
-        return OperationResult.Fail($"Ürün silme hatası: {ex.Message}");
+        return OperationResult.Fail(UiText.Format("ProductDeleteException", ex.Message));
       }
     }
 
@@ -913,7 +914,7 @@ public class StokRepository
     SqlTransaction transaction = null, int? transferId = null)
   {
     if (urunId <= 0 || depoId <= 0 || string.IsNullOrWhiteSpace(tip))
-      return OperationResult.Fail("Geçersiz stok işlemi.");
+      return OperationResult.Fail(UiText.Get("InvalidStockOperation"));
     SqlConnection conn = transaction?.Connection ?? GetConnection();
     SqlTransaction trans = transaction ?? conn.BeginTransaction(IsolationLevel.Serializable);
     try
@@ -929,7 +930,7 @@ public class StokRepository
           check.Parameters.AddWithValue("@UrunId", urunId);
           check.Parameters.AddWithValue("@DepoId", depoId);
           if ((int)check.ExecuteScalar() != 1)
-            return OperationResult.Fail("Stok işlemi için ürün ve depo aktif olmalıdır.");
+            return OperationResult.Fail(UiText.Get("StockActiveRequired"));
         }
 
         // Mevcut miktar kontrolü
@@ -939,7 +940,7 @@ public class StokRepository
 
         if (yeniMiktar < 0)
         {
-          return OperationResult.Fail("Yetersiz stok! İşlem gerçekleştirilemedi.");
+          return OperationResult.Fail(UiText.Get("InsufficientStock"));
         }
 
         // Stok miktarını güncelle
@@ -979,12 +980,12 @@ public class StokRepository
 
         // Her iki işlem de başarılı olursa veritabanına kalıcı olarak işle
         if (transaction == null) trans.Commit();
-        return OperationResult.Ok("Stok başarıyla güncellendi");
+        return OperationResult.Ok(UiText.Get("StockUpdated"));
     }
     catch (Exception ex)
     {
       if (transaction == null) trans.Rollback();
-      return OperationResult.Fail($"Stok güncelleme hatası: {ex.Message}");
+      return OperationResult.Fail(UiText.Format("StockUpdateException", ex.Message));
     }
     finally
     {
@@ -996,7 +997,7 @@ public class StokRepository
   {
     if (urunId <= 0 || kaynakDepoId <= 0 || hedefDepoId <= 0 ||
         kaynakDepoId == hedefDepoId || miktar <= 0 || string.IsNullOrWhiteSpace(aciklama) || aciklama.Trim().Length > 500)
-      return OperationResult.Fail("Ürün, farklı iki depo, pozitif miktar ve en fazla 500 karakterlik açıklama zorunludur.");
+      return OperationResult.Fail(UiText.Get("TransferValidation"));
 
     try
     {
@@ -1016,7 +1017,7 @@ public class StokRepository
           if ((int)check.ExecuteScalar() != 1)
           {
             transaction.Rollback();
-            return OperationResult.Fail("Ürün veya seçilen depolardan biri aktif değil.");
+            return OperationResult.Fail(UiText.Get("TransferInactive"));
           }
         }
 
@@ -1036,17 +1037,17 @@ public class StokRepository
         }
 
         string not = $"Transfer #{transferId}";
-        var cikis = UpdateStok(urunId, kaynakDepoId, -miktar, "Transfer Çıkış", not, transaction, transferId);
+        var cikis = UpdateStok(urunId, kaynakDepoId, -miktar, UiText.Get("TransferOut"), not, transaction, transferId);
         if (!cikis.Success) { transaction.Rollback(); return cikis; }
-        var giris = UpdateStok(urunId, hedefDepoId, miktar, "Transfer Giriş", not, transaction, transferId);
+        var giris = UpdateStok(urunId, hedefDepoId, miktar, UiText.Get("TransferIn"), not, transaction, transferId);
         if (!giris.Success) { transaction.Rollback(); return giris; }
         transaction.Commit();
-        return OperationResult.Ok($"Transfer tamamlandı. İşlem numarası: {transferId}", transferId);
+        return OperationResult.Ok(UiText.Format("TransferCompleted", transferId), transferId);
       }
     }
     catch (Exception ex)
     {
-      return OperationResult.Fail("Stok transferi yapılamadı: " + ex.Message);
+      return OperationResult.Fail(UiText.Get("TransferError") + ex.Message);
     }
   }
 
@@ -1056,7 +1057,7 @@ public class StokRepository
   public OperationResult UpsertStok(int urunId, int depoId, int miktar, string neden)
   {
     if (urunId <= 0 || depoId <= 0 || miktar < 0 || string.IsNullOrWhiteSpace(neden) || neden.Trim().Length > 500)
-      return OperationResult.Fail("Geçerli stok miktarı ve en fazla 500 karakterlik düzeltme nedeni zorunludur.");
+      return OperationResult.Fail(UiText.Get("AdjustmentValidation"));
     try
     {
       using (SqlConnection conn = GetConnection())
@@ -1071,7 +1072,7 @@ public class StokRepository
     }
     catch (Exception ex)
     {
-      return OperationResult.Fail($"Stok set etme hatası: {ex.Message}");
+      return OperationResult.Fail(UiText.Format("StockSetException", ex.Message));
     }
   }
 
@@ -1087,7 +1088,7 @@ public class StokRepository
     }
     catch (Exception ex)
     {
-      MessageBox.Show(ex.Message);
+      UiMessage.Show(ex.Message);
     }
   }
 }
@@ -1110,7 +1111,7 @@ public class StokRepository
       }
       catch (Exception ex)
       {
-        MessageBox.Show("Veriler yüklenirken hata oluştu: " + ex.Message);
+        UiMessage.Show("Veriler yüklenirken hata oluştu: " + ex.Message);
       }
     }
  */

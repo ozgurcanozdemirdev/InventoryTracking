@@ -1,17 +1,18 @@
+using InventoryTracking.Localization;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace InventoryTracking.UI
 {
-  public class StokDuzeltmeNedeniForm : Form
+  public class StokDuzeltmeNedeniForm : LocalizedForm
   {
     private readonly TextBox txtNeden = new TextBox();
     public string Neden { get; private set; }
 
     public StokDuzeltmeNedeniForm()
     {
-      Text = "Stok Düzeltme Nedeni";
+      Text = UiText.Get("AdjustmentTitle");
       StartPosition = FormStartPosition.CenterParent;
       FormBorderStyle = FormBorderStyle.FixedDialog;
       MaximizeBox = false;
@@ -23,7 +24,7 @@ namespace InventoryTracking.UI
       var header = new Panel { Dock = DockStyle.Top, Height = 48, BackColor = Color.FromArgb(41, 128, 185) };
       header.Controls.Add(new Label
       {
-        Text = "STOK DÜZELTME NEDENİ", ForeColor = Color.White,
+        Text = UiText.Get("AdjustmentHeader"), ForeColor = Color.White,
         Font = new Font("Segoe UI", 12F, FontStyle.Bold), Dock = DockStyle.Fill,
         Padding = new Padding(15, 11, 0, 0)
       });
@@ -31,7 +32,7 @@ namespace InventoryTracking.UI
 
       Controls.Add(new Label
       {
-        Text = "Miktar değişikliğinin nedenini yazın:",
+        Text = UiText.Get("AdjustmentReasonPrompt"),
         Location = new Point(18, 61), Size = new Size(420, 25)
       });
       txtNeden.Location = new Point(18, 90);
@@ -42,13 +43,13 @@ namespace InventoryTracking.UI
 
       var btnKaydet = new Button
       {
-        Text = "Devam Et", Location = new Point(185, 150), Size = new Size(120, 38),
+        Text = UiText.Get("Continue"), Location = new Point(185, 150), Size = new Size(120, 38),
         BackColor = Color.FromArgb(46, 204, 113), ForeColor = Color.White,
         FlatStyle = FlatStyle.Flat, UseVisualStyleBackColor = false
       };
       var btnIptal = new Button
       {
-        Text = "İptal", Location = new Point(320, 150), Size = new Size(120, 38),
+        Text = UiText.Get("Cancel"), Location = new Point(320, 150), Size = new Size(120, 38),
         BackColor = Color.FromArgb(149, 165, 166), ForeColor = Color.White,
         FlatStyle = FlatStyle.Flat, UseVisualStyleBackColor = false
       };
@@ -58,7 +59,7 @@ namespace InventoryTracking.UI
       {
         if (string.IsNullOrWhiteSpace(txtNeden.Text))
         {
-          MessageBox.Show("Düzeltme nedeni boş olamaz.", "Uyarı",
+          UiMessage.Show(UiText.Get("ReasonRequired"), UiText.Get("Warning"),
             MessageBoxButtons.OK, MessageBoxIcon.Warning);
           txtNeden.Focus();
           return;

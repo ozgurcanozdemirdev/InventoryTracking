@@ -1,3 +1,4 @@
+using InventoryTracking.Localization;
 using System;
 using System.Drawing;
 using System.Linq;
@@ -7,7 +8,7 @@ using static InventoryTracking.Models.Entities;
 
 namespace InventoryTracking.UI
 {
-  public class StokTransferForm : Form
+  public class StokTransferForm : LocalizedForm
   {
     private readonly StokService _stokService = new StokService();
     private readonly DepoService _depoService = new DepoService();
@@ -20,12 +21,22 @@ namespace InventoryTracking.UI
     private readonly NumericUpDown numMiktar = new NumericUpDown();
     private readonly TextBox txtAciklama = new TextBox();
     private readonly Label lblMevcut = new Label();
+    private int? _sourceQuantity;
+    private string _stockError;
+
+    protected override void OnLanguageChanged()
+    {
+      if (lblMevcut == null) return;
+      lblMevcut.Text = _stockError != null
+        ? UiText.Get("StockReadError") + _stockError
+        : UiText.Get("SourceStockPrefix") + (_sourceQuantity?.ToString() ?? "-");
+    }
 
     public StokTransferForm(int kaynakDepoId, int urunId = 0)
     {
       _ilkDepoId = kaynakDepoId;
       _ilkUrunId = urunId;
-      Text = "Depolar Arası Stok Transferi";
+      Text = UiText.Get("TransferTitle");
       StartPosition = FormStartPosition.CenterParent;
       FormBorderStyle = FormBorderStyle.FixedDialog;
       MaximizeBox = false;
@@ -37,30 +48,30 @@ namespace InventoryTracking.UI
       var header = new Panel { Dock = DockStyle.Top, Height = 50, BackColor = Color.FromArgb(41, 128, 185) };
       header.Controls.Add(new Label
       {
-        Text = "DEPOLAR ARASI STOK TRANSFERİ", ForeColor = Color.White,
+        Text = UiText.Get("TransferHeader"), ForeColor = Color.White,
         Font = new Font("Segoe UI", 14F, FontStyle.Bold), Dock = DockStyle.Fill,
         Padding = new Padding(15, 9, 0, 0)
       });
       Controls.Add(header);
 
-      AddRow("Ürün:", cmbUrun, 67);
-      AddRow("Kaynak Depo:", cmbKaynak, 112);
-      AddRow("Hedef Depo:", cmbHedef, 157);
+      AddRow(UiText.Get("ProductLabel"), cmbUrun, 67);
+      AddRow(UiText.Get("SourceWarehouse"), cmbKaynak, 112);
+      AddRow(UiText.Get("TargetWarehouse"), cmbHedef, 157);
       AddRow("Miktar:", numMiktar, 202);
-      AddRow("Açıklama:", txtAciklama, 257);
+      AddRow(UiText.Get("DescriptionLabel"), txtAciklama, 257);
       foreach (var combo in new[] { cmbUrun, cmbKaynak, cmbHedef })
         combo.DropDownStyle = ComboBoxStyle.DropDownList;
       numMiktar.Minimum = 1;
       numMiktar.Maximum = 1000000;
       txtAciklama.MaxLength = 500;
-      lblMevcut.Text = "Kaynak stok: -";
+      lblMevcut.Text = UiText.Get("SourceStockUnknown");
       lblMevcut.Location = new Point(155, 236);
       lblMevcut.Size = new Size(400, 22);
       Controls.Add(lblMevcut);
 
       var footer = new Panel { Dock = DockStyle.Bottom, Height = 60, BackColor = Color.FromArgb(236, 240, 241) };
-      var btnAktar = MakeButton("✓ Transfer Et", 305, Color.FromArgb(46, 204, 113));
-      var btnIptal = MakeButton("İptal", 455, Color.FromArgb(149, 165, 166));
+      var btnAktar = MakeButton(UiText.Get("TransferAction"), 305, Color.FromArgb(46, 204, 113));
+      var btnIptal = MakeButton(UiText.Get("Cancel"), 455, Color.FromArgb(149, 165, 166));
       btnAktar.Click += (sender, e) => Transfer();
       btnIptal.Click += (sender, e) => { DialogResult = DialogResult.Cancel; Close(); };
       footer.Controls.Add(btnAktar);
@@ -101,7 +112,7 @@ namespace InventoryTracking.UI
         var urunler = _urunService.GetAllProducts();
         if (depolar.Count < 2 || urunler.Count == 0)
         {
-          MessageBox.Show("Transfer için en az iki aktif depo ve bir ürün gerekir.", "Uyarı",
+          UiMessage.Show(UiText.Get("TransferPrerequisites"), UiText.Get("Warning"),
             MessageBoxButtons.OK, MessageBoxIcon.Warning);
           Close();
           return;
@@ -123,7 +134,7 @@ namespace InventoryTracking.UI
       }
       catch (Exception ex)
       {
-        MessageBox.Show("Transfer bilgileri yüklenemedi: " + ex.Message, "Hata",
+        UiMessage.Show(UiText.Get("TransferDataError") + ex.Message, UiText.Get("Error"),
           MessageBoxButtons.OK, MessageBoxIcon.Error);
         Close();
       }
@@ -135,9 +146,11 @@ namespace InventoryTracking.UI
       try
       {
         int miktar = _stokService.GetStok(urunId, depoId)?.Miktar ?? 0;
-        lblMevcut.Text = "Kaynak stok: " + miktar;
+        _sourceQuantity = miktar;
+        _stockError = null;
+        lblMevcut.Text = UiText.Get("SourceStockPrefix") + miktar;
       }
-      catch (Exception ex) { lblMevcut.Text = "Stok okunamadı: " + ex.Message; }
+      catch (Exception ex) { _stockError = ex.Message; OnLanguageChanged(); }
     }
 
     private void Transfer()
@@ -146,19 +159,19 @@ namespace InventoryTracking.UI
           !(cmbKaynak.SelectedValue is int kaynak) || !(cmbHedef.SelectedValue is int hedef)) return;
       if (kaynak == hedef)
       {
-        MessageBox.Show("Kaynak ve hedef depo farklı olmalıdır.", "Uyarı",
+        UiMessage.Show(UiText.Get("DifferentWarehouses"), UiText.Get("Warning"),
           MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return;
       }
       if (string.IsNullOrWhiteSpace(txtAciklama.Text))
       {
-        MessageBox.Show("Transfer açıklaması zorunludur.", "Uyarı",
+        UiMessage.Show(UiText.Get("TransferDescriptionRequired"), UiText.Get("Warning"),
           MessageBoxButtons.OK, MessageBoxIcon.Warning);
         txtAciklama.Focus();
         return;
       }
       var result = _stokService.TransferStock(urunId, kaynak, hedef, (int)numMiktar.Value, txtAciklama.Text);
-      MessageBox.Show(result.Message, result.Success ? "Başarılı" : "Transfer Yapılamadı",
+      UiMessage.Show(result.Message, result.Success ? UiText.Get("Success") : UiText.Get("TransferFailed"),
         MessageBoxButtons.OK, result.Success ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
       if (result.Success) { DialogResult = DialogResult.OK; Close(); }
       else RefreshStock();

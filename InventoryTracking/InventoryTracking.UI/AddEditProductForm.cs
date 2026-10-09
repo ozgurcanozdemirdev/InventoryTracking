@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InventoryTracking.Localization;
+using System;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using static InventoryTracking.Business.Services;
@@ -6,7 +7,7 @@ using static InventoryTracking.Models.Entities;
 
 namespace InventoryTracking.UI
 {
-  public partial class AddEditProductForm : Form
+  public partial class AddEditProductForm : LocalizedForm
   {
     private readonly UrunService _urunService;
     private readonly KategoriService _kategoriService;
@@ -65,7 +66,7 @@ namespace InventoryTracking.UI
 
     private void InitializeControls()
     {
-      this.Text = _isEditMode ? "Ürün Düzenle" : "Yeni Ürün Ekle";
+      this.Text = _isEditMode ? UiText.Get("EditProductTitle") : UiText.Get("NewProductTitle");
       this.StartPosition = FormStartPosition.CenterParent;
       this.FormBorderStyle = FormBorderStyle.FixedDialog;
       this.MaximizeBox = false;
@@ -93,13 +94,18 @@ namespace InventoryTracking.UI
       {
         _btnMalzemeKaydi = new Button
         {
-          Text = _isEditMode ? "Malzeme Düzenle" : "Malzeme Kaydı",
-          Location = new System.Drawing.Point(139, 10),
-          Size = new System.Drawing.Size(133, 40),
+          Text = _isEditMode ? UiText.Get("EditMaterial") : UiText.Get("MaterialRecord"),
+          // Ã–lÃ§eklenmiÅŸ Kaydet ve Ä°ptal butonlarÄ±na gÃ¶re yerleÅŸir; metin ortada kalÄ±r.
+          Location = new System.Drawing.Point(btnKaydet.Right + 7, btnKaydet.Top),
+          Size = new System.Drawing.Size(btnIptal.Left - btnKaydet.Right - 14, btnKaydet.Height),
+          Anchor = btnKaydet.Anchor,
+          TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+          Padding = Padding.Empty,
+          UseCompatibleTextRendering = false,
           BackColor = System.Drawing.Color.FromArgb(52, 152, 219),
           ForeColor = System.Drawing.Color.White,
           FlatStyle = FlatStyle.Flat,
-          Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold),
+          Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold),
           UseVisualStyleBackColor = false
         };
         _btnMalzemeKaydi.FlatAppearance.BorderSize = 0;
@@ -108,7 +114,7 @@ namespace InventoryTracking.UI
           var kayit = _malzemeService.GetByBarkod(txtBarkod.Text);
           if (_isEditMode && kayit == null)
           {
-            MessageBox.Show("Bu ürüne bağlı malzeme kaydı bulunamadı.", "Hata",
+            UiMessage.Show(UiText.Get("ProductMaterialMissing"), UiText.Get("Error"),
               MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
           }
@@ -146,7 +152,7 @@ namespace InventoryTracking.UI
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"Veriler yüklenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        UiMessage.Show(UiText.Format("LoadException", ex.Message), UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -175,7 +181,7 @@ namespace InventoryTracking.UI
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"Ürün verileri yüklenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        UiMessage.Show(UiText.Format("ProductDataException", ex.Message), UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -183,7 +189,7 @@ namespace InventoryTracking.UI
     {
       if (string.IsNullOrWhiteSpace(txtBarkod.Text))
       {
-        MessageBox.Show("Lütfen barkodu giriniz", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        UiMessage.Show(UiText.Get("PleaseBarcode"), UiText.Get("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         txtBarkod.Focus();
         return false;
       }
@@ -191,40 +197,40 @@ namespace InventoryTracking.UI
       // Kaydetmeden hemen önce yeniden bakıyoruz; ekranda görünen eski katalog bilgisine güvenmiyoruz.
       if (!LoadKatalogBilgisi())
       {
-        MessageBox.Show($"{txtBarkod.Text.Trim()} numaralı malzeme bulunamadı. Önce yeni malzeme kaydı oluşturun.",
-          "Malzeme Bulunamadı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        UiMessage.Show(UiText.Format("MaterialNumberMissing", txtBarkod.Text.Trim()),
+          UiText.Get("MaterialNotFoundTitle"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return false;
       }
 
       if (string.IsNullOrWhiteSpace(txtUrunAdi.Text))
       {
-        MessageBox.Show("Lütfen ürün adını giriniz", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        UiMessage.Show(UiText.Get("PleaseProductName"), UiText.Get("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         txtUrunAdi.Focus();
         return false;
       }
 
       if (cmbKategori.SelectedValue == null)
       {
-        MessageBox.Show("Lütfen bir kategori seçiniz", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        UiMessage.Show(UiText.Get("PleaseCategory"), UiText.Get("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return false;
       }
 
       if (cmbBirim.SelectedValue == null)
       {
-        MessageBox.Show("Lütfen bir birim seçiniz", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        UiMessage.Show(UiText.Get("PleaseUnit"), UiText.Get("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return false;
       }
 
       if (numFiyat.Value < 0)
       {
-        MessageBox.Show("Fiyat negatif olamaz", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        UiMessage.Show(UiText.Get("PriceNegative"), UiText.Get("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         numFiyat.Focus();
         return false;
       }
 
       if (numMinStok.Value > numMaksStok.Value)
       {
-        MessageBox.Show("Minimum stok, maksimum stoktan büyük olamaz", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        UiMessage.Show(UiText.Get("StockLimitsOrder"), UiText.Get("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return false;
       }
 
@@ -248,7 +254,7 @@ namespace InventoryTracking.UI
       }
       catch (Exception ex)
       {
-        MessageBox.Show("Malzeme kataloğu okunamadı: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        UiMessage.Show(UiText.Get("MaterialCatalogError") + ex.Message, UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
         return false;
       }
     }
@@ -298,18 +304,18 @@ namespace InventoryTracking.UI
 
         if (result.Success)
         {
-          MessageBox.Show(result.Message, "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          UiMessage.Show(result.Message, UiText.Get("Success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
           this.DialogResult = DialogResult.OK;
           this.Close();
         }
         else
         {
-          MessageBox.Show(result.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          UiMessage.Show(result.Message, UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"İşlem sırasında hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        UiMessage.Show(UiText.Format("OperationException", ex.Message), UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 

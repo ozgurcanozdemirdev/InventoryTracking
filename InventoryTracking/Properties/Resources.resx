@@ -1,107 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <root>
-  <!-- 
-    Microsoft ResX Schema 
-    
-    Version 2.0
-    
-    The primary goals of this format is to allow a simple XML format 
-    that is mostly human readable. The generation and parsing of the 
-    various data types are done through the TypeConverter classes 
-    associated with the data types.
-    
-    Example:
-    
-    ... ado.net/XML headers & schema ...
-    <resheader name="resmimetype">text/microsoft-resx</resheader>
-    <resheader name="version">2.0</resheader>
-    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
-    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
-    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
-    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
-    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
-        <value>[base64 mime encoded serialized .NET Framework object]</value>
-    </data>
-    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
-        <comment>This is a comment</comment>
-    </data>
-                
-    There are any number of "resheader" rows that contain simple 
-    name/value pairs.
-    
-    Each data row contains a name, and value. The row also contains a 
-    type or mimetype. Type corresponds to a .NET class that support 
-    text/value conversion through the TypeConverter architecture. 
-    Classes that don't support this are serialized and stored with the 
-    mimetype set.
-    
-    The mimetype is used for serialized objects, and tells the 
-    ResXResourceReader how to depersist the object. This is currently not 
-    extensible. For a given mimetype the value must be set accordingly:
-    
-    Note - application/x-microsoft.net.object.binary.base64 is the format 
-    that the ResXResourceWriter will generate, however the reader can 
-    read any of the formats listed below.
-    
-    mimetype: application/x-microsoft.net.object.binary.base64
-    value   : The object must be serialized with 
-            : System.Serialization.Formatters.Binary.BinaryFormatter
-            : and then encoded with base64 encoding.
-    
-    mimetype: application/x-microsoft.net.object.soap.base64
-    value   : The object must be serialized with 
-            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
-            : and then encoded with base64 encoding.
-
-    mimetype: application/x-microsoft.net.object.bytearray.base64
-    value   : The object must be serialized into a byte array 
-            : using a System.ComponentModel.TypeConverter
-            : and then encoded with base64 encoding.
-    -->
-  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
-    <xsd:element name="root" msdata:IsDataSet="true">
-      <xsd:complexType>
-        <xsd:choice maxOccurs="unbounded">
-          <xsd:element name="metadata">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" />
-              <xsd:attribute name="type" type="xsd:string" />
-              <xsd:attribute name="mimetype" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="assembly">
-            <xsd:complexType>
-              <xsd:attribute name="alias" type="xsd:string" />
-              <xsd:attribute name="name" type="xsd:string" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="data">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" msdata:Ordinal="1" />
-              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
-              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
-            </xsd:complexType>
-          </xsd:element>
-          <xsd:element name="resheader">
-            <xsd:complexType>
-              <xsd:sequence>
-                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
-              </xsd:sequence>
-              <xsd:attribute name="name" type="xsd:string" use="required" />
-            </xsd:complexType>
-          </xsd:element>
-        </xsd:choice>
-      </xsd:complexType>
-    </xsd:element>
-  </xsd:schema>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
   </resheader>
@@ -109,9 +7,1061 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AppTitle" xml:space="preserve">
+    <value>Stok Takip Sistemi</value>
+  </data>
+  <data name="AddProduct" xml:space="preserve">
+    <value>Yeni Ürün</value>
+  </data>
+  <data name="EditProduct" xml:space="preserve">
+    <value>Düzenle</value>
+  </data>
+  <data name="DeleteProduct" xml:space="preserve">
+    <value>Sil</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Yenile</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Kaydet</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>İptal</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Dil</value>
+  </data>
+  <data name="Barcode" xml:space="preserve">
+    <value>Barkod</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Kategori</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Kategoriler</value>
+  </data>
+  <data name="Warehouse" xml:space="preserve">
+    <value>Depo</value>
+  </data>
+  <data name="Warehouses" xml:space="preserve">
+    <value>Depolar</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>Birim</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Miktar</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Fiyat</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Durum</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Lokasyon</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Aktif</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>Pasif</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Hata</value>
+  </data>
+  <data name="Information" xml:space="preserve">
+    <value>Bilgi</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Uyarı</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Başarılı</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Kapat</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Çıkış</value>
+  </data>
+  <data name="Entry" xml:space="preserve">
+    <value>Giriş</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Sil</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>Yeni</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>Ürün</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>Kullanıcı</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Açıklama</value>
+  </data>
+  <data name="DescriptionLabel" xml:space="preserve">
+    <value>Açıklama:</value>
+  </data>
+  <data name="DescriptionPrefix" xml:space="preserve">
+    <value>Açıklama: </value>
+  </data>
+  <data name="BarcodeSearch" xml:space="preserve">
+    <value>Barkod / Ürün Ara</value>
+  </data>
+  <data name="ScanPlaceholder" xml:space="preserve">
+    <value>Barkod okutun veya ürün adı yazın...</value>
+  </data>
+  <data name="SearchAccessible" xml:space="preserve">
+    <value>Barkod, ürün adı veya malzeme numarasıyla arama</value>
+  </data>
+  <data name="SearchHelp" xml:space="preserve">
+    <value>Barkod, ürün adı veya malzeme numarasıyla listeyi süzün. Barkod okutunca Enter ile kayıt ekranını açın.</value>
+  </data>
+  <data name="ConnectionSettings" xml:space="preserve">
+    <value>Bağlantı Ayarları</value>
+  </data>
+  <data name="ConnectionError" xml:space="preserve">
+    <value>Bağlantı Hatası</value>
+  </data>
+  <data name="WaitingConnection" xml:space="preserve">
+    <value>Bağlantı bekleniyor</value>
+  </data>
+  <data name="InvalidConnection" xml:space="preserve">
+    <value>Bağlantı bilgisi geçersiz: </value>
+  </data>
+  <data name="EmptyConnection" xml:space="preserve">
+    <value>Bağlantı bilgisi boş olamaz.</value>
+  </data>
+  <data name="ConnectionSaveError" xml:space="preserve">
+    <value>Bağlantı kaydedilemedi: </value>
+  </data>
+  <data name="ConnectionVerified" xml:space="preserve">
+    <value>Bağlantı ve gerekli tablolar doğrulandı.</value>
+  </data>
+  <data name="SchemaConnectionError" xml:space="preserve">
+    <value>Bağlantı veya veritabanı şeması doğrulanamadı: </value>
+  </data>
+  <data name="TestConnection" xml:space="preserve">
+    <value>Bağlantıyı Sına</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Başlangıç T.:</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>Bitiş Tarihi:</value>
+  </data>
+  <data name="InvalidDateRange" xml:space="preserve">
+    <value>Başlangıç tarihi, bitiş tarihinden ileri olamaz.</value>
+  </data>
+  <data name="SelectedProductHint" xml:space="preserve">
+    <value>Bilgiler seçili ürün ve depoya aittir.</value>
+  </data>
+  <data name="UnitPrice" xml:space="preserve">
+    <value>Birim Fiyat</value>
+  </data>
+  <data name="UnitsLoadError" xml:space="preserve">
+    <value>Birimler yüklenemedi: </value>
+  </data>
+  <data name="BarcodeExists" xml:space="preserve">
+    <value>Bu barkod zaten sistemde kayıtlıdır.</value>
+  </data>
+  <data name="WarehouseNameExists" xml:space="preserve">
+    <value>Bu isimde bir depo zaten kayıtlıdır.</value>
+  </data>
+  <data name="CategoryNameExists" xml:space="preserve">
+    <value>Bu isimde bir kategori zaten kayıtlıdır.</value>
+  </data>
+  <data name="ProductNameExists" xml:space="preserve">
+    <value>Bu isimde bir ürün zaten kayıtlıdır.</value>
+  </data>
+  <data name="MaterialBarcodeExists" xml:space="preserve">
+    <value>Bu malzeme numarası veya barkod zaten kayıtlıdır.</value>
+  </data>
+  <data name="MaterialDescriptionExists" xml:space="preserve">
+    <value>Bu malzeme numarası veya ürün açıklaması zaten kullanılıyor.</value>
+  </data>
+  <data name="ProductMaterialMissing" xml:space="preserve">
+    <value>Bu ürüne bağlı malzeme kaydı bulunamadı.</value>
+  </data>
+  <data name="ProductNotRegistered" xml:space="preserve">
+    <value>Böyle bir ürün bulunmamaktadır.</value>
+  </data>
+  <data name="CsvFilter" xml:space="preserve">
+    <value>CSV Dosyası (*.csv)|*.csv</value>
+  </data>
+  <data name="PdfFilter" xml:space="preserve">
+    <value>PDF Dosyası (*.pdf)|*.pdf</value>
+  </data>
+  <data name="WarehouseManagementHeader" xml:space="preserve">
+    <value>DEPO / ŞUBE YÖNETİMİ</value>
+  </data>
+  <data name="TransferHeader" xml:space="preserve">
+    <value>DEPOLAR ARASI STOK TRANSFERİ</value>
+  </data>
+  <data name="WarehouseBranch" xml:space="preserve">
+    <value>Depo / Şube</value>
+  </data>
+  <data name="WarehouseNameLabel" xml:space="preserve">
+    <value>Depo Adı:</value>
+  </data>
+  <data name="WarehouseSelection" xml:space="preserve">
+    <value>Depo Seçimi</value>
+  </data>
+  <data name="WarehouseManagement" xml:space="preserve">
+    <value>Depo Yönetimi</value>
+  </data>
+  <data name="WarehouseNameRequired" xml:space="preserve">
+    <value>Depo adı boş olamaz.</value>
+  </data>
+  <data name="WarehouseAlreadyActive" xml:space="preserve">
+    <value>Depo bulunamadı veya zaten aktif.</value>
+  </data>
+  <data name="WarehouseNotFound" xml:space="preserve">
+    <value>Depo bulunamadı.</value>
+  </data>
+  <data name="WarehouseStatusError" xml:space="preserve">
+    <value>Depo durumu değiştirilemedi: </value>
+  </data>
+  <data name="WarehouseAddError" xml:space="preserve">
+    <value>Depo ekleme hatası: </value>
+  </data>
+  <data name="WarehouseAdded" xml:space="preserve">
+    <value>Depo eklendi.</value>
+  </data>
+  <data name="WarehouseActivated" xml:space="preserve">
+    <value>Depo etkinleştirildi.</value>
+  </data>
+  <data name="WarehouseFilterError" xml:space="preserve">
+    <value>Depo filtresi yüklenemedi: </value>
+  </data>
+  <data name="WarehouseUpdateError" xml:space="preserve">
+    <value>Depo güncelleme hatası: </value>
+  </data>
+  <data name="WarehouseUpdated" xml:space="preserve">
+    <value>Depo güncellendi.</value>
+  </data>
+  <data name="WarehouseDeactivateRejected" xml:space="preserve">
+    <value>Depo pasife alınamadı. Son aktif depo veya içinde stok bulunan depo kapatılamaz.</value>
+  </data>
+  <data name="WarehouseDeactivated" xml:space="preserve">
+    <value>Depo pasife alındı.</value>
+  </data>
+  <data name="NoWarehouseSelected" xml:space="preserve">
+    <value>Depo seçilmedi</value>
+  </data>
+  <data name="WarehouseSameStatus" xml:space="preserve">
+    <value>Depo zaten bu durumda.</value>
+  </data>
+  <data name="TransferTitle" xml:space="preserve">
+    <value>Depolar Arası Stok Transferi</value>
+  </data>
+  <data name="WarehousesLoadError" xml:space="preserve">
+    <value>Depolar yüklenemedi: </value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>Devam Et</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Değişim</value>
+  </data>
+  <data name="Period" xml:space="preserve">
+    <value>Dönem</value>
+  </data>
+  <data name="ReasonRequired" xml:space="preserve">
+    <value>Düzeltme nedeni boş olamaz.</value>
+  </data>
+  <data name="Activate" xml:space="preserve">
+    <value>Etkinleştir</value>
+  </data>
+  <data name="ReportHint" xml:space="preserve">
+    <value>Filtreleri seçip Raporu Getir'e basın.</value>
+  </data>
+  <data name="PriceNegative" xml:space="preserve">
+    <value>Fiyat negatif olamaz</value>
+  </data>
+  <data name="SelectUnit" xml:space="preserve">
+    <value>Geçerli bir birim seçiniz</value>
+  </data>
+  <data name="SelectUnitDot" xml:space="preserve">
+    <value>Geçerli bir birim seçiniz.</value>
+  </data>
+  <data name="SelectWarehouseName" xml:space="preserve">
+    <value>Geçerli bir depo ve ad seçiniz.</value>
+  </data>
+  <data name="SelectWarehouseQuantity" xml:space="preserve">
+    <value>Geçerli bir depo ve stok miktarı seçiniz.</value>
+  </data>
+  <data name="SelectCategory" xml:space="preserve">
+    <value>Geçerli bir kategori seçiniz</value>
+  </data>
+  <data name="AdjustmentValidation" xml:space="preserve">
+    <value>Geçerli stok miktarı ve en fazla 500 karakterlik düzeltme nedeni zorunludur.</value>
+  </data>
+  <data name="InvalidUnitId" xml:space="preserve">
+    <value>Geçersiz birim ID</value>
+  </data>
+  <data name="InvalidWarehouseId" xml:space="preserve">
+    <value>Geçersiz depo ID</value>
+  </data>
+  <data name="InvalidWarehouse" xml:space="preserve">
+    <value>Geçersiz depo seçimi.</value>
+  </data>
+  <data name="InvalidReportFilter" xml:space="preserve">
+    <value>Geçersiz hareket raporu filtresi.</value>
+  </data>
+  <data name="InvalidCategoryId" xml:space="preserve">
+    <value>Geçersiz kategori ID</value>
+  </data>
+  <data name="InvalidCategory" xml:space="preserve">
+    <value>Geçersiz kategori seçimi.</value>
+  </data>
+  <data name="InvalidParameters" xml:space="preserve">
+    <value>Geçersiz parametre girdisi</value>
+  </data>
+  <data name="InvalidPeriod" xml:space="preserve">
+    <value>Geçersiz rapor periyodu.</value>
+  </data>
+  <data name="InvalidStockOperation" xml:space="preserve">
+    <value>Geçersiz stok işlemi.</value>
+  </data>
+  <data name="InvalidProductId" xml:space="preserve">
+    <value>Geçersiz ürün ID</value>
+  </data>
+  <data name="InvalidProduct" xml:space="preserve">
+    <value>Geçersiz ürün seçimi.</value>
+  </data>
+  <data name="ShownPrefix" xml:space="preserve">
+    <value>Gösterilen: </value>
+  </data>
+  <data name="SelectedSuffix" xml:space="preserve">
+    <value>   |   Seçili: </value>
+  </data>
+  <data name="Yearly" xml:space="preserve">
+    <value>Yıllık</value>
+  </data>
+  <data name="Monthly" xml:space="preserve">
+    <value>Aylık</value>
+  </data>
+  <data name="Daily" xml:space="preserve">
+    <value>Günlük</value>
+  </data>
+  <data name="MovementDetail" xml:space="preserve">
+    <value>Hareket Detayı</value>
+  </data>
+  <data name="MovementNumber" xml:space="preserve">
+    <value>Hareket No</value>
+  </data>
+  <data name="MovementCount" xml:space="preserve">
+    <value>Hareket Sayısı</value>
+  </data>
+  <data name="MovementType" xml:space="preserve">
+    <value>Hareket Türü</value>
+  </data>
+  <data name="NoMovement" xml:space="preserve">
+    <value>Hareket yok</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>Hazır</value>
+  </data>
+  <data name="TargetWarehouse" xml:space="preserve">
+    <value>Hedef Depo:</value>
+  </data>
+  <data name="SourceWarehouse" xml:space="preserve">
+    <value>Kaynak Depo:</value>
+  </data>
+  <data name="CategoryHeader" xml:space="preserve">
+    <value>KATEGORİ YÖNETİMİ</value>
+  </data>
+  <data name="CategoryNameLabel" xml:space="preserve">
+    <value>Kategori Adı:</value>
+  </data>
+  <data name="CategoryManagement" xml:space="preserve">
+    <value>Kategori Yönetimi</value>
+  </data>
+  <data name="CategoryNameRequired" xml:space="preserve">
+    <value>Kategori adı boş olamaz</value>
+  </data>
+  <data name="CategoryAdded" xml:space="preserve">
+    <value>Kategori başarıyla eklendi</value>
+  </data>
+  <data name="CategoryInUse" xml:space="preserve">
+    <value>Kategori başka kayıtlarda kullanılıyor; silinemez.</value>
+  </data>
+  <data name="CategoryDeleteRejected" xml:space="preserve">
+    <value>Kategori bulunamadı veya bir üründe kullanılıyor. Kullanılan kategori silinemez.</value>
+  </data>
+  <data name="CategoryNotFound" xml:space="preserve">
+    <value>Kategori bulunamadı.</value>
+  </data>
+  <data name="CategoryUpdated" xml:space="preserve">
+    <value>Kategori güncellendi</value>
+  </data>
+  <data name="CategoryDeleted" xml:space="preserve">
+    <value>Kategori silindi.</value>
+  </data>
+  <data name="CategoryDeleteError" xml:space="preserve">
+    <value>Kategori silme hatası: </value>
+  </data>
+  <data name="CategoriesLoadError" xml:space="preserve">
+    <value>Kategoriler yüklenemedi: </value>
+  </data>
+  <data name="SavedConnectionUnreadable" xml:space="preserve">
+    <value>Kaydedilmiş veritabanı bağlantısı okunamadı. Bağlantı ayarlarını yeniden girin.</value>
+  </data>
+  <data name="SaveAndOpen" xml:space="preserve">
+    <value>Kaydet ve Aç</value>
+  </data>
+  <data name="SourceStockPrefix" xml:space="preserve">
+    <value>Kaynak stok: </value>
+  </data>
+  <data name="SourceStockUnknown" xml:space="preserve">
+    <value>Kaynak stok: -</value>
+  </data>
+  <data name="DifferentWarehouses" xml:space="preserve">
+    <value>Kaynak ve hedef depo farklı olmalıdır.</value>
+  </data>
+  <data name="CriticalError" xml:space="preserve">
+    <value>Kritik Hata</value>
+  </data>
+  <data name="UserLabel" xml:space="preserve">
+    <value>Kullanıcı:</value>
+  </data>
+  <data name="PasswordLabel" xml:space="preserve">
+    <value>Parola:</value>
+  </data>
+  <data name="PleaseBarcode" xml:space="preserve">
+    <value>Lütfen barkodu giriniz</value>
+  </data>
+  <data name="PleaseUnit" xml:space="preserve">
+    <value>Lütfen bir birim seçiniz</value>
+  </data>
+  <data name="PleaseCategory" xml:space="preserve">
+    <value>Lütfen bir kategori seçiniz</value>
+  </data>
+  <data name="PleaseProduct" xml:space="preserve">
+    <value>Lütfen bir ürün seçiniz</value>
+  </data>
+  <data name="PleaseEntryQuantity" xml:space="preserve">
+    <value>Lütfen giriş yapılacak miktarı giriniz</value>
+  </data>
+  <data name="PleaseExitQuantity" xml:space="preserve">
+    <value>Lütfen çıkış yapılacak miktarı giriniz</value>
+  </data>
+  <data name="PleaseProductName" xml:space="preserve">
+    <value>Lütfen ürün adını giriniz</value>
+  </data>
+  <data name="MaximumStock" xml:space="preserve">
+    <value>Maks. Stok:</value>
+  </data>
+  <data name="MinimumStock" xml:space="preserve">
+    <value>Min. Stok:</value>
+  </data>
+  <data name="MaterialNotFoundTitle" xml:space="preserve">
+    <value>Malzeme Bulunamadı</value>
+  </data>
+  <data name="EditMaterial" xml:space="preserve">
+    <value>Malzeme Düzenle</value>
+  </data>
+  <data name="MaterialRecord" xml:space="preserve">
+    <value>Malzeme Kaydı</value>
+  </data>
+  <data name="MaterialNumber" xml:space="preserve">
+    <value>Malzeme No</value>
+  </data>
+  <data name="MaterialNumberLabel" xml:space="preserve">
+    <value>Malzeme No:</value>
+  </data>
+  <data name="MaterialUpdateError" xml:space="preserve">
+    <value>Malzeme güncellenemedi: </value>
+  </data>
+  <data name="MaterialSaved" xml:space="preserve">
+    <value>Malzeme kataloğa kaydedildi.</value>
+  </data>
+  <data name="MaterialCatalogError" xml:space="preserve">
+    <value>Malzeme kataloğu okunamadı: </value>
+  </data>
+  <data name="MaterialSaveFailed" xml:space="preserve">
+    <value>Malzeme kaydedilemedi</value>
+  </data>
+  <data name="MaterialMissing" xml:space="preserve">
+    <value>Malzeme kaydı bulunamadı.</value>
+  </data>
+  <data name="MaterialSaveError" xml:space="preserve">
+    <value>Malzeme kaydı yapılamadı: </value>
+  </data>
+  <data name="MaterialRequired" xml:space="preserve">
+    <value>Malzeme numarası, açıklama ve birim zorunludur.</value>
+  </data>
+  <data name="MaterialBarcodeRequired" xml:space="preserve">
+    <value>Malzeme numarası, barkod, açıklama ve birim zorunludur.</value>
+  </data>
+  <data name="MaterialLinkedUpdated" xml:space="preserve">
+    <value>Malzeme ve bağlı ürün bilgileri güncellendi.</value>
+  </data>
+  <data name="CurrentStock" xml:space="preserve">
+    <value>Mevcut Stok:</value>
+  </data>
+  <data name="PdfPrinterMissing" xml:space="preserve">
+    <value>Microsoft Print to PDF yazıcısı bulunamadı.</value>
+  </data>
+  <data name="AdjustmentReasonPrompt" xml:space="preserve">
+    <value>Miktar değişikliğinin nedenini yazın:</value>
+  </data>
+  <data name="StockLimitsOrder" xml:space="preserve">
+    <value>Minimum stok, maksimum stoktan büyük olamaz</value>
+  </data>
+  <data name="StockLimitsNegative" xml:space="preserve">
+    <value>Minimum/Maksimum stok negatif olamaz</value>
+  </data>
+  <data name="NullModel" xml:space="preserve">
+    <value>Model null olamaz</value>
+  </data>
+  <data name="NetChange" xml:space="preserve">
+    <value>Net Değişim</value>
+  </data>
+  <data name="NormalIn" xml:space="preserve">
+    <value>Normal Giriş</value>
+  </data>
+  <data name="NormalOut" xml:space="preserve">
+    <value>Normal Çıkış</value>
+  </data>
+  <data name="NormalMovements" xml:space="preserve">
+    <value>Normal Giriş/Çıkış</value>
+  </data>
+  <data name="InactiveProduct" xml:space="preserve">
+    <value>Pasif Ürün</value>
+  </data>
+  <data name="InactiveProductMissing" xml:space="preserve">
+    <value>Pasif ürün bulunamadı.</value>
+  </data>
+  <data name="ReportFailed" xml:space="preserve">
+    <value>Rapor getirilemedi.</value>
+  </data>
+  <data name="ReportLoading" xml:space="preserve">
+    <value>Rapor yükleniyor...</value>
+  </data>
+  <data name="SqlServerRequired" xml:space="preserve">
+    <value>SQL Server ve veritabanı adı zorunludur.</value>
+  </data>
+  <data name="SqlCredentialsRequired" xml:space="preserve">
+    <value>SQL kullanıcı adı ve parola zorunludur.</value>
+  </data>
+  <data name="AdjustmentHeader" xml:space="preserve">
+    <value>STOK DÜZELTME NEDENİ</value>
+  </data>
+  <data name="ReportHeader" xml:space="preserve">
+    <value>STOK HAREKET RAPORU</value>
+  </data>
+  <data name="SummaryPrintTitle" xml:space="preserve">
+    <value>STOK HAREKET RAPORU - ÖZET</value>
+  </data>
+  <data name="DetailPrintTitle" xml:space="preserve">
+    <value>STOK HAREKET RAPORU - HAREKET DETAYI</value>
+  </data>
+  <data name="MainHeader" xml:space="preserve">
+    <value>STOK TAKİP SİSTEMİ</value>
+  </data>
+  <data name="CountAdjustment" xml:space="preserve">
+    <value>Sayım Düzeltmesi</value>
+  </data>
+  <data name="CountIn" xml:space="preserve">
+    <value>Sayım Giriş</value>
+  </data>
+  <data name="CountOut" xml:space="preserve">
+    <value>Sayım Çıkış</value>
+  </data>
+  <data name="NoFilteredMovements" xml:space="preserve">
+    <value>Seçilen filtrelere uygun stok hareketi bulunamadı.</value>
+  </data>
+  <data name="MainHint" xml:space="preserve">
+    <value>Seçili ürün için stok işlemini açın veya ürün satırına çift tıklayın.</value>
+  </data>
+  <data name="StockQuantityHelp" xml:space="preserve">
+    <value>Seçili ürünün seçili depodaki stok miktarı</value>
+  </data>
+  <data name="DeleteDeactivate" xml:space="preserve">
+    <value>Sil / Pasife Al</value>
+  </data>
+  <data name="DeleteConfirmation" xml:space="preserve">
+    <value>Silme Onayı</value>
+  </data>
+  <data name="LastMovement" xml:space="preserve">
+    <value>Son Hareket</value>
+  </data>
+  <data name="ConnectionOkHelp" xml:space="preserve">
+    <value>Son veri yüklemesinde SQL Server bağlantısı başarılı.</value>
+  </data>
+  <data name="LastRefreshPrefix" xml:space="preserve">
+    <value>Son yenileme: </value>
+  </data>
+  <data name="StockStatusLabel" xml:space="preserve">
+    <value>Stok Durumu:</value>
+  </data>
+  <data name="AdjustmentTitle" xml:space="preserve">
+    <value>Stok Düzeltme Nedeni</value>
+  </data>
+  <data name="StockEntry" xml:space="preserve">
+    <value>Stok Girişi</value>
+  </data>
+  <data name="StockExit" xml:space="preserve">
+    <value>Stok Çıkışı</value>
+  </data>
+  <data name="StockQuantity" xml:space="preserve">
+    <value>Stok Miktarı</value>
+  </data>
+  <data name="MainTitle" xml:space="preserve">
+    <value>Stok Takip Sistemi</value>
+  </data>
+  <data name="StockUpdated" xml:space="preserve">
+    <value>Stok başarıyla güncellendi</value>
+  </data>
+  <data name="StockFormError" xml:space="preserve">
+    <value>Stok işlem ekranı açılamadı: </value>
+  </data>
+  <data name="StockActiveRequired" xml:space="preserve">
+    <value>Stok işlemi için ürün ve depo aktif olmalıdır.</value>
+  </data>
+  <data name="StockAdjustmentReason" xml:space="preserve">
+    <value>Stok miktarı değiştirildiğinde en fazla 500 karakterlik düzeltme nedeni zorunludur.</value>
+  </data>
+  <data name="StockReadError" xml:space="preserve">
+    <value>Stok okunamadı: </value>
+  </data>
+  <data name="StockLevelPrefix" xml:space="preserve">
+    <value>Stok seviyesi: </value>
+  </data>
+  <data name="TransferError" xml:space="preserve">
+    <value>Stok transferi yapılamadı: </value>
+  </data>
+  <data name="StockOperationLabel" xml:space="preserve">
+    <value>Stok İşlemi:</value>
+  </data>
+  <data name="StocksLoadError" xml:space="preserve">
+    <value>Stoklar yüklenirken hata: </value>
+  </data>
+  <data name="OutOfStock" xml:space="preserve">
+    <value>Stokta Yok</value>
+  </data>
+  <data name="InStock" xml:space="preserve">
+    <value>Stokta</value>
+  </data>
+  <data name="LowStock" xml:space="preserve">
+    <value>Az Stok</value>
+  </data>
+  <data name="CriticalStock" xml:space="preserve">
+    <value>Kritik</value>
+  </data>
+  <data name="LowStockCode" xml:space="preserve">
+    <value>Düşük</value>
+  </data>
+  <data name="TrustCertificate" xml:space="preserve">
+    <value>Sunucu sertifikasına güven (yalnızca güvenilir yerel sunucu)</value>
+  </data>
+  <data name="DateTime" xml:space="preserve">
+    <value>Tarih / Saat</value>
+  </data>
+  <data name="TransferIn" xml:space="preserve">
+    <value>Transfer Giriş</value>
+  </data>
+  <data name="TransferOut" xml:space="preserve">
+    <value>Transfer Çıkış</value>
+  </data>
+  <data name="TransferNumber" xml:space="preserve">
+    <value>Transfer No</value>
+  </data>
+  <data name="TransferFailed" xml:space="preserve">
+    <value>Transfer Yapılamadı</value>
+  </data>
+  <data name="TransferDescriptionRequired" xml:space="preserve">
+    <value>Transfer açıklaması zorunludur.</value>
+  </data>
+  <data name="TransferDataError" xml:space="preserve">
+    <value>Transfer bilgileri yüklenemedi: </value>
+  </data>
+  <data name="TransferPrerequisites" xml:space="preserve">
+    <value>Transfer için en az iki aktif depo ve bir ürün gerekir.</value>
+  </data>
+  <data name="AllWarehouses" xml:space="preserve">
+    <value>Tüm depolar</value>
+  </data>
+  <data name="AllProducts" xml:space="preserve">
+    <value>Tüm ürünler</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>Tümü</value>
+  </data>
+  <data name="ExitPrompt" xml:space="preserve">
+    <value>Uygulamadan çıkış yapmak istediğinize emin misiniz?</value>
+  </data>
+  <data name="DatabaseHeader" xml:space="preserve">
+    <value>VERİTABANI BAĞLANTISI</value>
+  </data>
+  <data name="DatabaseSettings" xml:space="preserve">
+    <value>Veritabanı Bağlantı Ayarları</value>
+  </data>
+  <data name="DatabaseConnection" xml:space="preserve">
+    <value>Veritabanı Bağlantısı</value>
+  </data>
+  <data name="EmptyDbConfig" xml:space="preserve">
+    <value>Veritabanı bağlantı dizesi (DBConStr) boş. App.config ve Settings.settings ayarlarını kontrol edin.</value>
+  </data>
+  <data name="DatabaseLabel" xml:space="preserve">
+    <value>Veritabanı:</value>
+  </data>
+  <data name="WindowsAuth" xml:space="preserve">
+    <value>Windows kimliğiyle bağlan</value>
+  </data>
+  <data name="NewMaterial" xml:space="preserve">
+    <value>Yeni Malzeme Kaydı</value>
+  </data>
+  <data name="NewProductTitle" xml:space="preserve">
+    <value>Yeni Ürün Ekle</value>
+  </data>
+  <data name="InitialStockDescription" xml:space="preserve">
+    <value>Yeni ürün kaydı ve ilk stok girişi.</value>
+  </data>
+  <data name="RefreshFailed" xml:space="preserve">
+    <value>Yenileme başarısız</value>
+  </data>
+  <data name="InsufficientStock" xml:space="preserve">
+    <value>Yetersiz stok! İşlem gerçekleştirilemedi.</value>
+  </data>
+  <data name="Direction" xml:space="preserve">
+    <value>Yön</value>
+  </data>
+  <data name="DirectionLabel" xml:space="preserve">
+    <value>Yön:</value>
+  </data>
+  <data name="ExitConfirmation" xml:space="preserve">
+    <value>Çıkış Onayı</value>
+  </data>
+  <data name="SetupHint" xml:space="preserve">
+    <value>Önce SQL Server'da V1 kurulum betiğini veya mevcut veritabanı geçişlerini çalıştırın.</value>
+  </data>
+  <data name="PleaseWarehouse" xml:space="preserve">
+    <value>Önce bir depo seçiniz.</value>
+  </data>
+  <data name="PleaseCategoryFirst" xml:space="preserve">
+    <value>Önce bir kategori seçiniz.</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Önceki</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>Özet</value>
+  </data>
+  <data name="ProductInformationHeader" xml:space="preserve">
+    <value>ÜRÜN BİLGİLERİ</value>
+  </data>
+  <data name="ProductDetailHeader" xml:space="preserve">
+    <value>ÜRÜN DETAYI</value>
+  </data>
+  <data name="ProductBarcodeLabel" xml:space="preserve">
+    <value>Ürün / Barkod:</value>
+  </data>
+  <data name="ProductNameLabel" xml:space="preserve">
+    <value>Ürün Adı:</value>
+  </data>
+  <data name="ProductInformation" xml:space="preserve">
+    <value>Ürün Bilgileri</value>
+  </data>
+  <data name="ProductNotFoundTitle" xml:space="preserve">
+    <value>Ürün Bulunamadı</value>
+  </data>
+  <data name="ProductDetail" xml:space="preserve">
+    <value>Ürün Detayı</value>
+  </data>
+  <data name="EditProductTitle" xml:space="preserve">
+    <value>Ürün Düzenle</value>
+  </data>
+  <data name="ProductRegistered" xml:space="preserve">
+    <value>Ürün Zaten Kayıtlı</value>
+  </data>
+  <data name="ProductNameRequired" xml:space="preserve">
+    <value>Ürün adı boş olamaz</value>
+  </data>
+  <data name="ProductCatalogMatch" xml:space="preserve">
+    <value>Ürün açıklaması ve birimi malzeme kataloğundaki kayıtla aynı olmalıdır.</value>
+  </data>
+  <data name="ProductAdded" xml:space="preserve">
+    <value>Ürün başarıyla eklendi</value>
+  </data>
+  <data name="ProductUpdated" xml:space="preserve">
+    <value>Ürün başarıyla güncellendi</value>
+  </data>
+  <data name="ProductDeleted" xml:space="preserve">
+    <value>Ürün başarıyla silindi</value>
+  </data>
+  <data name="ProductReadFailed" xml:space="preserve">
+    <value>Ürün bilgisi alınamadı</value>
+  </data>
+  <data name="ProductMissing" xml:space="preserve">
+    <value>Ürün bulunamadı</value>
+  </data>
+  <data name="ProductMissingDot" xml:space="preserve">
+    <value>Ürün bulunamadı.</value>
+  </data>
+  <data name="ProductActivateError" xml:space="preserve">
+    <value>Ürün etkinleştirilemedi: </value>
+  </data>
+  <data name="TransferInactive" xml:space="preserve">
+    <value>Ürün veya seçilen depolardan biri aktif değil.</value>
+  </data>
+  <data name="ProductActivated" xml:space="preserve">
+    <value>Ürün yeniden etkinleştirildi. Mevcut stok kayıtları korundu.</value>
+  </data>
+  <data name="TransferValidation" xml:space="preserve">
+    <value>Ürün, farklı iki depo, pozitif miktar ve en fazla 500 karakterlik açıklama zorunludur.</value>
+  </data>
+  <data name="ProductLabel" xml:space="preserve">
+    <value>Ürün:</value>
+  </data>
+  <data name="OperationFailed" xml:space="preserve">
+    <value>İşlem Yapılamadı</value>
+  </data>
+  <data name="OperationSuccess" xml:space="preserve">
+    <value>İşlem başarılı</value>
+  </data>
+  <data name="EntryAction" xml:space="preserve">
+    <value>↑ Giriş Yap</value>
+  </data>
+  <data name="ExitAction" xml:space="preserve">
+    <value>↓ Çıkış Yap</value>
+  </data>
+  <data name="PdfAction" xml:space="preserve">
+    <value>↓ PDF'e Aktar</value>
+  </data>
+  <data name="LoadReportAction" xml:space="preserve">
+    <value>↻ Raporu Getir</value>
+  </data>
+  <data name="ClearAction" xml:space="preserve">
+    <value>↻ Temizle</value>
+  </data>
+  <data name="Connected" xml:space="preserve">
+    <value>● Bağlı</value>
+  </data>
+  <data name="DataUnavailable" xml:space="preserve">
+    <value>● Veri alınamadı</value>
+  </data>
+  <data name="UpdateAction" xml:space="preserve">
+    <value>✎ Güncelle</value>
+  </data>
+  <data name="CsvAction" xml:space="preserve">
+    <value>✓ CSV'ye Aktar</value>
+  </data>
+  <data name="AddAction" xml:space="preserve">
+    <value>✓ Ekle</value>
+  </data>
+  <data name="SaveAction" xml:space="preserve">
+    <value>✓ Kaydet</value>
+  </data>
+  <data name="TransferAction" xml:space="preserve">
+    <value>✓ Transfer Et</value>
+  </data>
+  <data name="CloseAction" xml:space="preserve">
+    <value>✕ Kapat</value>
+  </data>
+  <data name="DeleteAction" xml:space="preserve">
+    <value>✕ Sil</value>
+  </data>
+  <data name="CancelAction" xml:space="preserve">
+    <value>✕ İptal</value>
+  </data>
+  <data name="Movements" xml:space="preserve">
+    <value>Hareketler</value>
+  </data>
+  <data name="ExportEmpty" xml:space="preserve">
+    <value>Aktarılacak veri bulunamadı.</value>
+  </data>
+  <data name="ExportError" xml:space="preserve">
+    <value>Aktarım sırasında hata:
+</value>
+  </data>
+  <data name="NoActiveWarehouse" xml:space="preserve">
+    <value>Aktif depo bulunamadı. Depolar butonundan yeni depo ekleyiniz.</value>
+  </data>
+  <data name="PdfError" xml:space="preserve">
+    <value>PDF oluşturulurken hata meydana geldi. Bilgisayarınızda 'Microsoft Print to PDF' özelliğinin açık olduğundan emin olun.
+Detay: </value>
+  </data>
+  <data name="ReportDataError" xml:space="preserve">
+    <value>Rapor verileri getirilemedi:
+
+</value>
+  </data>
+  <data name="EnvironmentConnectionHint" xml:space="preserve">
+    <value>
+
+Ortam değişkenindeki bağlantı bilgisini düzeltin.</value>
+  </data>
+  <data name="MaterialNumberMissing" xml:space="preserve">
+    <value>{0} numaralı malzeme bulunamadı. Önce yeni malzeme kaydı oluşturun.</value>
+  </data>
+  <data name="CategoryAddException" xml:space="preserve">
+    <value>Kategori ekleme hatası: {0}</value>
+  </data>
+  <data name="CategoryUpdateException" xml:space="preserve">
+    <value>Kategori güncelleme hatası: {0}</value>
+  </data>
+  <data name="ProductListException" xml:space="preserve">
+    <value>Ürünler listelenirken hata oluştu: {0}</value>
+  </data>
+  <data name="ProductAddException" xml:space="preserve">
+    <value>Ürün ekleme hatası: {0}</value>
+  </data>
+  <data name="ProductUpdateException" xml:space="preserve">
+    <value>Ürün güncelleme hatası: {0}</value>
+  </data>
+  <data name="ProductDeleteException" xml:space="preserve">
+    <value>Ürün silme hatası: {0}</value>
+  </data>
+  <data name="StockUpdateException" xml:space="preserve">
+    <value>Stok güncelleme hatası: {0}</value>
+  </data>
+  <data name="TransferCompleted" xml:space="preserve">
+    <value>Transfer tamamlandı. İşlem numarası: {0}</value>
+  </data>
+  <data name="StockSetException" xml:space="preserve">
+    <value>Stok set etme hatası: {0}</value>
+  </data>
+  <data name="LoadException" xml:space="preserve">
+    <value>Veriler yüklenirken hata: {0}</value>
+  </data>
+  <data name="ProductDataException" xml:space="preserve">
+    <value>Ürün verileri yüklenirken hata: {0}</value>
+  </data>
+  <data name="OperationException" xml:space="preserve">
+    <value>İşlem sırasında hata: {0}</value>
+  </data>
+  <data name="WarehouseDeactivatePrompt" xml:space="preserve">
+    <value>'{0}' deposu silinerek pasife alınacak. Stok geçmişi korunur. Devam edilsin mi?</value>
+  </data>
+  <data name="CategoryDeletePrompt" xml:space="preserve">
+    <value>'{0}' kategorisi silinsin mi?</value>
+  </data>
+  <data name="WarehouseLoadException" xml:space="preserve">
+    <value>Depolar yüklenirken hata: {0}
+
+StackTrace: {1}</value>
+  </data>
+  <data name="ProductDeletePrompt" xml:space="preserve">
+    <value>'{0}' ürününü silmek istediğinize emin misiniz?</value>
+  </data>
+  <data name="DeleteException" xml:space="preserve">
+    <value>Silme işlemi sırasında hata: {0}</value>
+  </data>
+  <data name="ProductExistsPrompt" xml:space="preserve">
+    <value>Bu barkod numarasına sahip bir ürün zaten mevcut: {0}.
+Ürün güncelleme formunu açmak ister misiniz?</value>
+  </data>
+  <data name="ProductReactivatePrompt" xml:space="preserve">
+    <value>{0} pasif durumda. Ürünü yeniden etkinleştirmek ister misiniz? Mevcut stok kayıtları korunur.</value>
+  </data>
+  <data name="OperationErrorDetail" xml:space="preserve">
+    <value>İşlem sırasında hata oluştu: {0}</value>
+  </data>
+  <data name="ProductInfoException" xml:space="preserve">
+    <value>Ürün bilgileri yüklenirken hata: {0}</value>
+  </data>
+  <data name="StockInfoException" xml:space="preserve">
+    <value>Stok bilgisi yüklenirken hata: {0}</value>
+  </data>
+  <data name="MaximumStockPrompt" xml:space="preserve">
+    <value>Yeni miktar ({0}) maksimum stok ({1}) değerini aşacaktır.
+Devam etmek istiyor musunuz?</value>
+  </data>
+  <data name="StockUpdatedQuantity" xml:space="preserve">
+    <value>Stok başarıyla güncellendi.
+Yeni Miktar: {0}</value>
+  </data>
+  <data name="ReportSaved" xml:space="preserve">
+    <value>Rapor kaydedildi:
+{0}</value>
+  </data>
+  <data name="PdfSaved" xml:space="preserve">
+    <value>PDF başarıyla kaydedildi:
+{0}</value>
+  </data>
+  <data name="CountTotals" xml:space="preserve">
+    <value>Sayım: +{0:N0} / -{1:N0}
+</value>
+  </data>
+  <data name="NetTotals" xml:space="preserve">
+    <value>Net değişim: {0:N0}   Hareket sayısı: {1:N0}</value>
+  </data>
+  <data name="PrintChangeStock" xml:space="preserve">
+    <value>Değişim: {0:+#;-#;0}  Stok: {1} → {2}  </value>
+  </data>
+  <data name="PrintUserTransfer" xml:space="preserve">
+    <value>Kullanıcı: {0}  Transfer: {1}</value>
+  </data>
+  <data name="StartupError" xml:space="preserve">
+    <value>Uygulama başlatılırken hata oluştu:
+
+{0}
+
+Stack Trace:
+{1}</value>
+  </data>
+  <data name="StockInDirection" xml:space="preserve">
+    <value>Giriş</value>
+  </data>
+  <data name="StockOutDirection" xml:space="preserve">
+    <value>Çıkış</value>
+  </data>
+  <data name="StockLabel" xml:space="preserve">
+    <value>Stok:</value>
+  </data>
+  <data name="BarcodeLabel" xml:space="preserve">
+    <value>Barkod:</value>
+  </data>
+  <data name="CategoryLabel" xml:space="preserve">
+    <value>Kategori:</value>
+  </data>
+  <data name="UnitLabel" xml:space="preserve">
+    <value>Birim:</value>
+  </data>
+  <data name="PriceLabel" xml:space="preserve">
+    <value>Fiyat:</value>
+  </data>
+  <data name="QuantityLabel" xml:space="preserve">
+    <value>Miktar:</value>
+  </data>
+  <data name="WarehouseLabel" xml:space="preserve">
+    <value>Depo:</value>
+  </data>
+  <data name="LocationLabel" xml:space="preserve">
+    <value>Lokasyon:</value>
+  </data>
+  <data name="MovementLabel" xml:space="preserve">
+    <value>Hareket:</value>
+  </data>
+  <data name="AdjustmentsTotal" xml:space="preserve">
+    <value>Sayım: +{0:N0} / -{1:N0}
+</value>
+  </data>
+  <data name="RegularTotal" xml:space="preserve">
+    <value>Normal: +{0:N0} / -{1:N0}   </value>
+  </data>
+  <data name="TransferTotal" xml:space="preserve">
+    <value>Transfer: +{0:N0} / -{1:N0}   </value>
+  </data>
+  <data name="TransferCaption" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
+  <data name="WarehouseLocationHeader" xml:space="preserve">
+    <value>Konum</value>
+  </data>
+  <data name="WarehouseLocationLabel" xml:space="preserve">
+    <value>Konum:</value>
+  </data>
 </root>

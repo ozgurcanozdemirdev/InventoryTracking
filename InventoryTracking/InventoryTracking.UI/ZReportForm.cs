@@ -1,4 +1,5 @@
-﻿using System;
+using InventoryTracking.Localization;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,7 +13,7 @@ using static InventoryTracking.Models.Entities;
 
 namespace InventoryTracking.UI
 {
-  public partial class ZReportForm : Form
+  public partial class ZReportForm : LocalizedForm
   {
     private int _yazdirilacakSatirIndex = 0;
     private readonly ZReportService _reportService = new ZReportService();
@@ -21,18 +22,66 @@ namespace InventoryTracking.UI
     private readonly ComboBox _cmbHareket = new ComboBox();
     private readonly ComboBox _cmbYon = new ComboBox();
     private readonly TabControl _sekmeler = new TabControl();
-    private readonly TabPage _ozetSekmesi = new TabPage("Özet");
-    private readonly TabPage _detaySekmesi = new TabPage("Hareket Detayı");
+    private readonly TabPage _ozetSekmesi = new TabPage(UiText.Get("Summary"));
+    private readonly TabPage _detaySekmesi = new TabPage(UiText.Get("MovementDetail"));
     private readonly DataGridView _dgvDetay = new DataGridView();
     private readonly Label _lblToplam = new Label();
     private string _uygulananFiltre = "";
     private bool _raporGetirildi;
+    private HareketRaporFiltresi _appliedFilter;
+    private string _appliedPeriod;
+    private string _appliedWarehouse;
+    private static readonly string[] MovementKeys = { "All", "NormalMovements", "TransferCaption", "CountAdjustment" };
+    private static readonly string[] DirectionKeys = { "All", "StockInDirection", "StockOutDirection" };
+
+    protected override void OnLanguageChanged()
+    {
+      // Yüklenmiş rapor ve değiştirilen filtreler ayrı tutulur; dil değişimi SQL çalıştırmaz.
+      TranslateChoices(_cmbHareket, MovementKeys);
+      TranslateChoices(_cmbYon, DirectionKeys);
+      if (_cmbDepo.Items.Count > 0)
+      {
+        int selected = _cmbDepo.SelectedIndex;
+        _cmbDepo.Items[0] = new DepoSecenegi { Id = 0 };
+        _cmbDepo.SelectedIndex = selected;
+      }
+      ConfigureColumns();
+      if (_raporGetirildi)
+      {
+        _uygulananFiltre = FilterDescription();
+        UpdateReportTotals();
+      }
+    }
+
+    private static void TranslateChoices(ComboBox combo, string[] keys)
+    {
+      if (combo.Items.Count != keys.Length) return;
+      int selected = combo.SelectedIndex;
+      combo.BeginUpdate();
+      try
+      {
+        for (int i = 0; i < keys.Length; i++) combo.Items[i] = UiText.Get(keys[i]);
+        combo.SelectedIndex = selected;
+      }
+      finally { combo.EndUpdate(); }
+    }
+
+    private void UpdateReportTotals()
+    {
+      var summary = dgvRapor.DataSource as List<HareketRaporOzeti>;
+      var details = _dgvDetay.DataSource as List<HareketRaporDetayi>;
+      if (summary == null || details == null) return;
+      _lblToplam.Text = UiText.Format("RegularTotal", summary.Sum(x => x.NormalGiris), summary.Sum(x => x.NormalCikis)) +
+        UiText.Format("TransferTotal", summary.Sum(x => x.TransferGiris), summary.Sum(x => x.TransferCikis)) +
+        UiText.Format("CountTotals", summary.Sum(x => x.DuzeltmeGiris), summary.Sum(x => x.DuzeltmeCikis)) +
+        UiText.Format("NetTotals", summary.Sum(x => x.NetDegisim), details.Count);
+    }
 
     private sealed class DepoSecenegi
     {
       public int Id { get; set; }
       public string Ad { get; set; }
-      public override string ToString() => Ad;
+      public override string ToString() => Id == 0 ? UiText.Get("AllWarehouses") : Ad;
     }
 
     private static string CsvValue(object value)
@@ -71,14 +120,14 @@ namespace InventoryTracking.UI
       pnlFilter.Height = 120;
 
       // Önceki tarih ve dönem denetimlerini koruyup ikinci satıra ayrıntı filtreleri ekliyoruz.
-      AddFilterLabel("Depo:", 15, 78, 50);
-      _cmbDepo.SetBounds(65, 74, 225, 28);
+      AddFilterLabel("Depo:", 15, 78, 85);
+      _cmbDepo.SetBounds(105, 74, 190, 28);
       _cmbDepo.Name = "cmbRaporDepo";
       _cmbDepo.DropDownStyle = ComboBoxStyle.DropDownList;
       pnlFilter.Controls.Add(_cmbDepo);
 
-      AddFilterLabel("Ürün / Barkod:", 305, 78, 120);
-      _txtUrun.SetBounds(425, 74, 215, 28);
+      AddFilterLabel(UiText.Get("ProductBarcodeLabel"), 305, 78, 130);
+      _txtUrun.SetBounds(440, 74, 200, 28);
       _txtUrun.Name = "txtRaporUrun";
       _txtUrun.MaxLength = 200;
       pnlFilter.Controls.Add(_txtUrun);
@@ -87,15 +136,15 @@ namespace InventoryTracking.UI
       _cmbHareket.SetBounds(735, 74, 195, 28);
       _cmbHareket.Name = "cmbRaporHareket";
       _cmbHareket.DropDownStyle = ComboBoxStyle.DropDownList;
-      _cmbHareket.Items.AddRange(new object[] { "Tümü", "Normal Giriş/Çıkış", "Transfer", "Sayım Düzeltmesi" });
+      _cmbHareket.Items.AddRange(new object[] { UiText.Get("All"), UiText.Get("NormalMovements"), "Transfer", UiText.Get("CountAdjustment") });
       _cmbHareket.SelectedIndex = 0;
       pnlFilter.Controls.Add(_cmbHareket);
 
-      AddFilterLabel("Yön:", 945, 78, 45);
-      _cmbYon.SetBounds(990, 74, 165, 28);
+      AddFilterLabel(UiText.Get("DirectionLabel"), 945, 78, 75);
+      _cmbYon.SetBounds(1025, 74, 130, 28);
       _cmbYon.Name = "cmbRaporYon";
       _cmbYon.DropDownStyle = ComboBoxStyle.DropDownList;
-      _cmbYon.Items.AddRange(new object[] { "Tümü", "Giriş", "Çıkış" });
+      _cmbYon.Items.AddRange(new object[] { UiText.Get("All"), UiText.Get("StockInDirection"), UiText.Get("StockOutDirection") });
       _cmbYon.SelectedIndex = 0;
       pnlFilter.Controls.Add(_cmbYon);
 
@@ -111,7 +160,7 @@ namespace InventoryTracking.UI
       _lblToplam.Height = 45;
       _lblToplam.Padding = new Padding(8, 5, 8, 0);
       _lblToplam.Font = new Font("Segoe UI", 9F, FontStyle.Bold);
-      _lblToplam.Text = "Filtreleri seçip Raporu Getir'e basın.";
+      _lblToplam.Text = UiText.Get("ReportHint");
       _ozetSekmesi.Controls.Add(dgvRapor);
       _ozetSekmesi.Controls.Add(_lblToplam);
 
@@ -144,7 +193,7 @@ namespace InventoryTracking.UI
     private void LoadDepoOptions()
     {
       _cmbDepo.Items.Clear();
-      _cmbDepo.Items.Add(new DepoSecenegi { Id = 0, Ad = "Tüm depolar" });
+      _cmbDepo.Items.Add(new DepoSecenegi { Id = 0, Ad = UiText.Get("AllWarehouses") });
       try
       {
         foreach (var depo in new DepoService().GetAllDepolar())
@@ -152,7 +201,7 @@ namespace InventoryTracking.UI
       }
       catch (Exception ex)
       {
-        MessageBox.Show("Depo filtresi yüklenemedi: " + ex.Message, "Hata",
+        UiMessage.Show(UiText.Get("WarehouseFilterError") + ex.Message, UiText.Get("Error"),
           MessageBoxButtons.OK, MessageBoxIcon.Warning);
       }
       _cmbDepo.SelectedIndex = 0;
@@ -161,7 +210,7 @@ namespace InventoryTracking.UI
     private HareketRaporFiltresi GetFilter()
     {
       if (dtpBaslangic.Value.Date > dtpBitis.Value.Date)
-        throw new ArgumentException("Başlangıç tarihi, bitiş tarihinden ileri olamaz.");
+        throw new ArgumentException(UiText.Get("InvalidDateRange"));
       var selectedDepo = _cmbDepo.SelectedItem as DepoSecenegi;
       return new HareketRaporFiltresi
       {
@@ -176,10 +225,15 @@ namespace InventoryTracking.UI
 
     private string FilterDescription()
     {
-      string donem = rbYillik.Checked ? "Yıllık" : rbAylik.Checked ? "Aylık" : "Günlük";
-      string urun = string.IsNullOrWhiteSpace(_txtUrun.Text) ? "Tüm ürünler" : _txtUrun.Text.Trim();
-      return $"{dtpBaslangic.Value:dd.MM.yyyy} - {dtpBitis.Value:dd.MM.yyyy} | {donem} | " +
-        $"{_cmbDepo.Text} | {urun} | {_cmbHareket.Text} | {_cmbYon.Text}";
+      var filter = _appliedFilter ?? GetFilter();
+      string period = _appliedPeriod ?? (rbYillik.Checked ? "Yearly" : rbAylik.Checked ? "Monthly" : "Daily");
+      string warehouse = filter.DepoId.HasValue ? (_appliedWarehouse ?? _cmbDepo.Text) : UiText.Get("AllWarehouses");
+      string product = string.IsNullOrWhiteSpace(filter.UrunArama) ? UiText.Get("AllProducts") : filter.UrunArama;
+      int direction = !filter.CikisMi.HasValue ? 0 : filter.CikisMi.Value ? 2 : 1;
+      return $"{filter.Baslangic:dd.MM.yyyy} - {filter.Bitis:dd.MM.yyyy} | " +
+        UiText.Get(period) + " | " + warehouse + " | " + product + " | " +
+        UiText.Get(MovementKeys[filter.HareketGrubu]) + " | " +
+        UiText.Get(DirectionKeys[direction]);
     }
 
     private DataGridView SelectedGrid() => _sekmeler.SelectedTab == _detaySekmesi ? _dgvDetay : dgvRapor;
@@ -189,14 +243,14 @@ namespace InventoryTracking.UI
       var grid = SelectedGrid();
       if (!_raporGetirildi || grid.Rows.Count == 0)
       {
-        MessageBox.Show("Aktarılacak veri bulunamadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        UiMessage.Show(UiText.Get("ExportEmpty"), UiText.Get("Information"), MessageBoxButtons.OK, MessageBoxIcon.Information);
         return;
       }
 
       using (var sfd = new SaveFileDialog())
       {
         // Uzantı uyarısını kaldırmak için sadece CSV bıraktık
-        sfd.Filter = "CSV Dosyası (*.csv)|*.csv";
+        sfd.Filter = UiText.Get("CsvFilter");
         sfd.FileName = $"StokHareket_{(_sekmeler.SelectedTab == _detaySekmesi ? "Detay" : "Ozet")}_{DateTime.Now:yyyyMMdd_HHmmss}";
 
         if (sfd.ShowDialog() != DialogResult.OK) return;
@@ -205,11 +259,11 @@ namespace InventoryTracking.UI
         {
           WriteCsv(sfd.FileName, grid);
 
-          MessageBox.Show($"Rapor kaydedildi:\n{sfd.FileName}", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          UiMessage.Show(UiText.Format("ReportSaved", sfd.FileName), UiText.Get("Success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
         {
-          MessageBox.Show("Aktarım sırasında hata:\n" + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          UiMessage.Show(UiText.Get("ExportError") + ex.Message, UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
       }
     }
@@ -218,13 +272,13 @@ namespace InventoryTracking.UI
     {
       if (!_raporGetirildi || SelectedGrid().Rows.Count == 0)
       {
-        MessageBox.Show("Aktarılacak veri bulunamadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        UiMessage.Show(UiText.Get("ExportEmpty"), UiText.Get("Information"), MessageBoxButtons.OK, MessageBoxIcon.Information);
         return;
       }
 
       using (var sfd = new SaveFileDialog())
       {
-        sfd.Filter = "PDF Dosyası (*.pdf)|*.pdf";
+        sfd.Filter = UiText.Get("PdfFilter");
         sfd.FileName = $"StokHareket_{(_sekmeler.SelectedTab == _detaySekmesi ? "Detay" : "Ozet")}_{DateTime.Now:yyyyMMdd_HHmmss}";
 
         if (sfd.ShowDialog() != DialogResult.OK) return;
@@ -237,7 +291,7 @@ namespace InventoryTracking.UI
           {
             pd.PrinterSettings.PrinterName = "Microsoft Print to PDF";
             if (!pd.PrinterSettings.IsValid)
-              throw new InvalidOperationException("Microsoft Print to PDF yazıcısı bulunamadı.");
+              throw new InvalidOperationException(UiText.Get("PdfPrinterMissing"));
             pd.PrinterSettings.PrintToFile = true;
             pd.PrinterSettings.PrintFileName = sfd.FileName;
             pd.DefaultPageSettings.Landscape = true;
@@ -245,11 +299,11 @@ namespace InventoryTracking.UI
             pd.Print();
           }
 
-          MessageBox.Show($"PDF başarıyla kaydedildi:\n{sfd.FileName}", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          UiMessage.Show(UiText.Format("PdfSaved", sfd.FileName), UiText.Get("Success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)
         {
-          MessageBox.Show("PDF oluşturulurken hata meydana geldi. Bilgisayarınızda 'Microsoft Print to PDF' özelliğinin açık olduğundan emin olun.\nDetay: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          UiMessage.Show(UiText.Get("PdfError") + ex.Message, UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
       }
     }
@@ -265,7 +319,7 @@ namespace InventoryTracking.UI
         _raporGetirildi = false;
         dgvRapor.DataSource = null;
         _dgvDetay.DataSource = null;
-        _lblToplam.Text = "Rapor yükleniyor...";
+        _lblToplam.Text = UiText.Get("ReportLoading");
         var filtre = GetFilter();
         string periyot = rbYillik.Checked ? "Yıllık" : rbAylik.Checked ? "Aylık" : "Günlük";
         var ozet = _reportService.GetHareketOzeti(filtre, periyot);
@@ -273,22 +327,22 @@ namespace InventoryTracking.UI
         dgvRapor.DataSource = ozet;
         _dgvDetay.DataSource = detay;
         ConfigureColumns();
+        _appliedFilter = filtre;
+        _appliedPeriod = rbYillik.Checked ? "Yearly" : rbAylik.Checked ? "Monthly" : "Daily";
+        _appliedWarehouse = _cmbDepo.Text;
         _uygulananFiltre = FilterDescription();
         _raporGetirildi = true;
-        _lblToplam.Text = $"Normal: +{ozet.Sum(x => x.NormalGiris):N0} / -{ozet.Sum(x => x.NormalCikis):N0}   " +
-          $"Transfer: +{ozet.Sum(x => x.TransferGiris):N0} / -{ozet.Sum(x => x.TransferCikis):N0}   " +
-          $"Sayım: +{ozet.Sum(x => x.DuzeltmeGiris):N0} / -{ozet.Sum(x => x.DuzeltmeCikis):N0}\n" +
-          $"Net değişim: {ozet.Sum(x => x.NetDegisim):N0}   Hareket sayısı: {detay.Count:N0}";
+        UpdateReportTotals();
 
         if (detay.Count == 0)
         {
-          MessageBox.Show("Seçilen filtrelere uygun stok hareketi bulunamadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          UiMessage.Show(UiText.Get("NoFilteredMovements"), UiText.Get("Information"), MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
       }
       catch (Exception ex)
       {
-        _lblToplam.Text = "Rapor getirilemedi.";
-        MessageBox.Show("Rapor verileri getirilemedi:\n\n" + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        _lblToplam.Text = UiText.Get("ReportFailed");
+        UiMessage.Show(UiText.Get("ReportDataError") + ex.Message, UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -305,7 +359,7 @@ namespace InventoryTracking.UI
         {
           var satir = new List<string>();
           foreach (DataGridViewCell cell in row.Cells)
-            if (grid.Columns[cell.ColumnIndex].Visible) satir.Add(CsvValue(cell.Value));
+            if (grid.Columns[cell.ColumnIndex].Visible) satir.Add(CsvValue(UiText.GridValue(cell)));
           writer.WriteLine(string.Join(";", satir));
         }
       }
@@ -313,13 +367,13 @@ namespace InventoryTracking.UI
 
     private void ConfigureColumns()
     {
-      string[] ozetAdlari = { "Dönem", "Normal Giriş", "Normal Çıkış", "Transfer Giriş",
-        "Transfer Çıkış", "Sayım Giriş", "Sayım Çıkış", "Net Değişim", "Hareket Sayısı" };
+      string[] ozetAdlari = { UiText.Get("Period"), UiText.Get("NormalIn"), UiText.Get("NormalOut"), UiText.Get("TransferIn"),
+        UiText.Get("TransferOut"), UiText.Get("CountIn"), UiText.Get("CountOut"), UiText.Get("NetChange"), UiText.Get("MovementCount") };
       for (int i = 0; i < ozetAdlari.Length && i < dgvRapor.Columns.Count; i++)
         dgvRapor.Columns[i].HeaderText = ozetAdlari[i];
 
-      string[] detayAdlari = { "Hareket No", "Tarih / Saat", "Ürün", "Barkod", "Depo",
-        "Hareket Türü", "Yön", "Değişim", "Önceki", "Yeni", "Kullanıcı", "Açıklama", "Transfer No" };
+      string[] detayAdlari = { UiText.Get("MovementNumber"), UiText.Get("DateTime"), UiText.Get("Product"), UiText.Get("Barcode"), UiText.Get("Warehouse"),
+        UiText.Get("MovementType"), UiText.Get("Direction"), UiText.Get("Change"), UiText.Get("Previous"), UiText.Get("New"), UiText.Get("User"), UiText.Get("Description"), UiText.Get("TransferNumber") };
       for (int i = 0; i < detayAdlari.Length && i < _dgvDetay.Columns.Count; i++)
         _dgvDetay.Columns[i].HeaderText = detayAdlari[i];
       if (_dgvDetay.Columns.Contains("HareketTarihi"))
@@ -349,7 +403,7 @@ namespace InventoryTracking.UI
       int solMarj = e.MarginBounds.Left; // Sayfanın soldan boşluğu
 
       // Filtre ve başlık her sayfada görünür; sayfa değişince bağlam kaybolmaz.
-      e.Graphics.DrawString("STOK HAREKET RAPORU - ÖZET", baslikFont, firca, solMarj, y);
+      e.Graphics.DrawString(UiText.Get("SummaryPrintTitle"), baslikFont, firca, solMarj, y);
       y += 35;
       int filterHeight = (int)Math.Ceiling(e.Graphics.MeasureString(_uygulananFiltre, icerikFont, e.MarginBounds.Width).Height);
       e.Graphics.DrawString(_uygulananFiltre, icerikFont, firca,
@@ -411,7 +465,7 @@ namespace InventoryTracking.UI
           sf.Alignment = StringAlignment.Near; // Sola yasla
           sf.LineAlignment = StringAlignment.Center; // Dikeyde ortala
 
-          string metin = cell.Value != null ? cell.Value.ToString() : "";
+          string metin = UiText.GridValue(cell)?.ToString() ?? "";
 
           // Eğer rakamsa sağa yaslayalım ki daha profesyonel dursun
           if (decimal.TryParse(metin, out _))
@@ -449,7 +503,7 @@ namespace InventoryTracking.UI
         int y = e.MarginBounds.Top;
         int left = e.MarginBounds.Left;
         int width = e.MarginBounds.Width;
-        e.Graphics.DrawString("STOK HAREKET RAPORU - HAREKET DETAYI", titleFont, Brushes.Black, left, y);
+        e.Graphics.DrawString(UiText.Get("DetailPrintTitle"), titleFont, Brushes.Black, left, y);
         y += 35;
         int filterHeight = (int)Math.Ceiling(e.Graphics.MeasureString(_uygulananFiltre, textFont, width).Height);
         e.Graphics.DrawString(_uygulananFiltre, textFont, Brushes.Black,
@@ -463,10 +517,10 @@ namespace InventoryTracking.UI
           if (hareket == null) { _yazdirilacakSatirIndex++; continue; }
           string satir1 = $"#{hareket.HareketId}  {hareket.HareketTarihi:dd.MM.yyyy HH:mm:ss}  " +
             $"{hareket.UrunAdi} [{hareket.Barkod}]  |  {hareket.DepoAdi}";
-          string satir2 = $"{hareket.HareketTipi} / {hareket.Yon}  " +
-            $"Değişim: {hareket.DegisenMiktar:+#;-#;0}  Stok: {hareket.OncekiMiktar} → {hareket.YeniMiktar}  " +
-            $"Kullanıcı: {hareket.KullaniciAdi}  Transfer: {(hareket.TransferId?.ToString() ?? "-")}";
-          string satir3 = "Açıklama: " + hareket.Aciklama;
+          string satir2 = $"{UiText.DisplayValue("HareketTipi", hareket.HareketTipi)} / {UiText.DisplayValue("Yon", hareket.Yon)}  " +
+            UiText.Format("PrintChangeStock", hareket.DegisenMiktar, hareket.OncekiMiktar, hareket.YeniMiktar) +
+            UiText.Format("PrintUserTransfer", hareket.KullaniciAdi, (hareket.TransferId?.ToString() ?? "-"));
+          string satir3 = UiText.Get("DescriptionPrefix") + hareket.Aciklama;
           int h1 = (int)Math.Ceiling(e.Graphics.MeasureString(satir1, boldFont, width).Height);
           int h2 = (int)Math.Ceiling(e.Graphics.MeasureString(satir2, textFont, width).Height);
           int h3 = (int)Math.Ceiling(e.Graphics.MeasureString(satir3, textFont, width).Height);

@@ -1,3 +1,4 @@
+using InventoryTracking.Localization;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -10,7 +11,7 @@ namespace InventoryTracking.UI
   /// <summary>
   /// Ürün açılmadan önce barkodun yetkili malzeme kataloğuna kaydedildiği ekran.
   /// </summary>
-  public class MalzemeKayitForm : Form
+  public class MalzemeKayitForm : LocalizedForm
   {
     private readonly TextBox txtMalzemeNo = new TextBox();
     private readonly TextBox txtBarkod = new TextBox();
@@ -24,7 +25,7 @@ namespace InventoryTracking.UI
 
     public MalzemeKayitForm(string barkod = "")
     {
-      Text = "Yeni Malzeme Kaydı";
+      Text = UiText.Get("NewMaterial");
       StartPosition = FormStartPosition.CenterParent;
       FormBorderStyle = FormBorderStyle.FixedDialog;
       MaximizeBox = false;
@@ -32,9 +33,9 @@ namespace InventoryTracking.UI
       ClientSize = new Size(440, 268);
       Font = new Font("Segoe UI", 10F);
 
-      AddRow("Malzeme No:", txtMalzemeNo, 20);
+      AddRow(UiText.Get("MaterialNumberLabel"), txtMalzemeNo, 20);
       AddRow("Barkod:", txtBarkod, 65);
-      AddRow("Açıklama:", txtAciklama, 110);
+      AddRow(UiText.Get("DescriptionLabel"), txtAciklama, 110);
       AddRow("Birim:", cmbBirim, 155);
       txtMalzemeNo.MaxLength = 50;
       txtBarkod.MaxLength = 50;
@@ -42,8 +43,8 @@ namespace InventoryTracking.UI
       txtBarkod.Text = barkod?.Trim() ?? "";
       cmbBirim.DropDownStyle = ComboBoxStyle.DropDownList;
 
-      var btnKaydet = new Button { Text = "Kaydet", Location = new Point(170, 215), Size = new Size(115, 36) };
-      var btnIptal = new Button { Text = "İptal", Location = new Point(300, 215), Size = new Size(115, 36) };
+      var btnKaydet = new Button { Text = UiText.Get("Save"), Location = new Point(170, 215), Size = new Size(115, 36) };
+      var btnIptal = new Button { Text = UiText.Get("Cancel"), Location = new Point(300, 215), Size = new Size(115, 36) };
       btnKaydet.Click += BtnKaydet_Click;
       btnIptal.Click += (sender, e) => { DialogResult = DialogResult.Cancel; Close(); };
       Controls.Add(btnKaydet);
@@ -57,7 +58,7 @@ namespace InventoryTracking.UI
     public MalzemeKayitForm(MalzemeKatalog malzeme) : this(malzeme?.Barkod)
     {
       _editing = malzeme ?? throw new ArgumentNullException(nameof(malzeme));
-      Text = "Malzeme Düzenle";
+      Text = UiText.Get("EditMaterial");
       txtMalzemeNo.Text = malzeme.MalzemeNo;
       txtAciklama.Text = malzeme.Aciklama;
       txtBarkod.ReadOnly = true;
@@ -83,7 +84,7 @@ namespace InventoryTracking.UI
       }
       catch (Exception ex)
       {
-        MessageBox.Show("Birimler yüklenemedi: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        UiMessage.Show(UiText.Get("UnitsLoadError") + ex.Message, UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -91,7 +92,7 @@ namespace InventoryTracking.UI
     {
       if (!(cmbBirim.SelectedValue is int birimId))
       {
-        MessageBox.Show("Geçerli bir birim seçiniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        UiMessage.Show(UiText.Get("SelectUnitDot"), UiText.Get("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return;
       }
 
@@ -108,7 +109,7 @@ namespace InventoryTracking.UI
       var result = _editing == null ? _malzemeService.Add(malzeme) : _malzemeService.Update(malzeme);
       if (!result.Success)
       {
-        MessageBox.Show(result.Message, "Malzeme kaydedilemedi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        UiMessage.Show(result.Message, UiText.Get("MaterialSaveFailed"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return;
       }
       KaydedilenMalzeme = malzeme;

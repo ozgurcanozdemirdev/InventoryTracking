@@ -1,3 +1,4 @@
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
@@ -68,9 +69,20 @@ namespace InventoryTracking.Controls
             g.DrawLine(pen, 9, 12, 22, 12); g.DrawLines(pen, new[] { new PointF(17, 7), new PointF(22, 12), new PointF(17, 17) });
             break;
           case InventoryIcon.Settings:
-            g.DrawEllipse(pen, 4, 4, 16, 16); g.DrawEllipse(pen, 9, 9, 6, 6);
-            g.DrawLine(pen, 12, 1, 12, 4); g.DrawLine(pen, 12, 20, 12, 23);
-            g.DrawLine(pen, 1, 12, 4, 12); g.DrawLine(pen, 20, 12, 23, 12);
+            // Sekiz dişli ayar simgesi, diğer simgelerle aynı ölçekte çizilir.
+            var teeth = new PointF[32];
+            double[] angles = { -0.30, -0.18, 0.18, 0.30 };
+            float[] radii = { 8F, 10.5F, 10.5F, 8F };
+            for (int tooth = 0; tooth < 8; tooth++)
+              for (int corner = 0; corner < 4; corner++)
+              {
+                double angle = tooth * Math.PI / 4 + angles[corner];
+                teeth[tooth * 4 + corner] = new PointF(
+                  12 + radii[corner] * (float)Math.Cos(angle),
+                  12 + radii[corner] * (float)Math.Sin(angle));
+              }
+            g.DrawPolygon(pen, teeth);
+            g.DrawEllipse(pen, 8.5F, 8.5F, 7F, 7F);
             break;
           case InventoryIcon.Entry:
           case InventoryIcon.Output:

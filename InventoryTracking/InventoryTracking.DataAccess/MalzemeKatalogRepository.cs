@@ -1,3 +1,4 @@
+using InventoryTracking.Localization;
 using InventoryTracking.Connection;
 using System;
 using System.Data.SqlClient;
@@ -38,7 +39,7 @@ namespace InventoryTracking.DataAccess
       if (malzeme == null || string.IsNullOrWhiteSpace(malzeme.MalzemeNo) ||
           string.IsNullOrWhiteSpace(malzeme.Barkod) || string.IsNullOrWhiteSpace(malzeme.Aciklama) ||
           malzeme.BirimId <= 0)
-        return OperationResult.Fail("Malzeme numarası, barkod, açıklama ve birim zorunludur.");
+        return OperationResult.Fail(UiText.Get("MaterialBarcodeRequired"));
 
       try
       {
@@ -54,16 +55,16 @@ namespace InventoryTracking.DataAccess
           cmd.Parameters.AddWithValue("@Aciklama", malzeme.Aciklama.Trim());
           cmd.Parameters.AddWithValue("@BirimId", malzeme.BirimId);
           malzeme.MalzemeId = (int)cmd.ExecuteScalar();
-          return OperationResult.Ok("Malzeme kataloğa kaydedildi.", malzeme.MalzemeId);
+          return OperationResult.Ok(UiText.Get("MaterialSaved"), malzeme.MalzemeId);
         }
       }
       catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
       {
-        return OperationResult.Fail("Bu malzeme numarası veya barkod zaten kayıtlıdır.");
+        return OperationResult.Fail(UiText.Get("MaterialBarcodeExists"));
       }
       catch (Exception ex)
       {
-        return OperationResult.Fail("Malzeme kaydı yapılamadı: " + ex.Message);
+        return OperationResult.Fail(UiText.Get("MaterialSaveError") + ex.Message);
       }
     }
 
@@ -72,7 +73,7 @@ namespace InventoryTracking.DataAccess
       if (malzeme == null || malzeme.MalzemeId <= 0 ||
           string.IsNullOrWhiteSpace(malzeme.MalzemeNo) || string.IsNullOrWhiteSpace(malzeme.Aciklama) ||
           malzeme.BirimId <= 0)
-        return OperationResult.Fail("Malzeme numarası, açıklama ve birim zorunludur.");
+        return OperationResult.Fail(UiText.Get("MaterialRequired"));
 
       try
       {
@@ -92,7 +93,7 @@ namespace InventoryTracking.DataAccess
             cmd.Parameters.AddWithValue("@Aciklama", malzeme.Aciklama.Trim());
             cmd.Parameters.AddWithValue("@BirimId", malzeme.BirimId);
             if (cmd.ExecuteNonQuery() == 0)
-              return OperationResult.Fail("Malzeme kaydı bulunamadı.");
+              return OperationResult.Fail(UiText.Get("MaterialMissing"));
           }
           using (SqlCommand cmd = new SqlCommand(@"
               UPDATE Urun SET UrunAdi=@Aciklama, GuncellemeTarihi=GETDATE()
@@ -103,16 +104,16 @@ namespace InventoryTracking.DataAccess
             cmd.ExecuteNonQuery();
           }
           transaction.Commit();
-          return OperationResult.Ok("Malzeme ve bağlı ürün bilgileri güncellendi.");
+          return OperationResult.Ok(UiText.Get("MaterialLinkedUpdated"));
         }
       }
       catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
       {
-        return OperationResult.Fail("Bu malzeme numarası veya ürün açıklaması zaten kullanılıyor.");
+        return OperationResult.Fail(UiText.Get("MaterialDescriptionExists"));
       }
       catch (Exception ex)
       {
-        return OperationResult.Fail("Malzeme güncellenemedi: " + ex.Message);
+        return OperationResult.Fail(UiText.Get("MaterialUpdateError") + ex.Message);
       }
     }
   }

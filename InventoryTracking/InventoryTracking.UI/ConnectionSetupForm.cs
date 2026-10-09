@@ -1,3 +1,4 @@
+using InventoryTracking.Localization;
 using InventoryTracking.Connection;
 using System;
 using System.Data.SqlClient;
@@ -6,7 +7,7 @@ using System.Windows.Forms;
 
 namespace InventoryTracking.UI
 {
-  public class ConnectionSetupForm : Form
+  public class ConnectionSetupForm : LocalizedForm
   {
     private readonly TextBox txtServer = new TextBox();
     private readonly TextBox txtDatabase = new TextBox();
@@ -15,9 +16,15 @@ namespace InventoryTracking.UI
     private readonly TextBox txtPassword = new TextBox();
     private readonly CheckBox chkTrustCertificate = new CheckBox();
 
-    public ConnectionSetupForm()
+    private readonly string _settingsPath;
+
+    public ConnectionSetupForm() : this(null) { }
+
+    // Testlerde ayrı ayar dosyası kullanılır; normal açılış mevcut kullanıcı ayarlarını kullanır.
+    internal ConnectionSetupForm(string settingsPath)
     {
-      Text = "Veritabanı Bağlantı Ayarları";
+      _settingsPath = settingsPath;
+      Text = UiText.Get("DatabaseSettings");
       StartPosition = FormStartPosition.CenterScreen;
       FormBorderStyle = FormBorderStyle.FixedDialog;
       MaximizeBox = false;
@@ -29,37 +36,37 @@ namespace InventoryTracking.UI
       var header = new Panel { Dock = DockStyle.Top, Height = 52, BackColor = Color.FromArgb(41, 128, 185) };
       header.Controls.Add(new Label
       {
-        Text = "VERİTABANI BAĞLANTISI", ForeColor = Color.White,
+        Text = UiText.Get("DatabaseHeader"), ForeColor = Color.White,
         Font = new Font("Segoe UI", 14F, FontStyle.Bold), Dock = DockStyle.Fill,
         Padding = new Padding(15, 10, 0, 0)
       });
       Controls.Add(header);
 
       AddRow("SQL Server:", txtServer, 72);
-      AddRow("Veritabanı:", txtDatabase, 114);
-      AddRow("Kullanıcı:", txtUser, 200);
-      AddRow("Parola:", txtPassword, 242);
+      AddRow(UiText.Get("DatabaseLabel"), txtDatabase, 114);
+      AddRow(UiText.Get("UserLabel"), txtUser, 200);
+      AddRow(UiText.Get("PasswordLabel"), txtPassword, 242);
       txtPassword.UseSystemPasswordChar = true;
-      chkWindows.Text = "Windows kimliğiyle bağlan";
+      chkWindows.Text = UiText.Get("WindowsAuth");
       chkWindows.Location = new Point(155, 158);
       chkWindows.Size = new Size(350, 27);
       chkWindows.Checked = true;
       chkWindows.CheckedChanged += (sender, e) => UpdateAuthFields();
       Controls.Add(chkWindows);
-      chkTrustCertificate.Text = "Sunucu sertifikasına güven (yalnızca güvenilir yerel sunucu)";
+      chkTrustCertificate.Text = UiText.Get("TrustCertificate");
       chkTrustCertificate.Location = new Point(155, 284);
       chkTrustCertificate.Size = new Size(390, 27);
       Controls.Add(chkTrustCertificate);
       Controls.Add(new Label
       {
-        Text = "Önce SQL Server'da V1 kurulum betiğini veya mevcut veritabanı geçişlerini çalıştırın.",
+        Text = UiText.Get("SetupHint"),
         Location = new Point(20, 318), Size = new Size(525, 24), ForeColor = Color.FromArgb(52, 73, 94)
       });
 
       var footer = new Panel { Dock = DockStyle.Bottom, Height = 59, BackColor = Color.FromArgb(236, 240, 241) };
-      var btnTest = MakeButton("Bağlantıyı Sına", 35, Color.FromArgb(52, 152, 219));
-      var btnSave = MakeButton("Kaydet ve Aç", 198, Color.FromArgb(46, 204, 113));
-      var btnCancel = MakeButton("İptal", 361, Color.FromArgb(149, 165, 166));
+      var btnTest = MakeButton(UiText.Get("TestConnection"), 35, Color.FromArgb(52, 152, 219));
+      var btnSave = MakeButton(UiText.Get("SaveAndOpen"), 198, Color.FromArgb(46, 204, 113));
+      var btnCancel = MakeButton(UiText.Get("Cancel"), 361, Color.FromArgb(149, 165, 166));
       btnTest.Click += (sender, e) => TestConnection();
       btnSave.Click += (sender, e) => SaveConnection();
       btnCancel.Click += (sender, e) => { DialogResult = DialogResult.Cancel; Close(); };
@@ -95,7 +102,7 @@ namespace InventoryTracking.UI
     {
       try
       {
-        string saved = ConnectionSettingsStore.Load();
+        string saved = ConnectionSettingsStore.Load(_settingsPath);
         var builder = new SqlConnectionStringBuilder(string.IsNullOrWhiteSpace(saved)
           ? Properties.Settings.Default.DBConStr : saved);
         txtServer.Text = builder.DataSource;
@@ -116,9 +123,9 @@ namespace InventoryTracking.UI
     private string BuildConnectionString()
     {
       if (string.IsNullOrWhiteSpace(txtServer.Text) || string.IsNullOrWhiteSpace(txtDatabase.Text))
-        throw new ArgumentException("SQL Server ve veritabanı adı zorunludur.");
+        throw new ArgumentException(UiText.Get("SqlServerRequired"));
       if (!chkWindows.Checked && (string.IsNullOrWhiteSpace(txtUser.Text) || string.IsNullOrWhiteSpace(txtPassword.Text)))
-        throw new ArgumentException("SQL kullanıcı adı ve parola zorunludur.");
+        throw new ArgumentException(UiText.Get("SqlCredentialsRequired"));
       var builder = new SqlConnectionStringBuilder
       {
         DataSource = txtServer.Text.Trim(),
@@ -142,10 +149,10 @@ namespace InventoryTracking.UI
       try
       {
         string error = ConnectionSettingsStore.Test(BuildConnectionString());
-        MessageBox.Show(error ?? "Bağlantı ve gerekli tablolar doğrulandı.", error == null ? "Başarılı" : "Bağlantı Hatası",
+        UiMessage.Show(error ?? UiText.Get("ConnectionVerified"), error == null ? UiText.Get("Success") : UiText.Get("ConnectionError"),
           MessageBoxButtons.OK, error == null ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
       }
-      catch (Exception ex) { MessageBox.Show(ex.Message, "Bağlantı Hatası", MessageBoxButtons.OK, MessageBoxIcon.Warning); }
+      catch (Exception ex) { UiMessage.Show(ex.Message, UiText.Get("ConnectionError"), MessageBoxButtons.OK, MessageBoxIcon.Warning); }
     }
 
     private void SaveConnection()
@@ -156,15 +163,15 @@ namespace InventoryTracking.UI
         string error = ConnectionSettingsStore.Test(connectionString);
         if (error != null)
         {
-          MessageBox.Show(error, "Bağlantı Hatası", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          UiMessage.Show(error, UiText.Get("ConnectionError"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
           return;
         }
-        ConnectionSettingsStore.Save(connectionString);
+        ConnectionSettingsStore.Save(connectionString, _settingsPath);
         SqlDBConnection.ResetConnection();
         DialogResult = DialogResult.OK;
         Close();
       }
-      catch (Exception ex) { MessageBox.Show("Bağlantı kaydedilemedi: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+      catch (Exception ex) { UiMessage.Show(UiText.Get("ConnectionSaveError") + ex.Message, UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error); }
     }
   }
 }

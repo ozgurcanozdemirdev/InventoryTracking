@@ -1,3 +1,4 @@
+using InventoryTracking.Localization;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -6,7 +7,7 @@ using static InventoryTracking.Models.Entities;
 
 namespace InventoryTracking.UI
 {
-  public class DepoYonetimForm : Form
+  public class DepoYonetimForm : LocalizedForm
   {
     private readonly DepoService _service = new DepoService();
     private readonly DataGridView dgvDepolar = new DataGridView();
@@ -16,7 +17,7 @@ namespace InventoryTracking.UI
 
     public DepoYonetimForm()
     {
-      Text = "Depo Yönetimi";
+      Text = UiText.Get("WarehouseManagement");
       StartPosition = FormStartPosition.CenterParent;
       FormBorderStyle = FormBorderStyle.FixedDialog;
       MaximizeBox = false;
@@ -28,7 +29,7 @@ namespace InventoryTracking.UI
       var header = new Panel { Dock = DockStyle.Top, Height = 50, BackColor = Color.FromArgb(41, 128, 185) };
       header.Controls.Add(new Label
       {
-        Text = "DEPO / ŞUBE YÖNETİMİ", ForeColor = Color.White,
+        Text = UiText.Get("WarehouseManagementHeader"), ForeColor = Color.White,
         Font = new Font("Segoe UI", 14F, FontStyle.Bold), Dock = DockStyle.Fill,
         Padding = new Padding(15, 9, 0, 0)
       });
@@ -44,21 +45,21 @@ namespace InventoryTracking.UI
       dgvDepolar.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
       dgvDepolar.MultiSelect = false;
       dgvDepolar.RowHeadersVisible = false;
-      dgvDepolar.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Depo / Şube", DataPropertyName = "DepoAdi" });
-      dgvDepolar.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Konum", DataPropertyName = "Lokasyon" });
-      dgvDepolar.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = "Durum", DataPropertyName = "Durum" });
+      dgvDepolar.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = UiText.Get("WarehouseBranch"), DataPropertyName = "DepoAdi" });
+      dgvDepolar.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = UiText.Get("WarehouseLocationHeader"), DataPropertyName = "Lokasyon" });
+      dgvDepolar.Columns.Add(new DataGridViewTextBoxColumn { HeaderText = UiText.Get("Status"), DataPropertyName = "Durum" });
       dgvDepolar.SelectionChanged += (sender, e) => FillSelected();
 
       var editor = new Panel { Dock = DockStyle.Bottom, Height = 173, BackColor = Color.FromArgb(236, 240, 241) };
-      AddRow(editor, "Depo Adı:", txtAd, 12, 100);
-      AddRow(editor, "Konum:", txtLokasyon, 48, 200);
-      AddRow(editor, "Açıklama:", txtAciklama, 84, 500);
+      AddRow(editor, UiText.Get("WarehouseNameLabel"), txtAd, 12, 100);
+      AddRow(editor, UiText.Get("WarehouseLocationLabel"), txtLokasyon, 48, 200);
+      AddRow(editor, UiText.Get("DescriptionLabel"), txtAciklama, 84, 500);
 
-      var btnEkle = MakeButton("✓ Ekle", 15, Color.FromArgb(46, 204, 113));
-      var btnGuncelle = MakeButton("✎ Güncelle", 166, Color.FromArgb(52, 152, 219));
-      var btnPasif = MakeButton("Sil / Pasife Al", 317, Color.FromArgb(231, 76, 60));
-      var btnAktif = MakeButton("Etkinleştir", 468, Color.FromArgb(155, 89, 182));
-      var btnKapat = MakeButton("Kapat", 619, Color.FromArgb(149, 165, 166));
+      var btnEkle = MakeButton(UiText.Get("AddAction"), 15, Color.FromArgb(46, 204, 113));
+      var btnGuncelle = MakeButton(UiText.Get("UpdateAction"), 166, Color.FromArgb(52, 152, 219));
+      var btnPasif = MakeButton(UiText.Get("DeleteDeactivate"), 317, Color.FromArgb(231, 76, 60));
+      var btnAktif = MakeButton(UiText.Get("Activate"), 468, Color.FromArgb(155, 89, 182));
+      var btnKapat = MakeButton(UiText.Get("Close"), 619, Color.FromArgb(149, 165, 166));
       btnEkle.Click += (sender, e) => ShowResult(_service.AddDepo(txtAd.Text, txtLokasyon.Text, txtAciklama.Text));
       btnGuncelle.Click += (sender, e) => UpdateSelected();
       btnPasif.Click += (sender, e) => SetSelectedActive(false);
@@ -106,7 +107,7 @@ namespace InventoryTracking.UI
       }
       catch (Exception ex)
       {
-        MessageBox.Show("Depolar yüklenemedi: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        UiMessage.Show(UiText.Get("WarehousesLoadError") + ex.Message, UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -122,23 +123,23 @@ namespace InventoryTracking.UI
     private void UpdateSelected()
     {
       var depot = SelectedDepot();
-      if (depot == null) { MessageBox.Show("Önce bir depo seçiniz."); return; }
+      if (depot == null) { UiMessage.Show(UiText.Get("PleaseWarehouse")); return; }
       ShowResult(_service.UpdateDepo(depot.DepoId, txtAd.Text, txtLokasyon.Text, txtAciklama.Text));
     }
 
     private void SetSelectedActive(bool active)
     {
       var depot = SelectedDepot();
-      if (depot == null) { MessageBox.Show("Önce bir depo seçiniz."); return; }
-      if (depot.AktifMi == active) { MessageBox.Show("Depo zaten bu durumda."); return; }
-      if (!active && MessageBox.Show($"'{depot.DepoAdi}' deposu silinerek pasife alınacak. Stok geçmişi korunur. Devam edilsin mi?", "Silme Onayı",
+      if (depot == null) { UiMessage.Show(UiText.Get("PleaseWarehouse")); return; }
+      if (depot.AktifMi == active) { UiMessage.Show(UiText.Get("WarehouseSameStatus")); return; }
+      if (!active && UiMessage.Show(UiText.Format("WarehouseDeactivatePrompt", depot.DepoAdi), UiText.Get("DeleteConfirmation"),
           MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
       ShowResult(_service.SetDepoActive(depot.DepoId, active));
     }
 
     private void ShowResult(OperationResult result)
     {
-      MessageBox.Show(result.Message, result.Success ? "Başarılı" : "İşlem Yapılamadı",
+      UiMessage.Show(result.Message, result.Success ? UiText.Get("Success") : UiText.Get("OperationFailed"),
         MessageBoxButtons.OK, result.Success ? MessageBoxIcon.Information : MessageBoxIcon.Warning);
       if (result.Success) LoadDepolar();
     }

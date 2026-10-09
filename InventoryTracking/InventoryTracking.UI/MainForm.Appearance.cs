@@ -1,3 +1,4 @@
+﻿using InventoryTracking.Localization;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -46,25 +47,57 @@ namespace InventoryTracking.UI
       picDepo.Image = CreateIcon(InventoryIcon.Depot, Color.FromArgb(76, 91, 111));
       picQuantity.Image = CreateIcon(InventoryIcon.Cube, Color.FromArgb(0, 117, 201), 30);
 
-      var user = new Label { AutoSize = true, ForeColor = Color.White, Text = Environment.UserName,
+      var user = new Label { Name = "lblUser", AutoSize = true, ForeColor = Color.White, Text = Environment.UserName,
         Margin = new Padding(8, 11, 12, 0), Font = CreateFont(10F) };
-      _lblClock = new Label { AutoSize = true, ForeColor = Color.White,
+      _lblClock = new Label { Name = "lblClock", AutoSize = true, ForeColor = Color.White,
         Margin = new Padding(8, 11, 12, 0), Font = CreateFont(10F) };
       pnlHeaderInfo.Controls.Add(user);
       pnlHeaderInfo.Controls.Add(_lblClock);
       pnlHeaderInfo.Controls.Add(_btnBaglanti);
-      _btnBaglanti.Size = new Size(150, 38);
+      // İki dilde de aynı genişlik kullanılır; uzun İngilizce metin tek satır kalır.
+      _btnBaglanti.AutoSize = false;
+      _btnBaglanti.Size = new Size(200, 38);
       _btnBaglanti.Margin = new Padding(8, 2, 0, 0);
       StyleButton(_btnBaglanti, Color.FromArgb(0, 99, 171), InventoryIcon.Settings, 9F);
+      // Simge solda sabittir. Yazı alanı simgeden sonra başlar ve dört kenara
+      // bağlı kaldığı için düğme boyutu değişince de kendi merkezinde durur.
+      var connectionIcon = new PictureBox
+      {
+        Image = _btnBaglanti.Image, Bounds = new Rectangle(8, 0, 22, 38),
+        Anchor = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Bottom,
+        SizeMode = PictureBoxSizeMode.CenterImage, BackColor = Color.Transparent,
+        TabStop = false
+      };
+      var connectionCaption = new Label
+      {
+        Name = "lblConnectionSettings", Text = _btnBaglanti.Text,
+        Bounds = new Rectangle(36, 0, _btnBaglanti.ClientSize.Width - 44, 38),
+        Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
+        TextAlign = ContentAlignment.MiddleCenter, AutoSize = false,
+        BackColor = Color.Transparent, Font = _btnBaglanti.Font,
+        ForeColor = _btnBaglanti.ForeColor, Margin = new Padding(0)
+      };
+      _btnBaglanti.Image = null;
+      _btnBaglanti.Text = string.Empty;
+      _btnBaglanti.AccessibleName = connectionCaption.Text;
+      connectionCaption.TextChanged += (sender, e) => _btnBaglanti.AccessibleName = connectionCaption.Text;
+      // Simge ve yazıya tıklamak da aynı bağlantı ayarları düğmesini çalıştırır.
+      connectionIcon.Click += (sender, e) => _btnBaglanti.PerformClick();
+      connectionCaption.Click += (sender, e) => _btnBaglanti.PerformClick();
+      _btnBaglanti.Controls.Add(connectionIcon);
+      _btnBaglanti.Controls.Add(connectionCaption);
+      // Designer, tasarımda bileşen yoksa kabı oluşturmayabilir.
+      // Saat ve ipucu bu kaba eklenir; form kapanınca birlikte temizlenir.
+      if (components == null) components = new System.ComponentModel.Container();
       var clock = new Timer(components) { Interval = 30000 };
       clock.Tick += (sender, e) => UpdateClock();
       clock.Start();
       UpdateClock();
 
       _toolTip = new ToolTip(components);
-      _toolTip.SetToolTip(lblStockAmount, "Seçili ürünün seçili depodaki stok miktarı");
-      _toolTip.SetToolTip(txtBarkod, "Barkod, ürün adı veya malzeme numarasıyla listeyi süzün. Barkod okutunca Enter ile kayıt ekranını açın.");
-      txtBarkod.AccessibleDescription = "Barkod, ürün adı veya malzeme numarasıyla arama";
+      _toolTip.SetToolTip(lblStockAmount, UiText.Get("StockQuantityHelp"));
+      _toolTip.SetToolTip(txtBarkod, UiText.Get("SearchHelp"));
+      txtBarkod.AccessibleDescription = UiText.Get("SearchAccessible");
       txtBarkod.TextChanged += (sender, e) =>
       {
         if (!_isFormLoading) ApplyStockFilter();
@@ -87,9 +120,26 @@ namespace InventoryTracking.UI
 
       // Tablo yazısı özellikle kalın tutulur. Seçili satır açık mavi kalır;
       // durum yalnızca renk ile anlatılmaz, okunabilir bir metin de gösterilir.
+      // Ã‡erÃ§eve sabit panelde kalÄ±r; tablo kaydÄ±rÄ±lÄ±rken fazladan Ã§izim yapÄ±lmaz.
+      var stockFrame = new Panel
+      {
+        Name = "pnlStockFrame", Dock = DockStyle.Fill, Margin = dgvStoklar.Margin,
+        Padding = new Padding(1), BackColor = Color.FromArgb(205, 216, 229)
+      };
+      pnlWorkspace.Controls.Remove(dgvStoklar);
+      dgvStoklar.Margin = Padding.Empty;
+      stockFrame.Controls.Add(dgvStoklar);
+      pnlWorkspace.Controls.Add(stockFrame, 0, 0);
+
       dgvStoklar.BackgroundColor = Color.White;
       dgvStoklar.BorderStyle = BorderStyle.None;
-      dgvStoklar.Paint += PaintSurfaceBorder;
+      // YalnÄ±zca tanÄ±mlÄ± sÃ¼tunlar gÃ¶sterilir; modelin kimlik alanlarÄ± eklenmez.
+      dgvStoklar.AutoGenerateColumns = false;
+      dgvStoklar.CellBorderStyle = DataGridViewCellBorderStyle.Single;
+      dgvStoklar.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+      // KaydÄ±rmadan kalan gÃ¶rÃ¼ntÃ¼ parÃ§alarÄ±nÄ± standart Paint akÄ±ÅŸÄ± yeniler.
+      // Invalidate Ã§izimi sÄ±raya alÄ±r; burada elle hÃ¼cre veya Ã§izgi Ã§izilmez.
+      dgvStoklar.Scroll += (sender, e) => dgvStoklar.Invalidate();
       dgvStoklar.GridColor = Color.FromArgb(226, 234, 243);
       dgvStoklar.EnableHeadersVisualStyles = false;
       dgvStoklar.RowHeadersVisible = false;
@@ -166,19 +216,19 @@ namespace InventoryTracking.UI
       var layout = new TableLayoutPanel { Dock = DockStyle.Top, AutoSize = true,
         ColumnCount = 1, Margin = new Padding(0) };
       layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-      var title = new Label { Text = "Ürün Bilgileri", Image = CreateIcon(InventoryIcon.Cube, Color.FromArgb(0, 117, 201), 28),
+      var title = new Label { Text = UiText.Get("ProductInformation"), Image = CreateIcon(InventoryIcon.Cube, Color.FromArgb(0, 117, 201), 28),
         ImageAlign = ContentAlignment.MiddleLeft,
         TextAlign = ContentAlignment.MiddleCenter, Font = CreateFont(13F, FontStyle.Bold), Dock = DockStyle.Fill,
         Height = 42, Margin = new Padding(0, 0, 0, 8) };
       layout.Controls.Add(title);
-      AddDetailField(layout, "Barkod", "Barkod");
-      AddDetailField(layout, "MalzemeNo", "Malzeme No");
-      AddDetailField(layout, "UrunAdi", "Ürün", 48);
-      AddDetailField(layout, "KategoriAdi", "Kategori");
-      AddDetailField(layout, "Miktar", "Miktar");
-      AddDetailField(layout, "Fiyat", "Birim Fiyat");
-      AddDetailField(layout, "SonHareketTarihi", "Son Hareket");
-      AddDetailField(layout, "StokDurumu", "Durum");
+      AddDetailField(layout, "Barkod", UiText.Get("Barcode"));
+      AddDetailField(layout, "MalzemeNo", UiText.Get("MaterialNumber"));
+      AddDetailField(layout, "UrunAdi", UiText.Get("Product"), 48);
+      AddDetailField(layout, "KategoriAdi", UiText.Get("Category"));
+      AddDetailField(layout, "Miktar", UiText.Get("Quantity"));
+      AddDetailField(layout, "Fiyat", UiText.Get("UnitPrice"));
+      AddDetailField(layout, "SonHareketTarihi", UiText.Get("LastMovement"));
+      AddDetailField(layout, "StokDurumu", UiText.Get("Status"));
       _detailValues["Miktar"].BackColor = Color.FromArgb(228, 241, 255);
       _detailValues["Miktar"].Font = CreateFont(11F, FontStyle.Bold);
       var actions = new TableLayoutPanel { Dock = DockStyle.Fill, Height = 62,
@@ -186,8 +236,8 @@ namespace InventoryTracking.UI
       actions.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
       actions.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
       actions.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50));
-      _btnStokGiris = new Button { Name = "btnStokGiris", Text = "Stok Girişi", Dock = DockStyle.Fill, Margin = new Padding(0, 0, 8, 0) };
-      _btnStokCikis = new Button { Name = "btnStokCikis", Text = "Stok Çıkışı", Dock = DockStyle.Fill, Margin = new Padding(0) };
+      _btnStokGiris = new Button { Name = "btnStokGiris", Text = UiText.Get("StockEntry"), Dock = DockStyle.Fill, Margin = new Padding(0, 0, 8, 0) };
+      _btnStokCikis = new Button { Name = "btnStokCikis", Text = UiText.Get("StockExit"), Dock = DockStyle.Fill, Margin = new Padding(0) };
       StyleButton(_btnStokGiris, Color.FromArgb(36, 158, 71), InventoryIcon.Entry);
       StyleButton(_btnStokCikis, Color.FromArgb(0, 120, 213), InventoryIcon.Output);
       _btnStokGiris.Click += (sender, e) => OpenStockOperation(true);
@@ -195,7 +245,7 @@ namespace InventoryTracking.UI
       actions.Controls.Add(_btnStokGiris, 0, 0);
       actions.Controls.Add(_btnStokCikis, 1, 0);
       var hint = new Label { Dock = DockStyle.Fill, Height = 30, ForeColor = Color.FromArgb(100, 116, 139),
-        Font = CreateFont(9F), TextAlign = ContentAlignment.MiddleLeft, Text = "Bilgiler seçili ürün ve depoya aittir." };
+        Font = CreateFont(9F), TextAlign = ContentAlignment.MiddleLeft, Text = UiText.Get("SelectedProductHint") };
       layout.Controls.Add(hint);
       scroll.Controls.Add(layout);
       container.Controls.Add(scroll, 0, 0);
@@ -235,8 +285,8 @@ namespace InventoryTracking.UI
     {
       // Kritik stok pozitif de olabilir. "Stokta Yok" yalnızca sıfır miktarı
       // anlatır; minimum veya düşük stok sınırındaki pozitif miktar "Az Stok"tur.
-      if (stock.Miktar == 0) return "Stokta Yok";
-      return stock.StokDurumu == "Normal" ? "Stokta" : "Az Stok";
+      if (stock.Miktar == 0) return UiText.Get("OutOfStock");
+      return stock.StokDurumu == "Normal" ? UiText.Get("InStock") : UiText.Get("LowStock");
     }
 
     private static Color StockStatusColor(Entities.Stok stock) => stock.Miktar == 0
@@ -262,14 +312,14 @@ namespace InventoryTracking.UI
         _detailValues["KategoriAdi"].Text = stock.KategoriAdi;
         _detailValues["Miktar"].Text = stock.Miktar.ToString("N0") + "  " + stock.BirimAdi;
         _detailValues["Fiyat"].Text = stock.Fiyat.ToString("C2", _searchCulture);
-        _detailValues["SonHareketTarihi"].Text = stock.SonHareketTarihi?.ToString("dd.MM.yyyy HH:mm") ?? "Hareket yok";
+        _detailValues["SonHareketTarihi"].Text = stock.SonHareketTarihi?.ToString("dd.MM.yyyy HH:mm") ?? UiText.Get("NoMovement");
         _detailValues["StokDurumu"].Text = "●  " + StockStatusText(stock);
         _detailValues["StokDurumu"].ForeColor = StockStatusColor(stock);
-        _toolTip.SetToolTip(_detailValues["StokDurumu"], "Stok seviyesi: " + stock.StokDurumu);
+        _toolTip.SetToolTip(_detailValues["StokDurumu"], UiText.Get("StockLevelPrefix") + UiText.DisplayValue("StokDurumu", stock.StokDurumu));
       }
       foreach (var label in _detailValues.Values)
         if (label != _detailValues["StokDurumu"]) _toolTip.SetToolTip(label, label.Text);
-      lblRecordCount.Text = "Gösterilen: " + dgvStoklar.Rows.Count + " / " + _loadedStocks.Count + "   |   Seçili: " + (stock == null ? 0 : 1);
+      lblRecordCount.Text = UiText.Get("ShownPrefix") + dgvStoklar.Rows.Count + " / " + _loadedStocks.Count + UiText.Get("SelectedSuffix") + (stock == null ? 0 : 1);
     }
 
     private bool ContainsSearch(string value, string search) => _searchCulture.CompareInfo.IndexOf(

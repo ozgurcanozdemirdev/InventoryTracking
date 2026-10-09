@@ -1,3 +1,4 @@
+using InventoryTracking.Localization;
 using System;
 using System.Data.SqlClient;
 using System.IO;
@@ -23,14 +24,14 @@ namespace InventoryTracking.Connection
       }
       catch (Exception ex) when (ex is CryptographicException || ex is IOException)
       {
-        throw new InvalidOperationException("Kaydedilmiş veritabanı bağlantısı okunamadı. Bağlantı ayarlarını yeniden girin.", ex);
+        throw new InvalidOperationException(UiText.Get("SavedConnectionUnreadable"), ex);
       }
     }
 
     public static void Save(string connectionString, string path = null)
     {
       if (string.IsNullOrWhiteSpace(connectionString))
-        throw new ArgumentException("Bağlantı bilgisi boş olamaz.", nameof(connectionString));
+        throw new ArgumentException(UiText.Get("EmptyConnection"), nameof(connectionString));
       string file = path ?? DefaultPath;
       string folder = Path.GetDirectoryName(file);
       Directory.CreateDirectory(folder);
@@ -52,7 +53,7 @@ namespace InventoryTracking.Connection
       {
         var builder = new SqlConnectionStringBuilder(connectionString);
         if (string.IsNullOrWhiteSpace(builder.DataSource) || string.IsNullOrWhiteSpace(builder.InitialCatalog))
-          return "SQL Server ve veritabanı adı zorunludur.";
+          return UiText.Get("SqlServerRequired");
         using (var connection = new SqlConnection(builder.ConnectionString))
         {
           connection.Open();
@@ -68,9 +69,9 @@ namespace InventoryTracking.Connection
       }
       catch (SqlException ex)
       {
-        return "Bağlantı veya veritabanı şeması doğrulanamadı: " + ex.Message;
+        return UiText.Get("SchemaConnectionError") + ex.Message;
       }
-      catch (ArgumentException ex) { return "Bağlantı bilgisi geçersiz: " + ex.Message; }
+      catch (ArgumentException ex) { return UiText.Get("InvalidConnection") + ex.Message; }
     }
   }
 }

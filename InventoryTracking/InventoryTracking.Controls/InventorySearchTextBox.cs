@@ -1,3 +1,4 @@
+using InventoryTracking.Localization;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -11,7 +12,7 @@ namespace InventoryTracking.Controls
   internal class InventorySearchTextBox : TextBox
   {
     private bool _drawingPlaceholder;
-    public string PlaceholderText { get; set; } = "Barkod okutun veya ürün adı yazın...";
+    public string PlaceholderText { get; set; } = UiText.Get("ScanPlaceholder");
 
     protected override void OnTextChanged(EventArgs e)
     {

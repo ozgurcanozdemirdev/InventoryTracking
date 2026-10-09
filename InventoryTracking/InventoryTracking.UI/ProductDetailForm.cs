@@ -1,4 +1,5 @@
-﻿using System;
+using InventoryTracking.Localization;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -12,13 +13,20 @@ using static InventoryTracking.Models.Entities;
 
 namespace InventoryTracking.UI
 {
-  public partial class ProductDetailForm : Form
+  public partial class ProductDetailForm : LocalizedForm
   {
     private readonly Urun _urun;
     private readonly int _depoId;
     private readonly StokService _stokService;
     private readonly bool? _girisMi;
     private int _currentStockAmount = 0;
+    private string _stockStatus = "Kritik";
+
+    protected override void OnLanguageChanged()
+    {
+      if (lblDurumValue != null)
+        lblDurumValue.Text = UiText.DisplayValue("StokDurumu", _stockStatus).ToString();
+    }
     public ProductDetailForm(Urun urun, int depoId, StokService stokService)
       : this(urun, depoId, stokService, null)
     {
@@ -42,7 +50,7 @@ namespace InventoryTracking.UI
 
     private void InitializeControls()
     {
-      this.Text = _girisMi.HasValue ? (_girisMi.Value ? "Stok Girişi" : "Stok Çıkışı") : "Ürün Detayı";
+      this.Text = _girisMi.HasValue ? (_girisMi.Value ? UiText.Get("StockEntry") : UiText.Get("StockExit")) : UiText.Get("ProductDetail");
       // Ana ekrandaki yön butonu yalnızca istenen işlemi açar. Çift tıklama
       // ile açılan genel ürün penceresinde her iki işlem kullanılabilir.
       btnGiris.Enabled = !_girisMi.HasValue || _girisMi.Value;
@@ -75,7 +83,7 @@ namespace InventoryTracking.UI
         lblUrunAdiValue.Text = _urun.UrunAdi;
         lblKategoriValue.Text = _urun.KategoriAdi;
         lblBirimValue.Text = _urun.BirimAdi;
-        lblFiyatValue.Text = _urun.Fiyat.ToString("C2");
+        lblFiyatValue.Text = _urun.Fiyat.ToString("C2", System.Globalization.CultureInfo.GetCultureInfo("tr-TR"));
         lblMinStokValue.Text = _urun.MinimumStok.ToString();
         lblMaksStokValue.Text = _urun.MaksimumStok.ToString();
 
@@ -95,7 +103,7 @@ namespace InventoryTracking.UI
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"Ürün bilgileri yüklenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        UiMessage.Show(UiText.Format("ProductInfoException", ex.Message), UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -112,7 +120,8 @@ namespace InventoryTracking.UI
         {
           _currentStockAmount = stok.Miktar;
           lblMiktarValue.Text = stok.Miktar.ToString();
-          lblDurumValue.Text = stok.StokDurumu;
+          _stockStatus = stok.StokDurumu;
+          lblDurumValue.Text = UiText.DisplayValue("StokDurumu", _stockStatus).ToString();
 
           // Durum etiketini renklendir
           switch (stok.StokDurumu)
@@ -132,13 +141,14 @@ namespace InventoryTracking.UI
         {
           _currentStockAmount = 0;
           lblMiktarValue.Text = "0";
-          lblDurumValue.Text = "Kritik";
+          _stockStatus = "Kritik";
+          lblDurumValue.Text = UiText.Get("CriticalStock");
           lblDurumValue.ForeColor = System.Drawing.Color.DarkRed;
         }
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"Stok bilgisi yüklenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        UiMessage.Show(UiText.Format("StockInfoException", ex.Message), UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -164,7 +174,7 @@ namespace InventoryTracking.UI
     {
       if (numMiktar.Value <= 0)
       {
-        MessageBox.Show("Lütfen giriş yapılacak miktarı giriniz", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        UiMessage.Show(UiText.Get("PleaseEntryQuantity"), UiText.Get("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         numMiktar.Focus();
         return;
       }
@@ -175,9 +185,9 @@ namespace InventoryTracking.UI
 
       if (yeniMiktar > _urun.MaksimumStok)
       {
-        DialogResult result = MessageBox.Show(
-            $"Yeni miktar ({yeniMiktar}) maksimum stok ({_urun.MaksimumStok}) değerini aşacaktır.\nDevam etmek istiyor musunuz?",
-            "Uyarı",
+        DialogResult result = UiMessage.Show(
+            UiText.Format("MaximumStockPrompt", yeniMiktar, _urun.MaksimumStok),
+            UiText.Get("Warning"),
             MessageBoxButtons.YesNo,
             MessageBoxIcon.Question);
 
@@ -191,13 +201,13 @@ namespace InventoryTracking.UI
       if (result_op.Success)
       {
         yeniMiktar = _stokService.GetStok(_urun.UrunId, _depoId)?.Miktar ?? 0;
-        MessageBox.Show($"Stok başarıyla güncellendi.\nYeni Miktar: {yeniMiktar}", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        UiMessage.Show(UiText.Format("StockUpdatedQuantity", yeniMiktar), UiText.Get("Success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
         this.DialogResult = DialogResult.OK;
         this.Close();
       }
       else
       {
-        MessageBox.Show(result_op.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        UiMessage.Show(result_op.Message, UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -205,7 +215,7 @@ namespace InventoryTracking.UI
     {
       if (numMiktar.Value <= 0)
       {
-        MessageBox.Show("Lütfen çıkış yapılacak miktarı giriniz", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        UiMessage.Show(UiText.Get("PleaseExitQuantity"), UiText.Get("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         numMiktar.Focus();
         return;
       }
@@ -218,13 +228,13 @@ namespace InventoryTracking.UI
       if (result.Success)
       {
         int yeniMiktar = _stokService.GetStok(_urun.UrunId, _depoId)?.Miktar ?? 0;
-        MessageBox.Show($"Stok başarıyla güncellendi.\nYeni Miktar: {yeniMiktar}", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        UiMessage.Show(UiText.Format("StockUpdatedQuantity", yeniMiktar), UiText.Get("Success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
         this.DialogResult = DialogResult.OK;
         this.Close();
       }
       else
       {
-        MessageBox.Show(result.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        UiMessage.Show(result.Message, UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 

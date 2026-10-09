@@ -1,4 +1,5 @@
-﻿using InventoryTracking.DataAccess;
+using InventoryTracking.Localization;
+using InventoryTracking.DataAccess;
 using System;
 using System.Windows.Forms;
 using static InventoryTracking.Business.Services;
@@ -8,7 +9,7 @@ using InventoryTracking.UI;
 
 namespace InventoryTracking.UI
 {
-  public partial class MainForm : Form
+  public partial class MainForm : LocalizedForm
   {
     private readonly StokService _stokService;
     private readonly UrunService _urunService;
@@ -31,6 +32,7 @@ namespace InventoryTracking.UI
       // Görünüm bir kez kurulur; Load yalnızca veriyi yükler. Böylece yenilemede
       // veya tasarım kontrolünde butonlar ve olay abonelikleri çoğalmaz.
       InitializeControls();
+      InitializeLanguageSupport();
     }
 
     //bool formloading = false;
@@ -52,10 +54,10 @@ namespace InventoryTracking.UI
       dgvStoklar.AllowUserToOrderColumns = false;
       ConfigureDataGridViewColumns();
 
-      _btnKategoriYonet = new Button { Name = "btnKategoriYonet", Text = "Kategoriler" };
-      _btnDepoYonet = new Button { Name = "btnDepoYonet", Text = "Depolar" };
+      _btnKategoriYonet = new Button { Name = "btnKategoriYonet", Text = UiText.Get("Categories") };
+      _btnDepoYonet = new Button { Name = "btnDepoYonet", Text = UiText.Get("Warehouses") };
       _btnTransfer = new Button { Name = "btnTransfer", Text = "Transfer" };
-      _btnBaglanti = new Button { Name = "btnBaglanti", Text = "Bağlantı Ayarları" };
+      _btnBaglanti = new Button { Name = "btnBaglanti", Text = UiText.Get("ConnectionSettings") };
       _btnKategoriYonet.Click += (sender, e) =>
       {
         using (var form = new KategoriYonetimForm()) form.ShowDialog(this);
@@ -94,14 +96,14 @@ namespace InventoryTracking.UI
     private void ConfigureDataGridViewColumns()
     {
       dgvStoklar.Columns.Clear();
-      AddStockColumn("Barkod", "Barkod", 155, 145);
-      AddStockColumn("MalzemeNo", "Malzeme No", 125, 110);
-      AddStockColumn("UrunAdi", "Ürün", 230, 180);
-      AddStockColumn("KategoriAdi", "Kategori", 125, 100);
-      AddStockColumn("Miktar", "Miktar", 75, 75);
-      AddStockColumn("BirimAdi", "Birim", 85, 85);
-      AddStockColumn("SonHareketTarihi", "Son Hareket", 170, 160);
-      AddStockColumn("StokDurumu", "Durum", 125, 125);
+      AddStockColumn("Barkod", UiText.Get("Barcode"), 155, 145);
+      AddStockColumn("MalzemeNo", UiText.Get("MaterialNumber"), 125, 110);
+      AddStockColumn("UrunAdi", UiText.Get("Product"), 230, 180);
+      AddStockColumn("KategoriAdi", UiText.Get("Category"), 125, 100);
+      AddStockColumn("Miktar", UiText.Get("Quantity"), 75, 75);
+      AddStockColumn("BirimAdi", UiText.Get("Unit"), 85, 85);
+      AddStockColumn("SonHareketTarihi", UiText.Get("LastMovement"), 170, 160);
+      AddStockColumn("StokDurumu", UiText.Get("Status"), 125, 125);
       dgvStoklar.Columns["Miktar"].DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleRight;
       dgvStoklar.Columns["Miktar"].DefaultCellStyle.Format = "N0";
       dgvStoklar.Columns["Miktar"].DefaultCellStyle.Padding = new Padding(0, 0, 8, 0);
@@ -125,7 +127,7 @@ namespace InventoryTracking.UI
         {
           cmbDepo.DataSource = null;
           _selectedDepoId = 0;
-          MessageBox.Show("Aktif depo bulunamadı. Depolar butonundan yeni depo ekleyiniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          UiMessage.Show(UiText.Get("NoActiveWarehouse"), UiText.Get("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
           return;
         }
 
@@ -142,7 +144,7 @@ namespace InventoryTracking.UI
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"Depolar yüklenirken hata: {ex.Message}\n\nStackTrace: {ex.StackTrace}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        UiMessage.Show(UiText.Format("WarehouseLoadException", ex.Message, ex.StackTrace), UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
         // Form_Load içindeyken this.Close() çağırmak tehlikelidir. Application.Exit() daha güvenlidir.
         Application.Exit();
       }
@@ -160,16 +162,17 @@ namespace InventoryTracking.UI
           _selectedDepoId = 0;
           _loadedStocks.Clear();
           ApplyStockFilter();
-          toolStripDepot.Text = "Depo seçilmedi";
+          toolStripDepot.Text = UiText.Get("NoWarehouseSelected");
           return;
         }
         _selectedDepoId = depoId;
         _loadedStocks = _stokService.GetStokByDepo(depoId);
         ApplyStockFilter(selectedId);
-        toolStripStatusLabel.Text = "Son yenileme: " + DateTime.Now.ToString("HH:mm:ss");
-        toolStripConnection.Text = "● Bağlı";
+        toolStripStatusLabel.Tag = DateTime.Now;
+        toolStripStatusLabel.Text = UiText.Get("LastRefreshPrefix") + ((DateTime)toolStripStatusLabel.Tag).ToString("HH:mm:ss");
+        toolStripConnection.Text = UiText.Get("Connected");
         toolStripConnection.ForeColor = System.Drawing.Color.FromArgb(21, 138, 76);
-        toolStripConnection.ToolTipText = "Son veri yüklemesinde SQL Server bağlantısı başarılı.";
+        toolStripConnection.ToolTipText = UiText.Get("ConnectionOkHelp");
         toolStripDepot.Text = cmbDepo.Text;
       }
       catch (Exception ex)
@@ -177,10 +180,11 @@ namespace InventoryTracking.UI
         // Bağlantı veya sorgu başarısızsa eski depoya ait bilgi ekranda kalmaz.
         _loadedStocks.Clear();
         ApplyStockFilter();
-        toolStripConnection.Text = "● Veri alınamadı";
+        toolStripConnection.Text = UiText.Get("DataUnavailable");
         toolStripConnection.ForeColor = System.Drawing.Color.DarkRed;
-        toolStripStatusLabel.Text = "Yenileme başarısız";
-        MessageBox.Show("Stoklar yüklenirken hata: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        toolStripStatusLabel.Tag = null;
+        toolStripStatusLabel.Text = UiText.Get("RefreshFailed");
+        UiMessage.Show(UiText.Get("StocksLoadError") + ex.Message, UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -203,7 +207,7 @@ namespace InventoryTracking.UI
       }
       catch (Exception ex)
       {
-        MessageBox.Show(ex.Message);
+        UiMessage.Show(ex.Message);
       }
     }
 
@@ -222,7 +226,7 @@ namespace InventoryTracking.UI
     {
       if (dgvStoklar.SelectedRows.Count == 0)
       {
-        MessageBox.Show("Lütfen bir ürün seçiniz", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        UiMessage.Show(UiText.Get("PleaseProduct"), UiText.Get("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return;
       }
 
@@ -231,7 +235,7 @@ namespace InventoryTracking.UI
 
       if (string.IsNullOrWhiteSpace(barkod))
       {
-        MessageBox.Show("Ürün bilgisi alınamadı", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        UiMessage.Show(UiText.Get("ProductReadFailed"), UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
         return;
       }
 
@@ -240,7 +244,7 @@ namespace InventoryTracking.UI
         var urun = _urunService.SearchByBarkod(barkod);
         if (urun == null)
         {
-          MessageBox.Show("Ürün bulunamadı", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          UiMessage.Show(UiText.Get("ProductMissing"), UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
           return;
         }
 
@@ -254,7 +258,7 @@ namespace InventoryTracking.UI
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"İşlem sırasında hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        UiMessage.Show(UiText.Format("OperationException", ex.Message), UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -262,7 +266,7 @@ namespace InventoryTracking.UI
     {
       if (dgvStoklar.SelectedRows.Count == 0)
       {
-        MessageBox.Show("Lütfen bir ürün seçiniz", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        UiMessage.Show(UiText.Get("PleaseProduct"), UiText.Get("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
         return;
       }
 
@@ -270,9 +274,9 @@ namespace InventoryTracking.UI
       string urunAdi = selectedRow.Cells["UrunAdi"].Value?.ToString();
       string barkod = selectedRow.Cells["Barkod"].Value?.ToString();
 
-      DialogResult result = MessageBox.Show(
-          $"'{urunAdi}' ürününü silmek istediğinize emin misiniz?",
-          "Silme Onayı",
+      DialogResult result = UiMessage.Show(
+          UiText.Format("ProductDeletePrompt", urunAdi),
+          UiText.Get("DeleteConfirmation"),
           MessageBoxButtons.YesNo,
           MessageBoxIcon.Question);
 
@@ -288,18 +292,18 @@ namespace InventoryTracking.UI
 
           if (deleteResult.Success)
           {
-            MessageBox.Show(deleteResult.Message, "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            UiMessage.Show(deleteResult.Message, UiText.Get("Success"), MessageBoxButtons.OK, MessageBoxIcon.Information);
             LoadStokList();
           }
           else
           {
-            MessageBox.Show(deleteResult.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            UiMessage.Show(deleteResult.Message, UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
           }
         }
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"Silme işlemi sırasında hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        UiMessage.Show(UiText.Format("DeleteException", ex.Message), UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -345,9 +349,9 @@ namespace InventoryTracking.UI
 
           if (urun != null)
           {
-            DialogResult cevap = MessageBox.Show(
-                $"Bu barkod numarasına sahip bir ürün zaten mevcut: {urun.UrunAdi}.\nÜrün güncelleme formunu açmak ister misiniz?",
-                "Ürün Zaten Kayıtlı",
+            DialogResult cevap = UiMessage.Show(
+                UiText.Format("ProductExistsPrompt", urun.UrunAdi),
+                UiText.Get("ProductRegistered"),
                 MessageBoxButtons.YesNo,
                 MessageBoxIcon.Question);
 
@@ -367,13 +371,13 @@ namespace InventoryTracking.UI
             var pasifUrun = urunService.SearchInactiveByBarkod(arananBarkod);
             if (pasifUrun != null)
             {
-              var cevap = MessageBox.Show(
-                $"{pasifUrun.UrunAdi} pasif durumda. Ürünü yeniden etkinleştirmek ister misiniz? Mevcut stok kayıtları korunur.",
-                "Pasif Ürün", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+              var cevap = UiMessage.Show(
+                UiText.Format("ProductReactivatePrompt", pasifUrun.UrunAdi),
+                UiText.Get("InactiveProduct"), MessageBoxButtons.YesNo, MessageBoxIcon.Question);
               if (cevap == DialogResult.Yes)
               {
                 var sonuc = urunService.ReactivateProduct(pasifUrun.UrunId);
-                MessageBox.Show(sonuc.Message, sonuc.Success ? "Başarılı" : "Hata",
+                UiMessage.Show(sonuc.Message, sonuc.Success ? UiText.Get("Success") : UiText.Get("Error"),
                   MessageBoxButtons.OK, sonuc.Success ? MessageBoxIcon.Information : MessageBoxIcon.Error);
                 if (sonuc.Success) LoadStokList();
               }
@@ -381,14 +385,14 @@ namespace InventoryTracking.UI
               txtBarkod.Focus();
               return;
             }
-            MessageBox.Show("Böyle bir ürün bulunmamaktadır.", "Ürün Bulunamadı",
+            UiMessage.Show(UiText.Get("ProductNotRegistered"), UiText.Get("ProductNotFoundTitle"),
               MessageBoxButtons.OK, MessageBoxIcon.Information);
             var malzemeService = new MalzemeService();
             var malzeme = malzemeService.GetByBarkod(arananBarkod);
             if (malzeme == null)
             {
-              MessageBox.Show($"{arananBarkod} numaralı malzeme bulunamadı. Önce yeni malzeme kaydı oluşturun.",
-                "Malzeme Bulunamadı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+              UiMessage.Show(UiText.Format("MaterialNumberMissing", arananBarkod),
+                UiText.Get("MaterialNotFoundTitle"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
               using (var malzemeFormu = new MalzemeKayitForm(arananBarkod))
               {
                 if (malzemeFormu.ShowDialog(this) != DialogResult.OK)
@@ -411,7 +415,7 @@ namespace InventoryTracking.UI
         }
         catch (Exception ex)
         {
-          MessageBox.Show($"İşlem sırasında hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          UiMessage.Show(UiText.Format("OperationErrorDetail", ex.Message), UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
       }
     }
@@ -433,7 +437,7 @@ namespace InventoryTracking.UI
         var urun = _urunService.SearchByBarkod(selected.Barkod);
         if (urun == null)
         {
-          MessageBox.Show("Ürün bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+          UiMessage.Show(UiText.Get("ProductMissingDot"), UiText.Get("Warning"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
           LoadStokList();
           return;
         }
@@ -444,7 +448,7 @@ namespace InventoryTracking.UI
       }
       catch (Exception ex)
       {
-        MessageBox.Show("Stok işlem ekranı açılamadı: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        UiMessage.Show(UiText.Get("StockFormError") + ex.Message, UiText.Get("Error"), MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
@@ -463,15 +467,15 @@ namespace InventoryTracking.UI
       }
       else if (column == "SonHareketTarihi" && !stock.SonHareketTarihi.HasValue)
       {
-        e.Value = "Hareket yok";
+        e.Value = UiText.Get("NoMovement");
         e.FormattingApplied = true;
       }
     }
     private void btnKapat_Click(object sender, EventArgs e)
     {
-      DialogResult result = MessageBox.Show(
-        "Uygulamadan çıkış yapmak istediğinize emin misiniz?",
-        "Çıkış Onayı",
+      DialogResult result = UiMessage.Show(
+        UiText.Get("ExitPrompt"),
+        UiText.Get("ExitConfirmation"),
         MessageBoxButtons.YesNo,
         MessageBoxIcon.Question);
 

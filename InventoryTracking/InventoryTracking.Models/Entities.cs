@@ -1,4 +1,5 @@
-﻿using System;
+using InventoryTracking.Localization;
+using System;
 
 namespace InventoryTracking.Models
 {
@@ -143,9 +144,9 @@ namespace InventoryTracking.Models
       public string Message { get; set; }
       public object Data { get; set; }
 
-      public static OperationResult Ok(string message = "İşlem başarılı", object data = null)
+      public static OperationResult Ok(string message = null, object data = null)
       {
-        return new OperationResult { Success = true, Message = message, Data = data };
+        return new OperationResult { Success = true, Message = message ?? UiText.Get("OperationSuccess"), Data = data };
       }
 
       public static OperationResult Fail(string message)

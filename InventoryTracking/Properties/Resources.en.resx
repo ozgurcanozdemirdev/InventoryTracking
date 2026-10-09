@@ -1,0 +1,1067 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="AppTitle" xml:space="preserve">
+    <value>Inventory Tracking System</value>
+  </data>
+  <data name="AddProduct" xml:space="preserve">
+    <value>New Product</value>
+  </data>
+  <data name="EditProduct" xml:space="preserve">
+    <value>Edit</value>
+  </data>
+  <data name="DeleteProduct" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="Refresh" xml:space="preserve">
+    <value>Refresh</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Save</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Cancel</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Language</value>
+  </data>
+  <data name="Barcode" xml:space="preserve">
+    <value>Barcode</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Category</value>
+  </data>
+  <data name="Categories" xml:space="preserve">
+    <value>Categories</value>
+  </data>
+  <data name="Warehouse" xml:space="preserve">
+    <value>Warehouse</value>
+  </data>
+  <data name="Warehouses" xml:space="preserve">
+    <value>Warehouses</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>Unit</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Quantity</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Price</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Location" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="Inactive" xml:space="preserve">
+    <value>Inactive</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Error</value>
+  </data>
+  <data name="Information" xml:space="preserve">
+    <value>Information</value>
+  </data>
+  <data name="Warning" xml:space="preserve">
+    <value>Warning</value>
+  </data>
+  <data name="Success" xml:space="preserve">
+    <value>Success</value>
+  </data>
+  <data name="Close" xml:space="preserve">
+    <value>Close</value>
+  </data>
+  <data name="Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="Entry" xml:space="preserve">
+    <value>In</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Delete</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>New</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>Product</value>
+  </data>
+  <data name="User" xml:space="preserve">
+    <value>User</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Description</value>
+  </data>
+  <data name="DescriptionLabel" xml:space="preserve">
+    <value>Description:</value>
+  </data>
+  <data name="DescriptionPrefix" xml:space="preserve">
+    <value>Description: </value>
+  </data>
+  <data name="BarcodeSearch" xml:space="preserve">
+    <value>Barcode / Product Search</value>
+  </data>
+  <data name="ScanPlaceholder" xml:space="preserve">
+    <value>Scan a barcode or enter a product name...</value>
+  </data>
+  <data name="SearchAccessible" xml:space="preserve">
+    <value>Search by barcode, product name or material number</value>
+  </data>
+  <data name="SearchHelp" xml:space="preserve">
+    <value>Filter by barcode, product name or material number. Press Enter after scanning to open the entry form.</value>
+  </data>
+  <data name="ConnectionSettings" xml:space="preserve">
+    <value>Connection Settings</value>
+  </data>
+  <data name="ConnectionError" xml:space="preserve">
+    <value>Connection Error</value>
+  </data>
+  <data name="WaitingConnection" xml:space="preserve">
+    <value>Waiting for connection</value>
+  </data>
+  <data name="InvalidConnection" xml:space="preserve">
+    <value>Invalid connection settings: </value>
+  </data>
+  <data name="EmptyConnection" xml:space="preserve">
+    <value>Connection settings cannot be empty.</value>
+  </data>
+  <data name="ConnectionSaveError" xml:space="preserve">
+    <value>Could not save connection settings: </value>
+  </data>
+  <data name="ConnectionVerified" xml:space="preserve">
+    <value>Connection and required tables verified.</value>
+  </data>
+  <data name="SchemaConnectionError" xml:space="preserve">
+    <value>Could not verify the connection or database schema: </value>
+  </data>
+  <data name="TestConnection" xml:space="preserve">
+    <value>Test Connection</value>
+  </data>
+  <data name="StartDate" xml:space="preserve">
+    <value>Start Date:</value>
+  </data>
+  <data name="EndDate" xml:space="preserve">
+    <value>End Date:</value>
+  </data>
+  <data name="InvalidDateRange" xml:space="preserve">
+    <value>The start date cannot be later than the end date.</value>
+  </data>
+  <data name="SelectedProductHint" xml:space="preserve">
+    <value>Details belong to the selected product and warehouse.</value>
+  </data>
+  <data name="UnitPrice" xml:space="preserve">
+    <value>Unit Price</value>
+  </data>
+  <data name="UnitsLoadError" xml:space="preserve">
+    <value>Could not load units: </value>
+  </data>
+  <data name="BarcodeExists" xml:space="preserve">
+    <value>This barcode is already registered.</value>
+  </data>
+  <data name="WarehouseNameExists" xml:space="preserve">
+    <value>A warehouse with this name already exists.</value>
+  </data>
+  <data name="CategoryNameExists" xml:space="preserve">
+    <value>A category with this name already exists.</value>
+  </data>
+  <data name="ProductNameExists" xml:space="preserve">
+    <value>A product with this name already exists.</value>
+  </data>
+  <data name="MaterialBarcodeExists" xml:space="preserve">
+    <value>This material number or barcode is already registered.</value>
+  </data>
+  <data name="MaterialDescriptionExists" xml:space="preserve">
+    <value>This material number or product description is already in use.</value>
+  </data>
+  <data name="ProductMaterialMissing" xml:space="preserve">
+    <value>No material record was found for this product.</value>
+  </data>
+  <data name="ProductNotRegistered" xml:space="preserve">
+    <value>No such product was found.</value>
+  </data>
+  <data name="CsvFilter" xml:space="preserve">
+    <value>CSV File (*.csv)|*.csv</value>
+  </data>
+  <data name="PdfFilter" xml:space="preserve">
+    <value>PDF File (*.pdf)|*.pdf</value>
+  </data>
+  <data name="WarehouseManagementHeader" xml:space="preserve">
+    <value>WAREHOUSE / BRANCH MANAGEMENT</value>
+  </data>
+  <data name="TransferHeader" xml:space="preserve">
+    <value>WAREHOUSE STOCK TRANSFER</value>
+  </data>
+  <data name="WarehouseBranch" xml:space="preserve">
+    <value>Warehouse / Branch</value>
+  </data>
+  <data name="WarehouseNameLabel" xml:space="preserve">
+    <value>Warehouse Name:</value>
+  </data>
+  <data name="WarehouseSelection" xml:space="preserve">
+    <value>Warehouse Selection</value>
+  </data>
+  <data name="WarehouseManagement" xml:space="preserve">
+    <value>Warehouse Management</value>
+  </data>
+  <data name="WarehouseNameRequired" xml:space="preserve">
+    <value>Warehouse name is required.</value>
+  </data>
+  <data name="WarehouseAlreadyActive" xml:space="preserve">
+    <value>Warehouse not found or already active.</value>
+  </data>
+  <data name="WarehouseNotFound" xml:space="preserve">
+    <value>Warehouse not found.</value>
+  </data>
+  <data name="WarehouseStatusError" xml:space="preserve">
+    <value>Could not change warehouse status: </value>
+  </data>
+  <data name="WarehouseAddError" xml:space="preserve">
+    <value>Could not add warehouse: </value>
+  </data>
+  <data name="WarehouseAdded" xml:space="preserve">
+    <value>Warehouse added.</value>
+  </data>
+  <data name="WarehouseActivated" xml:space="preserve">
+    <value>Warehouse activated.</value>
+  </data>
+  <data name="WarehouseFilterError" xml:space="preserve">
+    <value>Could not load warehouse filter: </value>
+  </data>
+  <data name="WarehouseUpdateError" xml:space="preserve">
+    <value>Could not update warehouse: </value>
+  </data>
+  <data name="WarehouseUpdated" xml:space="preserve">
+    <value>Warehouse updated.</value>
+  </data>
+  <data name="WarehouseDeactivateRejected" xml:space="preserve">
+    <value>Cannot deactivate a warehouse containing stock or the last active warehouse.</value>
+  </data>
+  <data name="WarehouseDeactivated" xml:space="preserve">
+    <value>Warehouse deactivated.</value>
+  </data>
+  <data name="NoWarehouseSelected" xml:space="preserve">
+    <value>No warehouse selected</value>
+  </data>
+  <data name="WarehouseSameStatus" xml:space="preserve">
+    <value>Warehouse already has this status.</value>
+  </data>
+  <data name="TransferTitle" xml:space="preserve">
+    <value>Warehouse Stock Transfer</value>
+  </data>
+  <data name="WarehousesLoadError" xml:space="preserve">
+    <value>Could not load warehouses: </value>
+  </data>
+  <data name="Continue" xml:space="preserve">
+    <value>Continue</value>
+  </data>
+  <data name="Change" xml:space="preserve">
+    <value>Change</value>
+  </data>
+  <data name="Period" xml:space="preserve">
+    <value>Period</value>
+  </data>
+  <data name="ReasonRequired" xml:space="preserve">
+    <value>Adjustment reason is required.</value>
+  </data>
+  <data name="Activate" xml:space="preserve">
+    <value>Activate</value>
+  </data>
+  <data name="ReportHint" xml:space="preserve">
+    <value>Choose filters and click Load Report.</value>
+  </data>
+  <data name="PriceNegative" xml:space="preserve">
+    <value>Price cannot be negative.</value>
+  </data>
+  <data name="SelectUnit" xml:space="preserve">
+    <value>Select a valid unit.</value>
+  </data>
+  <data name="SelectUnitDot" xml:space="preserve">
+    <value>Select a valid unit.</value>
+  </data>
+  <data name="SelectWarehouseName" xml:space="preserve">
+    <value>Select a valid warehouse and name.</value>
+  </data>
+  <data name="SelectWarehouseQuantity" xml:space="preserve">
+    <value>Select a valid warehouse and stock quantity.</value>
+  </data>
+  <data name="SelectCategory" xml:space="preserve">
+    <value>Select a valid category.</value>
+  </data>
+  <data name="AdjustmentValidation" xml:space="preserve">
+    <value>Enter a valid quantity and an adjustment reason of up to 500 characters.</value>
+  </data>
+  <data name="InvalidUnitId" xml:space="preserve">
+    <value>Invalid unit ID.</value>
+  </data>
+  <data name="InvalidWarehouseId" xml:space="preserve">
+    <value>Invalid warehouse ID.</value>
+  </data>
+  <data name="InvalidWarehouse" xml:space="preserve">
+    <value>Invalid warehouse selection.</value>
+  </data>
+  <data name="InvalidReportFilter" xml:space="preserve">
+    <value>Invalid movement report filter.</value>
+  </data>
+  <data name="InvalidCategoryId" xml:space="preserve">
+    <value>Invalid category ID.</value>
+  </data>
+  <data name="InvalidCategory" xml:space="preserve">
+    <value>Invalid category selection.</value>
+  </data>
+  <data name="InvalidParameters" xml:space="preserve">
+    <value>Invalid parameters.</value>
+  </data>
+  <data name="InvalidPeriod" xml:space="preserve">
+    <value>Invalid report period.</value>
+  </data>
+  <data name="InvalidStockOperation" xml:space="preserve">
+    <value>Invalid stock operation.</value>
+  </data>
+  <data name="InvalidProductId" xml:space="preserve">
+    <value>Invalid product ID.</value>
+  </data>
+  <data name="InvalidProduct" xml:space="preserve">
+    <value>Invalid product selection.</value>
+  </data>
+  <data name="ShownPrefix" xml:space="preserve">
+    <value>Shown: </value>
+  </data>
+  <data name="SelectedSuffix" xml:space="preserve">
+    <value>   |   Selected: </value>
+  </data>
+  <data name="Yearly" xml:space="preserve">
+    <value>Yearly</value>
+  </data>
+  <data name="Monthly" xml:space="preserve">
+    <value>Monthly</value>
+  </data>
+  <data name="Daily" xml:space="preserve">
+    <value>Daily</value>
+  </data>
+  <data name="MovementDetail" xml:space="preserve">
+    <value>Movement Details</value>
+  </data>
+  <data name="MovementNumber" xml:space="preserve">
+    <value>Movement No.</value>
+  </data>
+  <data name="MovementCount" xml:space="preserve">
+    <value>Movement Count</value>
+  </data>
+  <data name="MovementType" xml:space="preserve">
+    <value>Movement Type</value>
+  </data>
+  <data name="NoMovement" xml:space="preserve">
+    <value>No movements</value>
+  </data>
+  <data name="Ready" xml:space="preserve">
+    <value>Ready</value>
+  </data>
+  <data name="TargetWarehouse" xml:space="preserve">
+    <value>Target Warehouse:</value>
+  </data>
+  <data name="SourceWarehouse" xml:space="preserve">
+    <value>Source Warehouse:</value>
+  </data>
+  <data name="CategoryHeader" xml:space="preserve">
+    <value>CATEGORY MANAGEMENT</value>
+  </data>
+  <data name="CategoryNameLabel" xml:space="preserve">
+    <value>Category Name:</value>
+  </data>
+  <data name="CategoryManagement" xml:space="preserve">
+    <value>Category Management</value>
+  </data>
+  <data name="CategoryNameRequired" xml:space="preserve">
+    <value>Category name is required.</value>
+  </data>
+  <data name="CategoryAdded" xml:space="preserve">
+    <value>Category added successfully.</value>
+  </data>
+  <data name="CategoryInUse" xml:space="preserve">
+    <value>Category is in use and cannot be deleted.</value>
+  </data>
+  <data name="CategoryDeleteRejected" xml:space="preserve">
+    <value>Category not found or used by a product. A category in use cannot be deleted.</value>
+  </data>
+  <data name="CategoryNotFound" xml:space="preserve">
+    <value>Category not found.</value>
+  </data>
+  <data name="CategoryUpdated" xml:space="preserve">
+    <value>Category updated.</value>
+  </data>
+  <data name="CategoryDeleted" xml:space="preserve">
+    <value>Category deleted.</value>
+  </data>
+  <data name="CategoryDeleteError" xml:space="preserve">
+    <value>Could not delete category: </value>
+  </data>
+  <data name="CategoriesLoadError" xml:space="preserve">
+    <value>Could not load categories: </value>
+  </data>
+  <data name="SavedConnectionUnreadable" xml:space="preserve">
+    <value>Could not read saved connection settings. Enter them again.</value>
+  </data>
+  <data name="SaveAndOpen" xml:space="preserve">
+    <value>Save and Open</value>
+  </data>
+  <data name="SourceStockPrefix" xml:space="preserve">
+    <value>Source stock: </value>
+  </data>
+  <data name="SourceStockUnknown" xml:space="preserve">
+    <value>Source stock: -</value>
+  </data>
+  <data name="DifferentWarehouses" xml:space="preserve">
+    <value>Source and target warehouses must be different.</value>
+  </data>
+  <data name="CriticalError" xml:space="preserve">
+    <value>Critical Error</value>
+  </data>
+  <data name="UserLabel" xml:space="preserve">
+    <value>User:</value>
+  </data>
+  <data name="PasswordLabel" xml:space="preserve">
+    <value>Password:</value>
+  </data>
+  <data name="PleaseBarcode" xml:space="preserve">
+    <value>Please enter a barcode.</value>
+  </data>
+  <data name="PleaseUnit" xml:space="preserve">
+    <value>Please select a unit.</value>
+  </data>
+  <data name="PleaseCategory" xml:space="preserve">
+    <value>Please select a category.</value>
+  </data>
+  <data name="PleaseProduct" xml:space="preserve">
+    <value>Please select a product.</value>
+  </data>
+  <data name="PleaseEntryQuantity" xml:space="preserve">
+    <value>Please enter the quantity to add.</value>
+  </data>
+  <data name="PleaseExitQuantity" xml:space="preserve">
+    <value>Please enter the quantity to withdraw.</value>
+  </data>
+  <data name="PleaseProductName" xml:space="preserve">
+    <value>Please enter a product name.</value>
+  </data>
+  <data name="MaximumStock" xml:space="preserve">
+    <value>Max. Stock:</value>
+  </data>
+  <data name="MinimumStock" xml:space="preserve">
+    <value>Min. Stock:</value>
+  </data>
+  <data name="MaterialNotFoundTitle" xml:space="preserve">
+    <value>Material Not Found</value>
+  </data>
+  <data name="EditMaterial" xml:space="preserve">
+    <value>Edit Material</value>
+  </data>
+  <data name="MaterialRecord" xml:space="preserve">
+    <value>Material Record</value>
+  </data>
+  <data name="MaterialNumber" xml:space="preserve">
+    <value>Material No.</value>
+  </data>
+  <data name="MaterialNumberLabel" xml:space="preserve">
+    <value>Material No.:</value>
+  </data>
+  <data name="MaterialUpdateError" xml:space="preserve">
+    <value>Could not update material: </value>
+  </data>
+  <data name="MaterialSaved" xml:space="preserve">
+    <value>Material saved to the catalog.</value>
+  </data>
+  <data name="MaterialCatalogError" xml:space="preserve">
+    <value>Could not read material catalog: </value>
+  </data>
+  <data name="MaterialSaveFailed" xml:space="preserve">
+    <value>Could Not Save Material</value>
+  </data>
+  <data name="MaterialMissing" xml:space="preserve">
+    <value>Material record not found.</value>
+  </data>
+  <data name="MaterialSaveError" xml:space="preserve">
+    <value>Could not save material: </value>
+  </data>
+  <data name="MaterialRequired" xml:space="preserve">
+    <value>Material number, description and unit are required.</value>
+  </data>
+  <data name="MaterialBarcodeRequired" xml:space="preserve">
+    <value>Material number, barcode, description and unit are required.</value>
+  </data>
+  <data name="MaterialLinkedUpdated" xml:space="preserve">
+    <value>Material and linked product details updated.</value>
+  </data>
+  <data name="CurrentStock" xml:space="preserve">
+    <value>Current Stock:</value>
+  </data>
+  <data name="PdfPrinterMissing" xml:space="preserve">
+    <value>Microsoft Print to PDF printer was not found.</value>
+  </data>
+  <data name="AdjustmentReasonPrompt" xml:space="preserve">
+    <value>Enter the reason for the quantity change:</value>
+  </data>
+  <data name="StockLimitsOrder" xml:space="preserve">
+    <value>Minimum stock cannot exceed maximum stock.</value>
+  </data>
+  <data name="StockLimitsNegative" xml:space="preserve">
+    <value>Stock limits cannot be negative.</value>
+  </data>
+  <data name="NullModel" xml:space="preserve">
+    <value>Model cannot be null.</value>
+  </data>
+  <data name="NetChange" xml:space="preserve">
+    <value>Net Change</value>
+  </data>
+  <data name="NormalIn" xml:space="preserve">
+    <value>Regular In</value>
+  </data>
+  <data name="NormalOut" xml:space="preserve">
+    <value>Regular Out</value>
+  </data>
+  <data name="NormalMovements" xml:space="preserve">
+    <value>Regular In/Out</value>
+  </data>
+  <data name="InactiveProduct" xml:space="preserve">
+    <value>Inactive Product</value>
+  </data>
+  <data name="InactiveProductMissing" xml:space="preserve">
+    <value>Inactive product not found.</value>
+  </data>
+  <data name="ReportFailed" xml:space="preserve">
+    <value>Could not load report.</value>
+  </data>
+  <data name="ReportLoading" xml:space="preserve">
+    <value>Loading report...</value>
+  </data>
+  <data name="SqlServerRequired" xml:space="preserve">
+    <value>SQL Server and database name are required.</value>
+  </data>
+  <data name="SqlCredentialsRequired" xml:space="preserve">
+    <value>SQL username and password are required.</value>
+  </data>
+  <data name="AdjustmentHeader" xml:space="preserve">
+    <value>STOCK ADJUSTMENT REASON</value>
+  </data>
+  <data name="ReportHeader" xml:space="preserve">
+    <value>STOCK MOVEMENT REPORT</value>
+  </data>
+  <data name="SummaryPrintTitle" xml:space="preserve">
+    <value>STOCK MOVEMENT REPORT - SUMMARY</value>
+  </data>
+  <data name="DetailPrintTitle" xml:space="preserve">
+    <value>STOCK MOVEMENT REPORT - DETAILS</value>
+  </data>
+  <data name="MainHeader" xml:space="preserve">
+    <value>INVENTORY TRACKING SYSTEM</value>
+  </data>
+  <data name="CountAdjustment" xml:space="preserve">
+    <value>Count Adjustment</value>
+  </data>
+  <data name="CountIn" xml:space="preserve">
+    <value>Count In</value>
+  </data>
+  <data name="CountOut" xml:space="preserve">
+    <value>Count Out</value>
+  </data>
+  <data name="NoFilteredMovements" xml:space="preserve">
+    <value>No stock movements match the selected filters.</value>
+  </data>
+  <data name="MainHint" xml:space="preserve">
+    <value>Open a stock operation for the selected product or double-click its row.</value>
+  </data>
+  <data name="StockQuantityHelp" xml:space="preserve">
+    <value>Stock quantity of the selected product in the selected warehouse</value>
+  </data>
+  <data name="DeleteDeactivate" xml:space="preserve">
+    <value>Delete / Deactivate</value>
+  </data>
+  <data name="DeleteConfirmation" xml:space="preserve">
+    <value>Confirm Deletion</value>
+  </data>
+  <data name="LastMovement" xml:space="preserve">
+    <value>Last Movement</value>
+  </data>
+  <data name="ConnectionOkHelp" xml:space="preserve">
+    <value>SQL Server connection succeeded during the last data load.</value>
+  </data>
+  <data name="LastRefreshPrefix" xml:space="preserve">
+    <value>Last refreshed: </value>
+  </data>
+  <data name="StockStatusLabel" xml:space="preserve">
+    <value>Stock Status:</value>
+  </data>
+  <data name="AdjustmentTitle" xml:space="preserve">
+    <value>Stock Adjustment Reason</value>
+  </data>
+  <data name="StockEntry" xml:space="preserve">
+    <value>Stock In</value>
+  </data>
+  <data name="StockExit" xml:space="preserve">
+    <value>Stock Out</value>
+  </data>
+  <data name="StockQuantity" xml:space="preserve">
+    <value>Stock Quantity</value>
+  </data>
+  <data name="MainTitle" xml:space="preserve">
+    <value>Inventory Tracking System</value>
+  </data>
+  <data name="StockUpdated" xml:space="preserve">
+    <value>Stock updated successfully.</value>
+  </data>
+  <data name="StockFormError" xml:space="preserve">
+    <value>Could not open stock operation: </value>
+  </data>
+  <data name="StockActiveRequired" xml:space="preserve">
+    <value>Product and warehouse must be active for stock operations.</value>
+  </data>
+  <data name="StockAdjustmentReason" xml:space="preserve">
+    <value>Changing stock quantity requires an adjustment reason of up to 500 characters.</value>
+  </data>
+  <data name="StockReadError" xml:space="preserve">
+    <value>Could not read stock: </value>
+  </data>
+  <data name="StockLevelPrefix" xml:space="preserve">
+    <value>Stock level: </value>
+  </data>
+  <data name="TransferError" xml:space="preserve">
+    <value>Could not transfer stock: </value>
+  </data>
+  <data name="StockOperationLabel" xml:space="preserve">
+    <value>Stock Operation:</value>
+  </data>
+  <data name="StocksLoadError" xml:space="preserve">
+    <value>Could not load stocks: </value>
+  </data>
+  <data name="OutOfStock" xml:space="preserve">
+    <value>Out of Stock</value>
+  </data>
+  <data name="InStock" xml:space="preserve">
+    <value>In Stock</value>
+  </data>
+  <data name="LowStock" xml:space="preserve">
+    <value>Low Stock</value>
+  </data>
+  <data name="CriticalStock" xml:space="preserve">
+    <value>Critical</value>
+  </data>
+  <data name="LowStockCode" xml:space="preserve">
+    <value>Low</value>
+  </data>
+  <data name="TrustCertificate" xml:space="preserve">
+    <value>Trust certificate (trusted local server only)</value>
+  </data>
+  <data name="DateTime" xml:space="preserve">
+    <value>Date / Time</value>
+  </data>
+  <data name="TransferIn" xml:space="preserve">
+    <value>Transfer In</value>
+  </data>
+  <data name="TransferOut" xml:space="preserve">
+    <value>Transfer Out</value>
+  </data>
+  <data name="TransferNumber" xml:space="preserve">
+    <value>Transfer No.</value>
+  </data>
+  <data name="TransferFailed" xml:space="preserve">
+    <value>Transfer Failed</value>
+  </data>
+  <data name="TransferDescriptionRequired" xml:space="preserve">
+    <value>Transfer description is required.</value>
+  </data>
+  <data name="TransferDataError" xml:space="preserve">
+    <value>Could not load transfer details: </value>
+  </data>
+  <data name="TransferPrerequisites" xml:space="preserve">
+    <value>A transfer requires at least two active warehouses and one product.</value>
+  </data>
+  <data name="AllWarehouses" xml:space="preserve">
+    <value>All warehouses</value>
+  </data>
+  <data name="AllProducts" xml:space="preserve">
+    <value>All products</value>
+  </data>
+  <data name="All" xml:space="preserve">
+    <value>All</value>
+  </data>
+  <data name="ExitPrompt" xml:space="preserve">
+    <value>Are you sure you want to exit the application?</value>
+  </data>
+  <data name="DatabaseHeader" xml:space="preserve">
+    <value>DATABASE CONNECTION</value>
+  </data>
+  <data name="DatabaseSettings" xml:space="preserve">
+    <value>Database Connection Settings</value>
+  </data>
+  <data name="DatabaseConnection" xml:space="preserve">
+    <value>Database Connection</value>
+  </data>
+  <data name="EmptyDbConfig" xml:space="preserve">
+    <value>Database connection string (DBConStr) is empty. Check App.config and Settings.settings.</value>
+  </data>
+  <data name="DatabaseLabel" xml:space="preserve">
+    <value>Database:</value>
+  </data>
+  <data name="WindowsAuth" xml:space="preserve">
+    <value>Use Windows authentication</value>
+  </data>
+  <data name="NewMaterial" xml:space="preserve">
+    <value>New Material Record</value>
+  </data>
+  <data name="NewProductTitle" xml:space="preserve">
+    <value>Add New Product</value>
+  </data>
+  <data name="InitialStockDescription" xml:space="preserve">
+    <value>New product record and initial stock entry.</value>
+  </data>
+  <data name="RefreshFailed" xml:space="preserve">
+    <value>Refresh failed</value>
+  </data>
+  <data name="InsufficientStock" xml:space="preserve">
+    <value>Insufficient stock. The operation could not be completed.</value>
+  </data>
+  <data name="Direction" xml:space="preserve">
+    <value>Direction</value>
+  </data>
+  <data name="DirectionLabel" xml:space="preserve">
+    <value>Direction:</value>
+  </data>
+  <data name="ExitConfirmation" xml:space="preserve">
+    <value>Confirm Exit</value>
+  </data>
+  <data name="SetupHint" xml:space="preserve">
+    <value>Run the initial SQL script or required database migrations first.</value>
+  </data>
+  <data name="PleaseWarehouse" xml:space="preserve">
+    <value>Please select a warehouse first.</value>
+  </data>
+  <data name="PleaseCategoryFirst" xml:space="preserve">
+    <value>Please select a category first.</value>
+  </data>
+  <data name="Previous" xml:space="preserve">
+    <value>Previous</value>
+  </data>
+  <data name="Summary" xml:space="preserve">
+    <value>Summary</value>
+  </data>
+  <data name="ProductInformationHeader" xml:space="preserve">
+    <value>PRODUCT INFORMATION</value>
+  </data>
+  <data name="ProductDetailHeader" xml:space="preserve">
+    <value>PRODUCT DETAILS</value>
+  </data>
+  <data name="ProductBarcodeLabel" xml:space="preserve">
+    <value>Product / Barcode:</value>
+  </data>
+  <data name="ProductNameLabel" xml:space="preserve">
+    <value>Product Name:</value>
+  </data>
+  <data name="ProductInformation" xml:space="preserve">
+    <value>Product Information</value>
+  </data>
+  <data name="ProductNotFoundTitle" xml:space="preserve">
+    <value>Product Not Found</value>
+  </data>
+  <data name="ProductDetail" xml:space="preserve">
+    <value>Product Details</value>
+  </data>
+  <data name="EditProductTitle" xml:space="preserve">
+    <value>Edit Product</value>
+  </data>
+  <data name="ProductRegistered" xml:space="preserve">
+    <value>Product Already Registered</value>
+  </data>
+  <data name="ProductNameRequired" xml:space="preserve">
+    <value>Product name is required.</value>
+  </data>
+  <data name="ProductCatalogMatch" xml:space="preserve">
+    <value>Product description and unit must match the material catalog record.</value>
+  </data>
+  <data name="ProductAdded" xml:space="preserve">
+    <value>Product added successfully.</value>
+  </data>
+  <data name="ProductUpdated" xml:space="preserve">
+    <value>Product updated successfully.</value>
+  </data>
+  <data name="ProductDeleted" xml:space="preserve">
+    <value>Product deleted successfully.</value>
+  </data>
+  <data name="ProductReadFailed" xml:space="preserve">
+    <value>Could not read product details.</value>
+  </data>
+  <data name="ProductMissing" xml:space="preserve">
+    <value>Product not found.</value>
+  </data>
+  <data name="ProductMissingDot" xml:space="preserve">
+    <value>Product not found.</value>
+  </data>
+  <data name="ProductActivateError" xml:space="preserve">
+    <value>Could not activate product: </value>
+  </data>
+  <data name="TransferInactive" xml:space="preserve">
+    <value>The product or one of the selected warehouses is inactive.</value>
+  </data>
+  <data name="ProductActivated" xml:space="preserve">
+    <value>Product reactivated. Existing stock records were preserved.</value>
+  </data>
+  <data name="TransferValidation" xml:space="preserve">
+    <value>Select a product, two different warehouses, a positive quantity and a description of up to 500 characters.</value>
+  </data>
+  <data name="ProductLabel" xml:space="preserve">
+    <value>Product:</value>
+  </data>
+  <data name="OperationFailed" xml:space="preserve">
+    <value>Operation Failed</value>
+  </data>
+  <data name="OperationSuccess" xml:space="preserve">
+    <value>Operation successful.</value>
+  </data>
+  <data name="EntryAction" xml:space="preserve">
+    <value>↑ Stock In</value>
+  </data>
+  <data name="ExitAction" xml:space="preserve">
+    <value>↓ Stock Out</value>
+  </data>
+  <data name="PdfAction" xml:space="preserve">
+    <value>↓ Export PDF</value>
+  </data>
+  <data name="LoadReportAction" xml:space="preserve">
+    <value>↻ Load Report</value>
+  </data>
+  <data name="ClearAction" xml:space="preserve">
+    <value>↻ Clear</value>
+  </data>
+  <data name="Connected" xml:space="preserve">
+    <value>● Connected</value>
+  </data>
+  <data name="DataUnavailable" xml:space="preserve">
+    <value>● Data unavailable</value>
+  </data>
+  <data name="UpdateAction" xml:space="preserve">
+    <value>✎ Update</value>
+  </data>
+  <data name="CsvAction" xml:space="preserve">
+    <value>✓ Export CSV</value>
+  </data>
+  <data name="AddAction" xml:space="preserve">
+    <value>✓ Add</value>
+  </data>
+  <data name="SaveAction" xml:space="preserve">
+    <value>✓ Save</value>
+  </data>
+  <data name="TransferAction" xml:space="preserve">
+    <value>✓ Transfer</value>
+  </data>
+  <data name="CloseAction" xml:space="preserve">
+    <value>✕ Close</value>
+  </data>
+  <data name="DeleteAction" xml:space="preserve">
+    <value>✕ Delete</value>
+  </data>
+  <data name="CancelAction" xml:space="preserve">
+    <value>✕ Cancel</value>
+  </data>
+  <data name="Movements" xml:space="preserve">
+    <value>Movements</value>
+  </data>
+  <data name="ExportEmpty" xml:space="preserve">
+    <value>No data is available to export.</value>
+  </data>
+  <data name="ExportError" xml:space="preserve">
+    <value>Export failed:
+</value>
+  </data>
+  <data name="NoActiveWarehouse" xml:space="preserve">
+    <value>No active warehouse was found. Add one using the Warehouses button.</value>
+  </data>
+  <data name="PdfError" xml:space="preserve">
+    <value>Could not create PDF. Make sure Microsoft Print to PDF is enabled.
+Details: </value>
+  </data>
+  <data name="ReportDataError" xml:space="preserve">
+    <value>Could not load report data:
+
+</value>
+  </data>
+  <data name="EnvironmentConnectionHint" xml:space="preserve">
+    <value>
+
+Correct the connection settings in the environment variable.</value>
+  </data>
+  <data name="MaterialNumberMissing" xml:space="preserve">
+    <value>Material {0} was not found. Create a material record first.</value>
+  </data>
+  <data name="CategoryAddException" xml:space="preserve">
+    <value>Could not add category: {0}</value>
+  </data>
+  <data name="CategoryUpdateException" xml:space="preserve">
+    <value>Could not update category: {0}</value>
+  </data>
+  <data name="ProductListException" xml:space="preserve">
+    <value>Could not list products: {0}</value>
+  </data>
+  <data name="ProductAddException" xml:space="preserve">
+    <value>Could not add product: {0}</value>
+  </data>
+  <data name="ProductUpdateException" xml:space="preserve">
+    <value>Could not update product: {0}</value>
+  </data>
+  <data name="ProductDeleteException" xml:space="preserve">
+    <value>Could not delete product: {0}</value>
+  </data>
+  <data name="StockUpdateException" xml:space="preserve">
+    <value>Could not update stock: {0}</value>
+  </data>
+  <data name="TransferCompleted" xml:space="preserve">
+    <value>Transfer completed. Reference: {0}</value>
+  </data>
+  <data name="StockSetException" xml:space="preserve">
+    <value>Could not set stock quantity: {0}</value>
+  </data>
+  <data name="LoadException" xml:space="preserve">
+    <value>Could not load data: {0}</value>
+  </data>
+  <data name="ProductDataException" xml:space="preserve">
+    <value>Could not load product data: {0}</value>
+  </data>
+  <data name="OperationException" xml:space="preserve">
+    <value>Operation failed: {0}</value>
+  </data>
+  <data name="WarehouseDeactivatePrompt" xml:space="preserve">
+    <value>Warehouse '{0}' will be deactivated. Stock history will be preserved. Continue?</value>
+  </data>
+  <data name="CategoryDeletePrompt" xml:space="preserve">
+    <value>Delete category '{0}'?</value>
+  </data>
+  <data name="WarehouseLoadException" xml:space="preserve">
+    <value>Could not load warehouses: {0}
+
+Stack trace: {1}</value>
+  </data>
+  <data name="ProductDeletePrompt" xml:space="preserve">
+    <value>Are you sure you want to delete product '{0}'?</value>
+  </data>
+  <data name="DeleteException" xml:space="preserve">
+    <value>Deletion failed: {0}</value>
+  </data>
+  <data name="ProductExistsPrompt" xml:space="preserve">
+    <value>A product with this barcode already exists: {0}.
+Open the product edit form?</value>
+  </data>
+  <data name="ProductReactivatePrompt" xml:space="preserve">
+    <value>{0} is inactive. Reactivate it? Existing stock records will be preserved.</value>
+  </data>
+  <data name="OperationErrorDetail" xml:space="preserve">
+    <value>An error occurred during the operation: {0}</value>
+  </data>
+  <data name="ProductInfoException" xml:space="preserve">
+    <value>Could not load product details: {0}</value>
+  </data>
+  <data name="StockInfoException" xml:space="preserve">
+    <value>Could not load stock details: {0}</value>
+  </data>
+  <data name="MaximumStockPrompt" xml:space="preserve">
+    <value>The new quantity ({0}) will exceed maximum stock ({1}).
+Continue?</value>
+  </data>
+  <data name="StockUpdatedQuantity" xml:space="preserve">
+    <value>Stock updated successfully.
+New quantity: {0}</value>
+  </data>
+  <data name="ReportSaved" xml:space="preserve">
+    <value>Report saved:
+{0}</value>
+  </data>
+  <data name="PdfSaved" xml:space="preserve">
+    <value>PDF saved successfully:
+{0}</value>
+  </data>
+  <data name="CountTotals" xml:space="preserve">
+    <value>Count: +{0:N0} / -{1:N0}
+</value>
+  </data>
+  <data name="NetTotals" xml:space="preserve">
+    <value>Net change: {0:N0}   Movements: {1:N0}</value>
+  </data>
+  <data name="PrintChangeStock" xml:space="preserve">
+    <value>Change: {0:+#;-#;0}  Stock: {1} → {2}  </value>
+  </data>
+  <data name="PrintUserTransfer" xml:space="preserve">
+    <value>User: {0}  Transfer: {1}</value>
+  </data>
+  <data name="StartupError" xml:space="preserve">
+    <value>Could not start the application:
+
+{0}
+
+Stack trace:
+{1}</value>
+  </data>
+  <data name="StockInDirection" xml:space="preserve">
+    <value>In</value>
+  </data>
+  <data name="StockOutDirection" xml:space="preserve">
+    <value>Out</value>
+  </data>
+  <data name="StockLabel" xml:space="preserve">
+    <value>Stock:</value>
+  </data>
+  <data name="BarcodeLabel" xml:space="preserve">
+    <value>Barcode:</value>
+  </data>
+  <data name="CategoryLabel" xml:space="preserve">
+    <value>Category:</value>
+  </data>
+  <data name="UnitLabel" xml:space="preserve">
+    <value>Unit:</value>
+  </data>
+  <data name="PriceLabel" xml:space="preserve">
+    <value>Price:</value>
+  </data>
+  <data name="QuantityLabel" xml:space="preserve">
+    <value>Quantity:</value>
+  </data>
+  <data name="WarehouseLabel" xml:space="preserve">
+    <value>Warehouse:</value>
+  </data>
+  <data name="LocationLabel" xml:space="preserve">
+    <value>Location:</value>
+  </data>
+  <data name="MovementLabel" xml:space="preserve">
+    <value>Movement:</value>
+  </data>
+  <data name="AdjustmentsTotal" xml:space="preserve">
+    <value>Count: +{0:N0} / -{1:N0}
+</value>
+  </data>
+  <data name="RegularTotal" xml:space="preserve">
+    <value>Regular: +{0:N0} / -{1:N0}   </value>
+  </data>
+  <data name="TransferTotal" xml:space="preserve">
+    <value>Transfer: +{0:N0} / -{1:N0}   </value>
+  </data>
+  <data name="TransferCaption" xml:space="preserve">
+    <value>Transfer</value>
+  </data>
+  <data name="WarehouseLocationHeader" xml:space="preserve">
+    <value>Location</value>
+  </data>
+  <data name="WarehouseLocationLabel" xml:space="preserve">
+    <value>Location:</value>
+  </data>
+</root>

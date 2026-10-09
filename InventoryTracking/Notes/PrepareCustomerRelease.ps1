@@ -1,4 +1,4 @@
-param([switch]$SkipBuild, [string]$OutputRoot)
+﻿param([switch]$SkipBuild, [string]$OutputRoot)
 
 $ErrorActionPreference = 'Stop'
 $project = Split-Path $PSScriptRoot -Parent
@@ -43,10 +43,15 @@ GO
 if ([string]::IsNullOrWhiteSpace($OutputRoot)) {
   $OutputRoot = Join-Path $workspace 'dist'
 }
-$package = Join-Path $OutputRoot ('InventoryTracking-V1-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
+$version = [Reflection.AssemblyName]::GetAssemblyName($exe).Version.ToString(3)
+$satellite = Join-Path $source 'en\InventoryTracking.resources.dll'
+if (-not (Test-Path -LiteralPath $satellite)) { throw 'English resources are missing. Rebuild Release before packaging.' }
+$package = Join-Path $OutputRoot ('InventoryTracking-v' + $version + '-' + (Get-Date -Format 'yyyyMMdd-HHmmss'))
 $sqlFolder = Join-Path $package 'SQL'
 New-Item -ItemType Directory -Path $sqlFolder -Force | Out-Null
 Copy-Item -LiteralPath $exe, $config -Destination $package
+# İngilizce kaynak DLL'i uygulamanın yanındaki en klasöründe bulunmalıdır.
+Copy-Item -LiteralPath (Join-Path $source 'en') -Destination $package -Recurse
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'MusteriKurulumu.md') -Destination $package
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'BackupAndVerify.ps1') -Destination $package
 foreach ($name in @(
@@ -55,6 +60,8 @@ foreach ($name in @(
   '2026-09-26_V1_MalzemeBirimGuncelleme.sql',
   '2026-09-26_V1_StokTransferi.sql',
   '2026-10-06_MalzemeNumarasiSadelestirme.sql',
+  '2026-10-10_UrunKodlariVeKategoriAdlari.sql',
+  'DemoData.sql',
   '2026-09-26_V1_UygulamaYetkileri.sql')) {
   Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination $sqlFolder
 }

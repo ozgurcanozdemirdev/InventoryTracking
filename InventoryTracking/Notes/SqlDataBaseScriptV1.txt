@@ -323,8 +323,8 @@ PRINT 'Stored Procedures olusturuldu.';
 GO
 
 -- 14. DEMO VERISI EKLE - KATEGORILER
-INSERT INTO Kategori (KategoriAdi, Aciklama) VALUES ('Icecek', 'Su ve diger icecekler');
-INSERT INTO Kategori (KategoriAdi, Aciklama) VALUES ('Gida', 'Gida urunleri');
+INSERT INTO Kategori (KategoriAdi, Aciklama) VALUES (N'İçecek', N'Su ve diğer içecekler');
+INSERT INTO Kategori (KategoriAdi, Aciklama) VALUES (N'Gıda', N'Gıda ürünleri');
 INSERT INTO Kategori (KategoriAdi, Aciklama) VALUES ('Temizlik', 'Temizlik malzemeleri');
 PRINT 'Kategoriler eklendi.';
 GO
