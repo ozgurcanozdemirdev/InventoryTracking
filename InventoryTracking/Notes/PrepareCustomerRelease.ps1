@@ -24,7 +24,7 @@ if (-not [string]::IsNullOrWhiteSpace($builder.Password) -or -not [string]::IsNu
   throw 'Release configuration contains SQL credentials; package was not created.'
 }
 $demoMarker = '-- 14. DEMO VERISI EKLE - KATEGORILER'
-$fullSchema = [IO.File]::ReadAllText((Join-Path $PSScriptRoot 'SqlDataBaseScriptV1.txt'))
+$fullSchema = [IO.File]::ReadAllText((Join-Path $PSScriptRoot 'DatabaseSetup.sql'))
 $demoStart = $fullSchema.IndexOf($demoMarker, [StringComparison]::Ordinal)
 if ($demoStart -lt 0) { throw 'Demo-data boundary was not found in the SQL schema; package was not created.' }
 $customerSchema = $fullSchema.Substring(0, $demoStart) + @'
@@ -52,20 +52,21 @@ New-Item -ItemType Directory -Path $sqlFolder -Force | Out-Null
 Copy-Item -LiteralPath $exe, $config -Destination $package
 # İngilizce kaynak DLL'i uygulamanın yanındaki en klasöründe bulunmalıdır.
 Copy-Item -LiteralPath (Join-Path $source 'en') -Destination $package -Recurse
-Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'MusteriKurulumu.md') -Destination $package
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'CustomerInstallation.md') -Destination $package
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'BackupAndVerify.ps1') -Destination $package
 foreach ($name in @(
-  '2026-09-26_UrunAdiBenzersiz.sql',
-  '2026-09-26_MalzemeKatalogVeHareketYonu.sql',
-  '2026-09-26_V1_MalzemeBirimGuncelleme.sql',
-  '2026-09-26_V1_StokTransferi.sql',
-  '2026-10-06_MalzemeNumarasiSadelestirme.sql',
-  '2026-10-10_UrunKodlariVeKategoriAdlari.sql',
+  '2026-09-26_UniqueProductName.sql',
+  '2026-09-26_MaterialCatalogAndMovementDirection.sql',
+  '2026-09-26_V1_MaterialUnitUpdate.sql',
+  '2026-09-26_V1_StockTransfer.sql',
+  '2026-10-06_MaterialNumberSimplification.sql',
+  '2026-10-10_ProductCodesAndCategoryNames.sql',
+  '2026-10-10_SalesReturnsAndAuditLog.sql',
   'DemoData.sql',
-  '2026-09-26_V1_UygulamaYetkileri.sql')) {
+  '2026-09-26_V1_ApplicationPermissions.sql')) {
   Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination $sqlFolder
 }
-[IO.File]::WriteAllText((Join-Path $sqlFolder 'SqlDataBaseScriptV1_Customer.sql'),
+[IO.File]::WriteAllText((Join-Path $sqlFolder 'DatabaseSetup.Customer.sql'),
   $customerSchema, (New-Object Text.UTF8Encoding($true)))
 $zip = $package + '.zip'
 Compress-Archive -LiteralPath $package -DestinationPath $zip

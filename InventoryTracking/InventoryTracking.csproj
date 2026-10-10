@@ -1,5 +1,130 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version='1.0' encoding='utf-8'?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="15.0">
+  <ItemGroup>
+    <Compile Include="Business\CategoryService.cs" />
+    <Compile Include="Business\MaterialService.cs" />
+    <Compile Include="Business\ProductService.cs" />
+    <Compile Include="Business\SalesReturnReportService.cs" />
+    <Compile Include="Business\SalesReturnService.cs" />
+    <Compile Include="Business\StockService.cs" />
+    <Compile Include="Business\UnitService.cs" />
+    <Compile Include="Business\WarehouseService.cs" />
+    <Compile Include="Business\ZReportService.cs" />
+    <Compile Include="Connection\ConnectionSettingsStore.cs" />
+    <Compile Include="Connection\SqlDatabaseConnection.cs" />
+    <Compile Include="DataAccess\CategoryRepository.cs" />
+    <Compile Include="DataAccess\MaterialCatalogRepository.cs" />
+    <Compile Include="DataAccess\ProductRepository.cs" />
+    <Compile Include="DataAccess\SalesReturnRepository.cs" />
+    <Compile Include="DataAccess\StockRepository.cs" />
+    <Compile Include="DataAccess\UnitRepository.cs" />
+    <Compile Include="DataAccess\WarehouseRepository.cs" />
+    <Compile Include="Models\Category.cs" />
+    <Compile Include="Models\MaterialCatalog.cs" />
+    <Compile Include="Models\MovementReportDetail.cs" />
+    <Compile Include="Models\MovementReportFilter.cs" />
+    <Compile Include="Models\MovementReportSummary.cs" />
+    <Compile Include="Models\OperationResult.cs" />
+    <Compile Include="Models\Product.cs" />
+    <Compile Include="Models\ProductViewModel.cs" />
+    <Compile Include="Models\SalesReturnRecord.cs" />
+    <Compile Include="Models\SalesReturnReportSummary.cs" />
+    <Compile Include="Models\Stock.cs" />
+    <Compile Include="Models\StockMovement.cs" />
+    <Compile Include="Models\StockStatusType.cs" />
+    <Compile Include="Models\Unit.cs" />
+    <Compile Include="Models\Warehouse.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Reporting\ExcelReportExporter.cs" />
+    <Compile Include="UI\Controls\InventoryIcon.cs" />
+    <Compile Include="UI\Controls\InventoryIcons.cs" />
+    <Compile Include="UI\Controls\InventorySearchTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Controls\InventoryValueLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\AddEditProductForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\AddEditProductForm.Designer.cs">
+      <DependentUpon>AddEditProductForm.cs</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\CategoryManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\ConnectionSetupForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\MainForm.Appearance.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\MainForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\MainForm.Designer.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\MainForm.Language.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\MainForm.Sales.cs">
+      <DependentUpon>MainForm.cs</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\MaterialRegistrationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\ProductDetailForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\ProductDetailForm.Designer.cs">
+      <DependentUpon>ProductDetailForm.cs</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\SalesReturnForm.cs" />
+    <Compile Include="UI\Forms\StockAdjustmentReasonForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\StockTransferForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\WarehouseManagementForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\ZReportForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\ZReportForm.Designer.cs">
+      <DependentUpon>ZReportForm.cs</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UI\Forms\ZReportForm.Financial.cs">
+      <DependentUpon>ZReportForm.cs</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="UI\Localization\LanguageManager.cs" />
+    <Compile Include="UI\Localization\LocalizedForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\Localization\UiMessage.cs" />
+    <Compile Include="UI\Localization\UiText.cs" />
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -45,78 +170,10 @@
     <Reference Include="System.Security" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Compile Include="InventoryTracking.UI\MainForm.Language.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Localization\UiText.cs" />
-    <Compile Include="Localization\LocalizedForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Localization\UiMessage.cs" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.IO.Compression.FileSystem" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="InventoryTracking.Business\Services.cs" />
-    <Compile Include="InventoryTracking.Connection\SqlDBConnection.cs" />
-    <Compile Include="InventoryTracking.Connection\ConnectionSettingsStore.cs" />
-    <Compile Include="InventoryTracking.DataAccess\KategoriRepository.cs" />
-    <Compile Include="InventoryTracking.DataAccess\MalzemeKatalogRepository.cs" />
-    <Compile Include="InventoryTracking.Models\Entities.cs" />
-    <Compile Include="Localization\LanguageManager.cs" />
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="InventoryTracking.UI\AddEditProductForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InventoryTracking.UI\AddEditProductForm.Designer.cs">
-      <DependentUpon>AddEditProductForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="InventoryTracking.UI\MainForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InventoryTracking.UI\MalzemeKayitForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InventoryTracking.UI\KategoriYonetimForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InventoryTracking.UI\DepoYonetimForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InventoryTracking.UI\StokTransferForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InventoryTracking.UI\StokDuzeltmeNedeniForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InventoryTracking.UI\ConnectionSetupForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InventoryTracking.UI\MainForm.Designer.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="InventoryTracking.UI\MainForm.Appearance.cs">
-      <DependentUpon>MainForm.cs</DependentUpon>
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InventoryTracking.Controls\InventoryIcons.cs" />
-    <Compile Include="InventoryTracking.Controls\InventoryValueLabel.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="InventoryTracking.Controls\InventorySearchTextBox.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="InventoryTracking.UI\ProductDetailForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InventoryTracking.UI\ProductDetailForm.Designer.cs">
-      <DependentUpon>ProductDetailForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="InventoryTracking.UI\ZReportForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="InventoryTracking.UI\ZReportForm.Designer.cs">
-      <DependentUpon>ZReportForm.cs</DependentUpon>
-    </Compile>
     <EmbeddedResource Include="Properties\Resources.en.resx">
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -125,46 +182,37 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <EmbeddedResource Include="InventoryTracking.UI\AddEditProductForm.resx">
+    <EmbeddedResource Include="UI\Forms\AddEditProductForm.resx">
       <DependentUpon>AddEditProductForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InventoryTracking.UI\MainForm.resx">
+    <EmbeddedResource Include="UI\Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InventoryTracking.UI\ProductDetailForm.resx">
+    <EmbeddedResource Include="UI\Forms\ProductDetailForm.resx">
       <DependentUpon>ProductDetailForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="InventoryTracking.UI\ZReportForm.resx">
+    <EmbeddedResource Include="UI\Forms\ZReportForm.resx">
       <DependentUpon>ZReportForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Notes\Notlar.txt" />
-    <Content Include="Notes\SqlDataBaseScriptV1.txt" />
-    <Content Include="Notes\2026-09-26_UrunAdiBenzersiz.sql" />
-    <Content Include="Notes\2026-09-26_MalzemeKatalogVeHareketYonu.sql" />
-    <Content Include="Notes\2026-09-26_V1_MalzemeBirimGuncelleme.sql" />
-    <Content Include="Notes\2026-09-26_V1_StokTransferi.sql" />
-    <Content Include="Notes\2026-09-26_V1_UygulamaYetkileri.sql" />
-    <Content Include="Notes\2026-10-06_MalzemeNumarasiSadelestirme.sql" />
-    <Content Include="Notes\2026-10-10_UrunKodlariVeKategoriAdlari.sql" />
+    <Content Include="Notes\Todo.txt" />
+    <Content Include="Notes\DatabaseSetup.sql" />
+    <Content Include="Notes\2026-09-26_UniqueProductName.sql" />
+    <Content Include="Notes\2026-09-26_MaterialCatalogAndMovementDirection.sql" />
+    <Content Include="Notes\2026-09-26_V1_MaterialUnitUpdate.sql" />
+    <Content Include="Notes\2026-09-26_V1_StockTransfer.sql" />
+    <Content Include="Notes\2026-09-26_V1_ApplicationPermissions.sql" />
+    <Content Include="Notes\2026-10-06_MaterialNumberSimplification.sql" />
+    <Content Include="Notes\2026-10-10_ProductCodesAndCategoryNames.sql" />
+    <Content Include="Notes\2026-10-10_SalesReturnsAndAuditLog.sql" />
     <Content Include="Notes\DemoData.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

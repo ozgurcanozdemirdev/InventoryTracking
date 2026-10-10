@@ -1,4 +1,4 @@
-param(
+﻿param(
   [string]$SqlServer,
   [string]$ScreenshotDirectory,
   [string]$MSBuildPath,
@@ -33,7 +33,7 @@ $testExe = Join-Path $PSScriptRoot "LocalizationCheck\bin\$Configuration\Localiz
 $preferenceFolder = Join-Path ([IO.Path]::GetTempPath()) ('InventoryTrackingLocalization_' + [guid]::NewGuid().ToString('N'))
 try {
   if ($SqlServer) {
-    $testArgs = @($preferenceFolder, $SqlServer, (Join-Path $project 'Notes\SqlDataBaseScriptV1.txt'))
+    $testArgs = @($preferenceFolder, $SqlServer, (Join-Path $project 'Notes\DatabaseSetup.sql'))
     if ($ScreenshotDirectory) { $testArgs += $ScreenshotDirectory }
     & $testExe @testArgs
   }

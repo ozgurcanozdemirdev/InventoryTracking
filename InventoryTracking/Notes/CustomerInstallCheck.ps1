@@ -1,4 +1,4 @@
-param([string]$PackageFolder)
+﻿param([string]$PackageFolder, [string]$SqlServer)
 
 $ErrorActionPreference = 'Stop'
 $workspace = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
@@ -6,10 +6,11 @@ if (-not $PackageFolder) {
   $PackageFolder = (Get-ChildItem -LiteralPath (Join-Path $workspace 'dist') -Directory |
     Sort-Object LastWriteTime -Descending | Select-Object -First 1).FullName
 }
-$sqlFile = Join-Path $PackageFolder 'SQL\SqlDataBaseScriptV1_Customer.sql'
+$sqlFile = Join-Path $PackageFolder 'SQL\DatabaseSetup.Customer.sql'
 if (-not (Test-Path -LiteralPath $sqlFile)) { throw 'Customer SQL script was not found.' }
 [xml]$config = Get-Content (Join-Path (Split-Path $PSScriptRoot -Parent) 'App.config')
 $builder = New-Object System.Data.SqlClient.SqlConnectionStringBuilder($config.configuration.connectionStrings.add.connectionString)
+if ($SqlServer) { $builder['Data Source'] = $SqlServer }
 $databaseName = 'InventoryTracking_CustomerQA_' + [guid]::NewGuid().ToString('N').Substring(0, 8)
 $builder['Initial Catalog'] = 'master'
 $admin = New-Object System.Data.SqlClient.SqlConnection($builder.ConnectionString)

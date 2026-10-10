@@ -1,0 +1,54 @@
+﻿# Ana ekran görünümü — 6 Ekim 2026
+
+Ana ekran, onaylanan görseldeki mavi başlık, simgeli işlem butonları, kalın
+liste yazıları ve sağdaki Ürün Bilgileri paneline göre düzenlendi. Mevcut
+ürün, kategori, depo, transfer ve rapor pencereleri butonla açılmaya devam eder.
+
+## Veri eşleştirmesi
+
+| Alan | Kaynak |
+| --- | --- |
+| Malzeme No | `MalzemeKatalog.MalzemeNo`, `Urun.MalzemeId` ilişkisi |
+| Miktar / üst stok kutusu | Seçili ürünün seçili depodaki `Stok.Miktar` değeri |
+| Son Hareket | Aynı ürün ve depoya ait `MAX(StokHareketi.HareketTarihi)` |
+| Birim fiyat | `Urun.Fiyat`, ürün panelinde gösterilir |
+| Durum | Sıfır miktar: Stokta Yok; pozitif Kritik/Düşük: Az Stok; Normal: Stokta |
+
+Hareketi olmayan ürünlerde **Hareket yok** yazılır. Stok kaydının güncelleme
+tarihi son hareket tarihi yerine kullanılmaz. Stok durumunun iş kuralı
+değişmez; listede daha sade etiketle gösterilir. Asıl seviye durum kutusunun
+ipucunda görülebilir. `Düşük` metni sorguda Türkçe döndürüldüğü için mevcut
+ürün işlem penceresinin renklendirmesiyle de eşleşir.
+
+Barkod/ürün araması seçili depo listesini bellekte süzer. Malzeme numarasıyla
+da arama yapılabilir. Barkod ve Enter ile mevcut kayıt açma akışı korunur.
+Sağdaki giriş/çıkış butonları miktar ve açıklama girilen mevcut işlem
+penceresini istenen yönle açar; stok kaydı ana ekrandan doğrudan değiştirilmez.
+
+## Formlar ve yardımcı kontroller
+
+`InventoryTracking.UI.Forms` yalnızca formları ve onların Designer, Appearance,
+resx dosyalarını içerir. Görsel yardımcılar `InventoryTracking.UI.Controls`
+klasöründedir: `InventoryIcons` simgeleri çizer, `InventorySearchTextBox`
+boş arama kutusuna açıklama çizer, `InventoryValueLabel` bilgi kutularının
+kenarlığını çizer. Bu sınıflar form veya iş kuralı değildir.
+
+Malzeme numarası doğrudan katalogdan gösterilir. İlk geçişte otomatik
+üretilmiş `LEGACY-<UrunId>` değerleri `2026-10-06_MaterialNumberSimplification.sql`
+ile öneksiz sayıya çevrilir; elle girilmiş numaralar korunur. Aynı numara başka
+malzemede kullanılmışsa işlem geri alınır.
+
+## Çalıştırma ve doğrulama
+
+Yeni sütun veya tablo eklenmediğinden bu görünüm için ek SQL migration
+gerekmez. Önceki V1 katalog/hareket şeması ve uygulama yetkileri gereklidir.
+Depo listesi sorgusu artık ADO.NET ile parametreli olarak ürün, katalog,
+kategori, birim ve hareket tablolarından tek seferde okunur.
+
+`V1IntegrationCheck.ps1`, geçici SQL veritabanında malzeme numarası,
+depoya göre son hareket, arama, seçim paneli, giriş/çıkış pencereleri,
+sıfır stok ve pencere boyutlarına göre yerleşimi kontrol eder.
+`-MainScreenshotFolder` verilirse çalışan formun ekran görüntülerini kaydeder.
+
+Eski dağıtım ZIP'leri bu değişikliği içermez. Yeni sürüm için projeyi yeniden
+derleyin; dağıtım gerektiğinde `PrepareCustomerRelease.ps1` ile yeni paket üretin.

@@ -1,4 +1,4 @@
-param([switch]$KeepDatabase, [string]$AssemblyPath, [string]$ReportScreenshotFolder, [string]$MainScreenshotFolder)
+﻿param([switch]$KeepDatabase, [string]$AssemblyPath, [string]$ReportScreenshotFolder, [string]$MainScreenshotFolder, [string]$SqlServer)
 
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Data
@@ -6,6 +6,7 @@ $root = Split-Path $PSScriptRoot -Parent
 [xml]$config = Get-Content (Join-Path $root 'App.config')
 $source = $config.configuration.connectionStrings.add.connectionString
 $base = New-Object System.Data.SqlClient.SqlConnectionStringBuilder($source)
+if ($SqlServer) { $base['Data Source'] = $SqlServer }
 $databaseName = 'InventoryTracking_QA_' + [guid]::NewGuid().ToString('N').Substring(0, 8)
 $base['Initial Catalog'] = 'master'
 $admin = New-Object System.Data.SqlClient.SqlConnection($base.ConnectionString)
@@ -28,7 +29,7 @@ function Check($condition, $label) {
 
 try {
   $admin.Open()
-  $script = [IO.File]::ReadAllText((Join-Path $PSScriptRoot 'SqlDataBaseScriptV1.txt'))
+  $script = [IO.File]::ReadAllText((Join-Path $PSScriptRoot 'DatabaseSetup.sql'))
   $script = $script.Replace('InventoryTracking', $databaseName)
   foreach ($batch in [regex]::Split($script, '(?im)^\s*GO\s*$')) {
     if (-not [string]::IsNullOrWhiteSpace($batch)) { $null = Run-Sql $admin $batch }
@@ -39,7 +40,7 @@ ALTER TABLE dbo.Urun WITH CHECK ADD CONSTRAINT FK_Urun_MalzemeBag
   FOREIGN KEY (MalzemeId, Barkod, BirimId)
   REFERENCES dbo.MalzemeKatalog(MalzemeId, Barkod, BirimId);
 '@
-  $migration = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '2026-09-26_V1_MalzemeBirimGuncelleme.sql'))
+  $migration = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '2026-09-26_V1_MaterialUnitUpdate.sql'))
   $null = Run-Sql $admin $migration
   $null = Run-Sql $admin $migration
   Check ((Run-Sql $admin "SELECT update_referential_action_desc FROM sys.foreign_keys WHERE name='FK_Urun_MalzemeBag'") -eq 'CASCADE') 'idempotent schema migration'
@@ -49,11 +50,11 @@ DROP INDEX UX_StokHareketi_TransferYonu ON dbo.StokHareketi;
 ALTER TABLE dbo.StokHareketi DROP COLUMN TransferId;
 DROP TABLE dbo.StokTransferi;
 '@
-  $transferMigration = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '2026-09-26_V1_StokTransferi.sql'))
+  $transferMigration = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '2026-09-26_V1_StockTransfer.sql'))
   $null = Run-Sql $admin $transferMigration
   $null = Run-Sql $admin $transferMigration
   Check ((Run-Sql $admin "SELECT COUNT(*) FROM sys.columns WHERE object_id=OBJECT_ID('StokHareketi') AND name='TransferId'") -eq 1) 'idempotent transfer migration'
-  $catalogMigration = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '2026-09-26_MalzemeKatalogVeHareketYonu.sql'))
+  $catalogMigration = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '2026-09-26_MaterialCatalogAndMovementDirection.sql'))
   $null = Run-Sql $admin $catalogMigration
   $null = Run-Sql $admin $catalogMigration
   Check ((Run-Sql $admin "SELECT COUNT(*) FROM dbo.MalzemeKatalog WHERE MalzemeNo LIKE 'LEGACY-%'") -eq 0) 'catalog migration does not add a legacy prefix'
@@ -70,7 +71,7 @@ WHERE u.UrunId IN (1,2);
 INSERT INTO dbo.MalzemeKatalog (MalzemeNo, Barkod, Aciklama, BirimId)
 VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
 '@
-  $numberMigration = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '2026-10-06_MalzemeNumarasiSadelestirme.sql'))
+  $numberMigration = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '2026-10-06_MaterialNumberSimplification.sql'))
   $numberConflictRejected = $false
   try { $null = Run-Sql $admin $numberMigration }
   catch { $numberConflictRejected = $_.Exception.ToString().Contains('50031') -or ($_.Exception.InnerException.Number -eq 50031) }
@@ -83,7 +84,7 @@ VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
   Check ((Run-Sql $admin 'SELECT MalzemeNo FROM dbo.MalzemeKatalog WHERE MalzemeId=(SELECT MalzemeId FROM dbo.Urun WHERE UrunId=3)') -eq $customNumber) 'custom material number preserved'
   Check (((Run-Sql $admin 'SELECT COUNT(*) FROM dbo.Stok') -eq $stockCount) -and
     ((Run-Sql $admin 'SELECT COUNT(*) FROM dbo.StokHareketi') -eq $movementCount)) 'number migration preserves stock and movement records'
-  $permissions = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '2026-09-26_V1_UygulamaYetkileri.sql'))
+  $permissions = [IO.File]::ReadAllText((Join-Path $PSScriptRoot '2026-09-26_V1_ApplicationPermissions.sql'))
   $null = Run-Sql $admin $permissions
   Check ((Run-Sql $admin "SELECT COUNT(*) FROM sys.database_principals WHERE name='InventoryTrackingApp'") -eq 1) 'limited application role created'
   $base['Initial Catalog'] = $databaseName
@@ -101,7 +102,7 @@ VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
     Check (-not $rawSaved.Contains($databaseName)) 'customer connection is not stored in plaintext'
   } finally { if (Test-Path $savedPath) { Remove-Item -LiteralPath $savedPath } }
 
-  $category = New-Object InventoryTracking.Business.Services+KategoriService
+  $category = New-Object InventoryTracking.Business.CategoryService
   Check ($category.AddKategori('QA Category', '').Success) 'category add'
   Check (-not $category.AddKategori('qa category', '').Success) 'category case-insensitive duplicate'
   $categoryId = ($category.GetAllKategoriler() | Where-Object KategoriAdi -eq 'QA Category').KategoriId
@@ -109,7 +110,7 @@ VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
   Check ($category.DeleteKategori($categoryId).Success) 'unused category delete'
   Check (-not $category.DeleteKategori(1).Success) 'used category protected'
 
-  $depot = New-Object InventoryTracking.Business.Services+DepoService
+  $depot = New-Object InventoryTracking.Business.WarehouseService
   Check ($depot.AddDepo('QA Depot', 'City', '').Success) 'depot add'
   Check (-not $depot.AddDepo('qa depot', 'City', '').Success) 'depot case-insensitive duplicate'
   $depotId = ($depot.GetAllDepolar() | Where-Object DepoAdi -eq 'QA Depot').DepoId
@@ -118,13 +119,13 @@ VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
   Check ($depot.SetDepoActive($depotId, $false).Success) 'empty depot deactivation'
   Check ($depot.SetDepoActive($depotId, $true).Success) 'depot reactivation'
 
-  $material = New-Object InventoryTracking.Business.Services+MalzemeService
+  $material = New-Object InventoryTracking.Business.MaterialService
   $item = $material.GetByBarkod('8690000123456')
   Check ($null -ne $item) 'material lookup'
   $item.Aciklama = 'QA Updated Product'
   $item.BirimId = 2
   Check ($material.Update($item).Success) 'material name and unit update'
-  $product = New-Object InventoryTracking.Business.Services+UrunService
+  $product = New-Object InventoryTracking.Business.ProductService
   $found = $product.SearchByBarkod('8690000123456')
   Check (($found.UrunAdi -eq 'QA Updated Product') -and ($found.BirimId -eq 2)) 'product follows material update'
   Check ($product.DeleteProduct($found.UrunId).Success) 'product soft delete'
@@ -133,13 +134,13 @@ VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
   Check ($product.ReactivateProduct($found.UrunId).Success) 'product reactivation'
   Check ($null -ne $product.SearchByBarkod('8690000123456')) 'reactivated product visible'
 
-  $newMaterial = New-Object 'InventoryTracking.Models.Entities+MalzemeKatalog'
+  $newMaterial = New-Object 'InventoryTracking.Models.MaterialCatalog'
   $newMaterial.MalzemeNo = 'QA-MAT-1'
   $newMaterial.Barkod = 'QA-BAR-1'
   $newMaterial.Aciklama = 'QA New Product'
   $newMaterial.BirimId = 1
   Check ($material.Add($newMaterial).Success) 'new material registration'
-  $newProduct = New-Object 'InventoryTracking.Models.Entities+UrunViewModel'
+  $newProduct = New-Object 'InventoryTracking.Models.ProductViewModel'
   $newProduct.Barkod = 'QA-BAR-1'
   $newProduct.UrunAdi = 'QA New Product'
   $newProduct.BirimId = 1
@@ -150,7 +151,7 @@ VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
   $newProduct.MaksimumStok = 20
   $newProduct.Fiyat = 12
   Check ($product.AddProduct($newProduct).Success) 'product and initial stock registration'
-  $newMaterial2 = New-Object 'InventoryTracking.Models.Entities+MalzemeKatalog'
+  $newMaterial2 = New-Object 'InventoryTracking.Models.MaterialCatalog'
   $newMaterial2.MalzemeNo = 'QA-MAT-2'
   $newMaterial2.Barkod = 'QA-BAR-2'
   $newMaterial2.Aciklama = 'qa new product'
@@ -162,7 +163,7 @@ VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
   $newProduct.Barkod = 'QA-MISSING'
   Check (-not $product.AddProduct($newProduct).Success) 'missing material blocks product'
 
-  $stock = New-Object InventoryTracking.Business.Services+StokService
+  $stock = New-Object InventoryTracking.Business.StockService
   $newId = $product.SearchByBarkod('QA-BAR-1').UrunId
   Check ($stock.UpdateStok($newId, $depotId, -2, 'Exit', 'QA').Success) 'stock exit'
   Check (-not $stock.UpdateStok($newId, $depotId, -100, 'Exit', 'QA').Success) 'negative stock blocked'
@@ -199,13 +200,13 @@ VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
     Check ($count -eq 2) 'transfer has exactly two linked movements'
     $count = Run-Sql $qa "SELECT COUNT(*) FROM StokHareketi WHERE UrunId=$newId AND Aciklama='QA inventory count'"
     Check ($count -eq 1) 'stock correction reason persisted'
-    $report = New-Object InventoryTracking.Business.Services+ZReportService
+    $report = New-Object InventoryTracking.Business.ZReportService
     $periods = @(
       ('G' + [char]0x00FC + 'nl' + [char]0x00FC + 'k'),
       ('Ayl' + [char]0x0131 + 'k'),
       ('Y' + [char]0x0131 + 'll' + [char]0x0131 + 'k')
     )
-    $filter = New-Object 'InventoryTracking.Models.Entities+HareketRaporFiltresi'
+    $filter = New-Object 'InventoryTracking.Models.MovementReportFilter'
     $filter.Baslangic = (Get-Date).Date
     $filter.Bitis = (Get-Date).Date
     $filter.UrunArama = 'QA-BAR-1'
@@ -252,8 +253,8 @@ VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
   Check (-not $stock.UpdateStok($newId, $closedDepotId, 1, 'Giriş', 'QA inactive depot').Success) 'inactive depot blocks stock movement'
 
   Add-Type -AssemblyName System.Windows.Forms
-  foreach ($formName in @('KategoriYonetimForm', 'DepoYonetimForm')) {
-    $form = New-Object "InventoryTracking.UI.$formName"
+  foreach ($formName in @('CategoryManagementForm', 'WarehouseManagementForm')) {
+    $form = New-Object "InventoryTracking.UI.Forms.$formName"
     try {
       $form.Show()
       [System.Windows.Forms.Application]::DoEvents()
@@ -262,14 +263,14 @@ VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
     }
     finally { $form.Close(); $form.Dispose() }
   }
-  $editMaterial = New-Object InventoryTracking.UI.MalzemeKayitForm -ArgumentList (,$item)
+  $editMaterial = New-Object InventoryTracking.UI.Forms.MaterialRegistrationForm -ArgumentList (,$item)
   try {
     $editMaterial.Show()
     [System.Windows.Forms.Application]::DoEvents()
     Check ($editMaterial.Text -like 'Malzeme D*zenle') 'material edit screen opens'
   }
   finally { $editMaterial.Close(); $editMaterial.Dispose() }
-  $editProduct = New-Object InventoryTracking.UI.AddEditProductForm -ArgumentList $found, 1
+  $editProduct = New-Object InventoryTracking.UI.Forms.AddEditProductForm -ArgumentList $found, 1
   try {
     $editProduct.Show()
     [System.Windows.Forms.Application]::DoEvents()
@@ -278,7 +279,7 @@ VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
       ($null -ne ($editButton.Controls | Where-Object Text -like 'Malzeme D*zenle' | Select-Object -First 1))) 'product edit screen links material editor'
   }
   finally { $editProduct.Close(); $editProduct.Dispose() }
-  $newProductForm = New-Object InventoryTracking.UI.AddEditProductForm -ArgumentList $depotId
+  $newProductForm = New-Object InventoryTracking.UI.Forms.AddEditProductForm -ArgumentList $depotId
   try {
     $newProductForm.GelenBarkod = 'QA-BAR-2'
     $newProductForm.Show()
@@ -287,14 +288,14 @@ VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
     Check (($newProductForm.Text -like 'Yeni *') -and ($productName.Text -eq 'qa new product')) 'new product screen loads scanned catalog item'
   }
   finally { $newProductForm.Close(); $newProductForm.Dispose() }
-  $transferForm = New-Object InventoryTracking.UI.StokTransferForm -ArgumentList 1, $newId
+  $transferForm = New-Object InventoryTracking.UI.Forms.StockTransferForm -ArgumentList 1, $newId
   try {
     $transferForm.Show()
     [System.Windows.Forms.Application]::DoEvents()
     Check ($transferForm.Visible) 'transfer screen opens'
   }
   finally { $transferForm.Close(); $transferForm.Dispose() }
-  $reportForm = New-Object InventoryTracking.UI.ZReportForm
+  $reportForm = New-Object InventoryTracking.UI.Forms.ZReportForm
   try {
     $reportForm.Show(); [System.Windows.Forms.Application]::DoEvents()
     Check ($reportForm.Visible) 'movement report screen opens'
@@ -352,13 +353,13 @@ VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
     finally { $graphics.Dispose(); $bitmap.Dispose() }
   }
   finally { $reportForm.Close(); $reportForm.Dispose() }
-  $reasonForm = New-Object InventoryTracking.UI.StokDuzeltmeNedeniForm
+  $reasonForm = New-Object InventoryTracking.UI.Forms.StockAdjustmentReasonForm
   try { $reasonForm.Show(); [System.Windows.Forms.Application]::DoEvents(); Check ($reasonForm.Visible) 'correction reason screen opens' }
   finally { $reasonForm.Close(); $reasonForm.Dispose() }
-  $setupForm = New-Object InventoryTracking.UI.ConnectionSetupForm
+  $setupForm = New-Object InventoryTracking.UI.Forms.ConnectionSetupForm
   try { $setupForm.Show(); [System.Windows.Forms.Application]::DoEvents(); Check ($setupForm.Visible) 'customer connection screen opens' }
   finally { $setupForm.Close(); $setupForm.Dispose() }
-  $main = New-Object InventoryTracking.UI.MainForm
+  $main = New-Object InventoryTracking.UI.Forms.MainForm
   try {
     $main.WindowState = [Windows.Forms.FormWindowState]::Normal
     $main.ClientSize = New-Object Drawing.Size -ArgumentList 1440, 830
@@ -393,7 +394,7 @@ VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
       $dialogTimer = New-Object Windows.Forms.Timer
       $dialogTimer.Interval = 150
       $dialogTimer.Add_Tick({
-        $dialog = [Windows.Forms.Application]::OpenForms | Where-Object { $_ -is [InventoryTracking.UI.ProductDetailForm] } | Select-Object -First 1
+        $dialog = [Windows.Forms.Application]::OpenForms | Where-Object { $_ -is [InventoryTracking.UI.Forms.ProductDetailForm] } | Select-Object -First 1
         if ($null -ne $dialog) {
           $giris = $dialog.Controls.Find('btnGiris', $true) | Select-Object -First 1
           $cikis = $dialog.Controls.Find('btnCikis', $true) | Select-Object -First 1
@@ -471,8 +472,8 @@ VALUES (N'2', N'QA-NUMBER-CONFLICT', N'QA number conflict', 1);
 }
 finally {
   $env:INVENTORYTRACKING_CONNECTION_STRING = $previousAppConnection
-  if ('InventoryTracking.Connection.SqlDBConnection' -as [type]) {
-    [InventoryTracking.Connection.SqlDBConnection]::CloseConnection()
+  if ('InventoryTracking.Connection.SqlDatabaseConnection' -as [type]) {
+    [InventoryTracking.Connection.SqlDatabaseConnection]::CloseConnection()
   }
   [System.Data.SqlClient.SqlConnection]::ClearAllPools()
   if ($admin.State -ne 'Open') { $admin.Open() }

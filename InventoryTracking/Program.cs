@@ -1,7 +1,7 @@
-using System;
+﻿using System;
 using System.Windows.Forms;
 using InventoryTracking.Connection;
-using InventoryTracking.Localization;
+using InventoryTracking.UI.Localization;
 
 namespace InventoryTracking
 {
@@ -22,7 +22,7 @@ namespace InventoryTracking
         try
         {
           connectionError = ConnectionSettingsStore.Test(
-            SqlDBConnection.ResolveConnectionString());
+            SqlDatabaseConnection.ResolveConnectionString());
         }
         catch (Exception ex)
         {
@@ -44,14 +44,14 @@ namespace InventoryTracking
             return;
           }
 
-          using (var setup = new InventoryTracking.UI.ConnectionSetupForm())
+          using (var setup = new InventoryTracking.UI.Forms.ConnectionSetupForm())
           {
             if (setup.ShowDialog() != DialogResult.OK)
               return;
           }
         }
 
-        Application.Run(new InventoryTracking.UI.MainForm());
+        Application.Run(new InventoryTracking.UI.Forms.MainForm());
       }
       catch (Exception ex)
       {

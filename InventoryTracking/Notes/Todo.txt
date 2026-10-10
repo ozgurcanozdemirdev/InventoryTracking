@@ -1,0 +1,11 @@
+6- Kullanıcı yönetimi ekranı eklenecek ve bu ekranda kullanıcılar eklenebilecek, güncellenebilecek ve silinebilecek. Kullanıcı işlemleri başarılı olduğunda kullanıcıya bilgilendirme mesajı gösterilecek ve ana formdaki kullanıcı listesi güncellenecek.
+
+7- Kullanıcıların yetki seviyeleri belirlenecek ve her kullanıcıya farklı yetkiler atanacak. Örneğin, bazı kullanıcılar sadece satış ve iade işlemleri yapabilirken, bazı kullanıcılar ürün ekleme, silme ve güncelleme işlemlerini yapabilecek. Yetki seviyeleri kullanıcı yönetimi ekranında belirlenecek ve her kullanıcının yetkileri kaydedilecek.
+
+8- Kullanıcıların yetki seviyelerine göre ana formda gösterilen butonlar ve işlemler kısıtlanacak. Örneğin, yetkisi olmayan bir kullanıcı ürün ekleme butonunu göremeyecek veya tıklayamayacak. Yetki kontrolü her işlem öncesinde yapılacak ve yetkisiz işlemler engellenecek.
+
+9- Kullanıcıların yetki seviyelerine göre raporlama ekranlarında gösterilen veriler kısıtlanacak. Örneğin, yetkisi olmayan bir kullanıcı sadece kendi yaptığı satış ve iade işlemlerini görebilecek, diğer kullanıcıların işlemlerini göremeyecek. Yetki kontrolü raporlama ekranlarında da uygulanacak.
+
+10- Kullanıcıların yetki seviyelerine göre kategori ve depo yönetimi ekranlarında gösterilen veriler kısıtlanacak. Örneğin, yetkisi olmayan bir kullanıcı sadece kendi eklediği kategorileri ve depoları görebilecek, diğer kullanıcıların eklediği kategorileri ve depoları göremeyecek. Yetki kontrolü kategori ve depo yönetimi ekranlarında da uygulanacak.
+
+11- Kullanıcıların yetki seviyelerine göre ürün detay ekranında gösterilen bilgiler kısıtlanacak. Örneğin, yetkisi olmayan bir kullanıcı ürünün fiyatını göremeyecek veya değiştiremeyecek. Yetki kontrolü ürün detay ekranında da uygulanacak.

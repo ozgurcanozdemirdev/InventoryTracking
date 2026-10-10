@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -10,9 +10,9 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Windows.Forms;
-using InventoryTracking.Localization;
-using InventoryTracking.UI;
-using static InventoryTracking.Models.Entities;
+using InventoryTracking.UI.Localization;
+using InventoryTracking.UI.Forms;
+using InventoryTracking.Models;
 
 class LocalizationCheck
 {
@@ -27,14 +27,14 @@ class LocalizationCheck
   }
 
   static Control Find(Control root, string name) => root.Controls.Find(name, true).Single();
-  static string Text(string key) => (string)typeof(LanguageManager).Assembly.GetType("InventoryTracking.Localization.UiText").GetMethod("Get").Invoke(null, new object[] { key });
+  static string Text(string key) => (string)typeof(LanguageManager).Assembly.GetType("InventoryTracking.UI.Localization.UiText").GetMethod("Get").Invoke(null, new object[] { key });
   [STAThread]
   static int Main(string[] args)
   {
     try
     {
       Application.SetUnhandledExceptionMode(UnhandledExceptionMode.ThrowException);
-      var messageType = typeof(LanguageManager).Assembly.GetType("InventoryTracking.Localization.UiMessage");
+      var messageType = typeof(LanguageManager).Assembly.GetType("InventoryTracking.UI.Localization.UiMessage");
       var handler = new Func<string, string, MessageBoxButtons, MessageBoxIcon, DialogResult>((text, caption, buttons, icon) =>
       {
         dialogs.Add(caption + ": " + text);
@@ -63,13 +63,13 @@ class LocalizationCheck
       var culture = CultureInfo.CurrentCulture;
       System.Windows.Forms.Timer clock;
       using (var main = new MainForm())
-      using (var category = new KategoriYonetimForm())
-      using (var warehouse = new DepoYonetimForm())
-      using (var material = new MalzemeKayitForm())
+      using (var category = new CategoryManagementForm())
+      using (var warehouse = new WarehouseManagementForm())
+      using (var material = new MaterialRegistrationForm())
       using (var add = new AddEditProductForm(1))
-      using (var transfer = new StokTransferForm(1))
+      using (var transfer = new StockTransferForm(1))
       using (var report = new ZReportForm())
-      using (var reason = new StokDuzeltmeNedeniForm())
+      using (var reason = new StockAdjustmentReasonForm())
       using (var connection = new ConnectionSetupForm())
       {
         var container = (System.ComponentModel.IContainer)Field(main, "components");
@@ -96,7 +96,7 @@ class LocalizationCheck
         Check(grid.Columns["Barkod"].HeaderText == "Barcode" && grid.Columns["Miktar"].HeaderText == "Quantity", "grid headers switch");
         Check(CultureInfo.CurrentCulture.Equals(culture), "number and date input culture is preserved");
         Check(File.ReadAllText(pref) == "en", "language preference saved");
-        Check(new InventoryTracking.Business.Services.UrunService().AddProduct(null).Message == "Model cannot be null.", "business validation uses English");
+        Check(new InventoryTracking.Business.ProductService().AddProduct(null).Message == "Model cannot be null.", "business validation uses English");
         LanguageManager.SetLanguage("tr");
         Check(Find(main, "btnYeniUrun").Text == "Yeni Ürün" && category.Text == "Kategori Yönetimi", "switch back to Turkish");
         Check(warehouseGrid.Columns[1].HeaderText == "Konum" && warehouseEditor.Controls.OfType<Label>().Any(l => l.Text == "Konum:"), "warehouse location captions restore Turkish");
@@ -197,7 +197,7 @@ class LocalizationCheck
             RunSql(admin, batch);
         builder.InitialCatalog = database;
         Environment.SetEnvironmentVariable("INVENTORYTRACKING_CONNECTION_STRING", builder.ConnectionString);
-        InventoryTracking.Connection.SqlDBConnection.ResetConnection();
+        InventoryTracking.Connection.SqlDatabaseConnection.ResetConnection();
         RunSql(admin, @"UPDATE dbo.Urun SET UrunAdi=CASE UrunId WHEN 1 THEN N'Bottled Water 1.5L' WHEN 2 THEN N'Milk 1L' ELSE N'Bread' END;
 UPDATE dbo.MalzemeKatalog SET Aciklama=CASE MalzemeId WHEN 1 THEN N'Bottled Water 1.5L' WHEN 2 THEN N'Milk 1L' ELSE N'Bread' END;
 UPDATE dbo.Depo SET DepoAdi=CASE DepoId WHEN 1 THEN N'Main Warehouse' ELSE N'Branch Warehouse' END;
@@ -221,7 +221,7 @@ UPDATE dbo.Birim SET BirimAdi=CASE BirimId WHEN 1 THEN N'Piece' WHEN 2 THEN N'Ki
           }
         }
         finally { if (File.Exists(connectionFile)) File.Delete(connectionFile); }
-        var stock = new InventoryTracking.Business.Services.StokService();
+        var stock = new InventoryTracking.Business.StockService();
         Check(stock.UpdateStok(1, 1, 20, "Giriş", "New delivery").Success, "stock entry before language test");
         Check(stock.TransferStock(1, 1, 2, 10, "Branch replenishment").Success, "stock transfer before language test");
         Check(stock.SetStock(1, 1, 150, "Stock count adjustment").Success, "stock count before language test");
@@ -251,7 +251,7 @@ UPDATE dbo.Birim SET BirimAdi=CASE BirimId WHEN 1 THEN N'Piece' WHEN 2 THEN N'Ki
           Check(Equals(depot, ((ComboBox)Find(main, "cmbDepo")).SelectedValue) && quantity == Find(main, "lblStockAmount").Text, "English switch keeps warehouse and quantity");
           Check(Find(main, "lblDetailUrunAdi").Text == "Bottled Water 1.5L", "record names stay unchanged");
           Check(Find(main, "btnKapat").Text == "Exit", "exit button is distinct from report direction");
-          Check(new InventoryTracking.Business.Services.UrunService().SearchByBarkod("8690000123456").Fiyat == 3.50m, "English product query retains SQL field names");
+          Check(new InventoryTracking.Business.ProductService().SearchByBarkod("8690000123456").Fiyat == 3.50m, "English product query retains SQL field names");
           Check(stock.GetStokByDepo(1).Count == 3 && stock.GetStok(1, 1).Miktar == 150, "English stock queries retain SQL field names");
           foreach (int width in new[]
           {
@@ -347,14 +347,14 @@ UPDATE dbo.Birim SET BirimAdi=CASE BirimId WHEN 1 THEN N'Piece' WHEN 2 THEN N'Ki
           ((Button)Find(report, "btnGetir")).PerformClick();
           Application.DoEvents();
           Check(detail.Rows.Count == 1 && detail.Rows[0].Cells["HareketTipi"].Value.ToString() == "Transfer Çıkış", "English filters keep SQL movement semantics");
-          var productService = new InventoryTracking.Business.Services.UrunService();
+          var productService = new InventoryTracking.Business.ProductService();
           var item = productService.GetProductById(1);
           using (var detailForm = new ProductDetailForm(item, 1, stock))
           using (var add = new AddEditProductForm(item, 1))
-          using (var category = new KategoriYonetimForm())
-          using (var warehouse = new DepoYonetimForm())
-          using (var transfer = new StokTransferForm(1, 1))
-          using (var material = new MalzemeKayitForm())
+          using (var category = new CategoryManagementForm())
+          using (var warehouse = new WarehouseManagementForm())
+          using (var transfer = new StockTransferForm(1, 1))
+          using (var material = new MaterialRegistrationForm())
           {
             foreach (var form in new Form[]
             {
@@ -383,7 +383,7 @@ UPDATE dbo.Birim SET BirimAdi=CASE BirimId WHEN 1 THEN N'Piece' WHEN 2 THEN N'Ki
       }
       finally
       {
-        InventoryTracking.Connection.SqlDBConnection.CloseConnection();
+        InventoryTracking.Connection.SqlDatabaseConnection.CloseConnection();
         SqlConnection.ClearAllPools();
         Environment.SetEnvironmentVariable("INVENTORYTRACKING_CONNECTION_STRING", previous);
         if (admin.State != System.Data.ConnectionState.Open)
